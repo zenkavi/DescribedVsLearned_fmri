@@ -1,16 +1,36 @@
 
-Notes based on this tutorial: https://www.hpcworkshops.com/
+######################################
+# AWS CLI
+######################################
+Update the local image to the latest
 
+```
+docker pull amazon/aws-cli:latest
+```
+
+Run aws cli giving it access to user configuration
+
+```
+docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli
+```
+
+------------------------------------------------------------------------------------------
+
+Notes below based on this tutorial: https://www.hpcworkshops.com/
+
+######################################
 # Cloud9 environment
+######################################
 
-- Use AWS Management Console > Cloud9 to create environment.
+- If not using local terminal for command line use AWS Management Console > Cloud9 to create environment.
 
 - Install/update AWS CLI
 ```
 pip3 install awscli -U --user
 ```
-
+######################################
 # S3
+######################################
 [In cloud9 environment]
 
 - Create S3 bucket
@@ -28,8 +48,9 @@ aws s3 cp ./SEG_C3NA_Velocity.sgy s3://bucket-${BUCKET_POSTFIX}/SEG_C3NA_Velocit
 ```
 aws s3 ls s3://bucket-${BUCKET_POSTFIX}/
 ```
-
+######################################
 # EC2
+######################################
 [In cloud9 environment]
 
 - Generate a key pair for SSH access into the EC2 instance
@@ -58,7 +79,9 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
   - create an IAM role with `AmazonS3FullAccess` policy
   - then in EC2 > Instances > select instance > Actions > Security > Modify IAM role
 
+######################################
 # Parallel Cluster
+######################################
 [In cloud9 environment]
 
 - Install Parallel
@@ -170,8 +193,9 @@ pcluster start hpclab-yourname
 ```
 pcluster delete hpclab-yourname
 ```
-
+######################################
 # FSx for Lustre
+######################################
 [In cloud9 environment]
 
 - Lustre allows you to link an S3 bucket to your cluster without overloading your cluster immediately by loading all the data from the bucket. Instead it loads the metadata and you can load whatever you want from your bucket for further processing
