@@ -1,4 +1,7 @@
 
+######################################
+# S3: Data storage
+######################################
 - Transfer data to S3
   - One subject
   ```
@@ -18,27 +21,23 @@
 aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ```
 
-- Create E2 instance to test conversion on single subject. Instance needs:
-  - access to S3 bucket (through policy)
-  - heudiconv container (specified in AMI)
-  - bids-validator container (specified in AMI)
-  - DescribedVsLearned_fmri repo for the heuristics.py script
+######################################
+# EC2: Computing
+######################################
+- EC2 and cluster specifications
 
 --> Create template instance using Amazon Linux 2 AMI
---> Install software (heudiconv, bidsvalidator, defacing stuff, mriqc, fmriprep)
+--> Install software (heudiconv, bidsvalidator, defacing stuff, mriqc, fmriprep, study script repo - DescribedVsLearned_fmri)
+--> Give access to S3 bucket
 --> Save current state of instance as AMI
 --> Keep this AMI as fmri-preproc
+--> Data management:
+  - Root is EBS.
+  - Testing writes to this. When instance is destroyed testing output is destroyed too.
+  - When running for all subjects read from and write to S3; with potential intermediate steps like Lustre SCRATCH
 
-- Run heudiconv on all subjects either on single EC2 or on cluster
-
-- Defacing testing.
-
-- Defacing on all
-
-- Mriqc testing.
-
-- Mriqc on all
-
-- Fmriprep testing.
-
-- Fmriprep on all
+- Test the following on single instance and run for all subjects on cluster
+  - Heudiconv
+  - Defacing
+  - Mriqc
+  - Fmriprep
