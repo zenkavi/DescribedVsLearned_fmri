@@ -36,6 +36,20 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
   - Testing writes to this. When instance is destroyed testing output is destroyed too.
   - When running for all subjects read from and write to S3; with potential intermediate steps like Lustre SCRATCH
 
+```
+export AMI_ID=ami-0b2ca94b5b49e0132
+
+export KEY_NAME=$(aws ec2 describe-key-pairs --query 'KeyPairs[*].KeyName | [0]' --output text)
+
+export SG_ID=$(aws ec2 describe-security-groups --filters Name=group-name,Values="fmri-preproc-sg" --query 'SecurityGroups[*].GroupId | [0]' --output text)
+
+export SUBNET_ID=$(aws ec2 describe-subnets --query 'Subnets[*].SubnetId | [0]' --output text)
+
+export VPC_ID=$(aws ec2 describe-vpcs --query 'Vpcs[*].VpcId | [0]' --output text)
+
+aws ec2 run-instances --image-id ${AMI_ID} --count 1 --instance-type t2.micro --key-name ${KEY_NAME} --security-group-ids ${SG_ID} --subnet-id ${SUBNET-ID}
+```
+
 - Test the following on single instance and run for all subjects on cluster
   - Heudiconv
   - Defacing
