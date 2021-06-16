@@ -1,6 +1,6 @@
 **IMPORTANT**: If you're using zsh, which is the new default on Mac Terminals you need to include `noglob` before running the docker image so it interprets the `*` wildcards correctly.
 
-Initial command to explore DICOM structures and specify the `heuristics` file.
+Explore DICOM structures and specify the `heuristics` file.
 
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
@@ -11,7 +11,18 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 -c none --overwrite
 ```
 
-Command to get all subjects' ages from dicoms
+On an EC2 instance
+
+```
+docker run --rm -it -v /${pwd}:/home nipy/heudiconv:latest \
+-d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+-o /home/ \
+-f convertall \
+-s 01 \
+-c none --overwrite
+```
+
+Get all subjects' ages from dicoms
 
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
@@ -22,7 +33,7 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 -c none --overwrite
 ```
 
-Command to convert dicoms of subject 01 into BIDS
+Convert dicoms of subject 01 into BIDS
 
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base -v /Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned:/code nipy/heudiconv:latest \

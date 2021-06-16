@@ -28,7 +28,7 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 
 --> Create template instance using Amazon Linux 2 AMI
 --> Install software (heudiconv, bidsvalidator, defacing stuff, mriqc, fmriprep, study script repo - DescribedVsLearned_fmri)
---> Give access to S3 bucket
+--> Give access to S3 bucket through IAM role? **This won't be enough to run anything on S3 content. They would have to downloaded to the instance to actually do anything with them**
 --> Save current state of instance as AMI
 --> Keep this AMI as fmri-preproc
 --> Data management:
@@ -73,6 +73,32 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
 ```
 ssh -i "fmri-preproc.pem" ec2-user@[IP-ADDRESS].us-west-1.compute.amazonaws.com
 ```
+
+- Install docker on EC2 instance
+```
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+```
+
+- Log out and back in for docker
+
+- Download container for heudiconv
+```
+docker pull nipy/heudiconv:latest
+```
+
+[For single instance testing]
+- Give EC2 instance IAM role to access S3
+```
+aws ec2 associate-iam-instance-profile --instance-id [INSTANCE_ID] --iam-instance-profile Name=S3FullAccessForEC2
+```
+
+- Copy content from S3
+```
+aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
+```
+
 
 - Test the following on single instance and run for all subjects on cluster
   - Heudiconv
