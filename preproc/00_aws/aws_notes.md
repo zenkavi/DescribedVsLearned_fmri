@@ -36,13 +36,34 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
   - Testing writes to this. When instance is destroyed testing output is destroyed too.
   - When running for all subjects read from and write to S3; with potential intermediate steps like Lustre SCRATCH
 
+
+Env set up to run instance (require `jq`)
 ```
+aws ec2 create-key-pair --key-name fmri-preproc --query 'KeyMaterial' --output text > fmri-preproc.pem
+chmod 400 fmri-preproc.pem
+
+aws ec2 create-security-group --group-name fmri-preproc-sg --description "fmri-preproc security group" --vpc-id [VPC-ID]
+
+aws ec2 authorize-security-group-ingress \
+   --group-name fmri-preproc-sg \
+   --protocol tcp \
+   --port 22 \
+   --cidr [IP-ADDRESS]
+
 export AMI_ID=ami-0b2ca94b5b49e0132
-export KEY_NAME=$(aws ec2 describe-key-pairs --query 'KeyPairs[*].KeyName | [0]' --output text)
-export SG_ID=$(aws ec2 describe-security-groups --filters Name=group-name,Values="fmri-preproc-sg" --query 'SecurityGroups[*].GroupId | [0]' --output text)
-export SUBNET_ID=$(aws ec2 describe-subnets --query 'Subnets[*].SubnetId | [0]' --output text)
-export VPC_ID=$(aws ec2 describe-vpcs --query 'Vpcs[*].VpcId | [0]' --output text)
-docker run --rm -it -e AMI_ID -e KEY_NAME -e SG_ID -e SUBNET_ID -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli ec2 run-instances --image-id ${AMI_ID} --count 1 --instance-type t2.micro --key-name ${KEY_NAME} --security-group-ids ${SG_ID} --subnet-id ${SUBNET_ID}
+export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="fmri-preproc-sg"  | jq -j '.SecurityGroups[0].GroupId'`
+export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
+```
+
+Run instance
+```
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID
+```
+
+List running instances
+```
+aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Name`]| [0].Value,InstanceType, PrivateIpAddress, PublicIpAddress]' --filters Name=instance-state-name,Values=running --output table
 ```
 
 - Test the following on single instance and run for all subjects on cluster
