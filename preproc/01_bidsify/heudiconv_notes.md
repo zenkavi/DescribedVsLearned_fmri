@@ -14,7 +14,7 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 On an EC2 instance
 
 ```
-docker run --rm -it -v /${pwd}:/home nipy/heudiconv:latest \
+docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
 -d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -o /home/ \
 -f convertall \
@@ -33,13 +33,13 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 -c none --overwrite
 ```
 
-Convert dicoms of subject 01 into BIDS
+Convert dicoms of subject 01 into BIDS on EC2
 
 ```
-noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base -v /Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned:/code nipy/heudiconv:latest \
--d /base/raw_fMRI_data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
+-d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /base/Nifti/ \
--f /code/bidsify/heuristic.py \
+-f /home/heuristic.py \
 -s 01 \
 -c dcm2niix --overwrite
 ```
