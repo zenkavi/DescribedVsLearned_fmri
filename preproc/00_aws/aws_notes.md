@@ -37,7 +37,7 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
   - When running for all subjects read from and write to S3; with potential intermediate steps like Lustre SCRATCH
 
 
-Env set up to run instance (require `jq`)
+- Key pair and security group creation to connect to the instance
 ```
 aws ec2 create-key-pair --key-name fmri-preproc --query 'KeyMaterial' --output text > fmri-preproc.pem
 chmod 400 fmri-preproc.pem
@@ -49,21 +49,29 @@ aws ec2 authorize-security-group-ingress \
    --protocol tcp \
    --port 22 \
    --cidr [IP-ADDRESS]
+```
 
+- Env set up to run instance (require `jq`)
+```
 export AMI_ID=ami-0b2ca94b5b49e0132
 export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
 export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="fmri-preproc-sg"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 ```
 
-Run instance
+- Run instance
 ```
-docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID
+docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID
 ```
 
-List running instances
+- List running instances
 ```
 aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Name`]| [0].Value,InstanceType, PrivateIpAddress, PublicIpAddress]' --filters Name=instance-state-name,Values=running --output table
+```
+
+- Connect to running instance
+```
+ssh -i "fmri-preproc.pem" ec2-user@[IP-ADDRESS].us-west-1.compute.amazonaws.com
 ```
 
 - Test the following on single instance and run for all subjects on cluster
