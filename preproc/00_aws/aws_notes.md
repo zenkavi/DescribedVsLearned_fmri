@@ -28,12 +28,12 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 
 --> Create template instance using Amazon Linux 2 AMI
 --> Install software (heudiconv, bidsvalidator, defacing stuff, mriqc, fmriprep, study script repo - DescribedVsLearned_fmri)
---> Give access to S3 bucket through IAM role? **This won't be enough to run anything on S3 content. Content would have to be downloaded to the instance to actually do anything with them**
+--> Give access to S3 bucket through IAM role for testing *only*
+  - **This won't be enough to run anything on S3 content. Content would have to be downloaded to the instance to actually do anything with them**
 --> Save current state of instance as AMI
 --> Keep this AMI as fmri-preproc
 --> Data management:
-  - Root is EBS.
-  - Testing writes to this. When instance is destroyed testing output is destroyed too.
+  - Root is EBS. *Do you need/want automated snapshots?*
   - When running for all subjects read from and write to S3; with potential intermediate steps like Lustre SCRATCH
 
 
@@ -98,11 +98,3 @@ aws ec2 associate-iam-instance-profile --instance-id [INSTANCE_ID] --iam-instanc
 ```
 aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
 ```
-
-
-- Test the following on single instance and run for all subjects on cluster
-  - Heudiconv
-    - **NEED to figure out what the fieldmaps correspond to before running on all subjects**
-  - Defacing
-  - Mriqc
-  - Fmriprep

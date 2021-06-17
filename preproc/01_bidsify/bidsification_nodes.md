@@ -1,3 +1,10 @@
+
+######################################
+# Heudiconv
+######################################
+- Convert DICOMs to Nifti in BIDS format
+  - **NEED to figure out what the fieldmaps correspond to before running on all subjects**
+
 **IMPORTANT**: If you're using zsh, which is the new default on Mac Terminals you need to include `noglob` before running the docker image so it interprets the `*` wildcards correctly.
 
 Explore DICOM structures and specify the `heuristics` file.
@@ -52,3 +59,15 @@ nipy/heudiconv:latest \
 -s 01 \
 -c dcm2niix --overwrite
 ```
+
+######################################
+# Physio
+######################################
+
+######################################
+# Event files
+######################################
+
+######################################
+# bidsvalidator
+######################################
