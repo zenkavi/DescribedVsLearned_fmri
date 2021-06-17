@@ -28,7 +28,7 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 
 --> Create template instance using Amazon Linux 2 AMI
 --> Install software (heudiconv, bidsvalidator, defacing stuff, mriqc, fmriprep, study script repo - DescribedVsLearned_fmri)
---> Give access to S3 bucket through IAM role? **This won't be enough to run anything on S3 content. They would have to downloaded to the instance to actually do anything with them**
+--> Give access to S3 bucket through IAM role? **This won't be enough to run anything on S3 content. Content would have to be downloaded to the instance to actually do anything with them**
 --> Save current state of instance as AMI
 --> Keep this AMI as fmri-preproc
 --> Data management:
@@ -102,6 +102,7 @@ aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
 
 - Test the following on single instance and run for all subjects on cluster
   - Heudiconv
+    - **NEED to figure out what the fieldmaps correspond to before running on all subjects**
   - Defacing
   - Mriqc
   - Fmriprep

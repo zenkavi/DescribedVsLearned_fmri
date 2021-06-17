@@ -1,18 +1,16 @@
 **IMPORTANT**: If you're using zsh, which is the new default on Mac Terminals you need to include `noglob` before running the docker image so it interprets the `*` wildcards correctly.
 
 Explore DICOM structures and specify the `heuristics` file.
-
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
 -d /base/raw_fMRI_data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
--o /base/Nifti/ \
+-o /base/ \
 -f convertall \
 -s 03 \
 -c none --overwrite
 ```
 
 On an EC2 instance
-
 ```
 docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
 -d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
@@ -23,7 +21,6 @@ docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
 ```
 
 Get all subjects' ages from dicoms
-
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
 -d /base/raw_fMRI_data/AR-GT-BUNDLES-{subject}_RANGEL/*/LOCALIZER_*/*.IMA \
@@ -33,13 +30,25 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 -c none --overwrite
 ```
 
-Convert dicoms of subject 01 into BIDS on EC2
-
+Convert dicoms of subject 01 into BIDS on EC2 (note: need instance bigger than t2.micro)
 ```
 docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
 -d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
--b -o /base/Nifti/ \
+-b -o /home/ \
 -f /home/heuristic.py \
+-s 01 \
+-c dcm2niix --overwrite
+```
+
+Convert dicoms of subject 01 into BIDS locally
+```
+noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/tmp:/base  \
+-v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/bids_nifti_wface:/out \
+-v /Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/01_bidsify:/code \
+nipy/heudiconv:latest \
+-d /base/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+-b -o /out/ \
+-f /code/heuristic.py \
 -s 01 \
 -c dcm2niix --overwrite
 ```
