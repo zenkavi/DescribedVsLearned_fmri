@@ -22,12 +22,11 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ```
 
 ######################################
-# EC2: Computing
+# EC2: Single instance for testing
 ######################################
-- EC2 and cluster specifications
-
 --> Create template instance using Amazon Linux 2 AMI
---> Install software (heudiconv, bidsvalidator, defacing stuff, mriqc, fmriprep, study script repo - DescribedVsLearned_fmri)
+--> Install software (heudiconv, mriqc, fmriprep)
+  - This could all possibly be done by specifying in `user data` option when running the instance
 --> Give access to S3 bucket through IAM role for testing *only*
   - **This won't be enough to run anything on S3 content. Content would have to be downloaded to the instance to actually do anything with them**
 --> Save current state of instance as AMI
@@ -76,16 +75,22 @@ ssh -i "fmri-preproc.pem" ec2-user@[IP-ADDRESS].us-west-1.compute.amazonaws.com
 
 - Install docker on EC2 instance
 ```
+sudo yum update -y
 sudo amazon-linux-extras install docker
 sudo service docker start
 sudo usermod -a -G docker ec2-user
 ```
 
-- Log out and back in for docker
-
-- Download container for heudiconv
+- Log out+in and check if docker is working
 ```
-docker pull nipy/heudiconv:latest
+docker info
+```
+
+- Download containers for heudiconv, mriqc, fmriprep,
+```
+sudo docker pull nipy/heudiconv:latest
+sudo docker pull poldracklab/mriqc:latest
+sudo docker pull poldracklab/fmriprep:latest
 ```
 
 [For single instance testing]
@@ -98,3 +103,7 @@ aws ec2 associate-iam-instance-profile --instance-id [INSTANCE_ID] --iam-instanc
 ```
 aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
 ```
+
+######################################
+# AWS ParallelCluster
+######################################
