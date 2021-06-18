@@ -7,9 +7,11 @@ case "${cfn_node_type}" in
         echo "This is the head node."
     ;;
     ComputeFleet)
+        sudo yum update -y
+        sudo amazon-linux-extras install docker
+        sudo service docker start
+        sudo usermod -a -G docker ec2-user
         docker pull nipy/heudiconv:0.9.0
-        docker pull poldracklab/mriqc:0.16.1
-        docker pull poldracklab/fmriprep:20.2.0
     ;;
     *)
     ;;
