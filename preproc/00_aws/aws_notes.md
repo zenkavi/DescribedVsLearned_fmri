@@ -3,11 +3,18 @@
 # S3: Data storage
 ######################################
 - Transfer data to S3
-  - One subject
+  - Single file
+  ```
+  export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
+  cd $STUDY_DIR
+  docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/template-setup-env.sh s3://described-vs-experienced/template-setup-env.sh
+  ```
+
+  - One subject folder
   ```
   aws s3 sync AR-GT-BUNDLES-02_RANGEL s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-02_RANGEL --exclude ".DS_Store"
   ```
-  - All data: [BEWARE, SHOULD TAKE VERY LONG!]
+  - All data:
   ```
   aws s3 sync raw_fmri_data s3://described-vs-experienced/raw_fmri_data --exclude ".DS_Store"
   ```
@@ -107,9 +114,10 @@ export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values=
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 export REGION=`aws configure get region`
-export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
 
-aws s3 cp $STUDY_DIR/00_aws/template_setup_env.sh s3://described-vs-experienced/template_setup_env.sh
+export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
+cd $STUDY_DIR
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/template-setup-env.sh s3://described-vs-experienced/template-setup-env.sh
 
 pcluster create template-cluster -c template-cluster-config.ini
 
