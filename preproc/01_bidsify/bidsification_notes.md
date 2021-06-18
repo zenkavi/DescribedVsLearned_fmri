@@ -19,7 +19,7 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 
 On an EC2 instance
 ```
-docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
+docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:0.9.0 \
 -d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -o /home/ \
 -f convertall \
@@ -39,7 +39,7 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 
 Convert dicoms of subject 01 into BIDS on EC2 (note: need instance bigger than t2.micro)
 ```
-docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:latest \
+docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:0.9.0 \
 -d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /home/ \
 -f /home/heuristic.py \

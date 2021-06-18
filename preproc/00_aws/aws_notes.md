@@ -24,37 +24,26 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ######################################
 # EC2: Single instance for testing
 ######################################
---> Create template instance using Amazon Linux 2 AMI
---> Install software (heudiconv, mriqc, fmriprep)
-  - This could all possibly be done by specifying in `user data` option when running the instance
---> Give access to S3 bucket through IAM role for testing *only*
-  - **This won't be enough to run anything on S3 content. Content would have to be downloaded to the instance to actually do anything with them**
---> Save current state of instance as AMI
---> Keep this AMI as fmri-preproc
---> Data management:
-  - Root is EBS. *Do you need/want automated snapshots?*
-  - When running for all subjects read from and write to S3; with potential intermediate steps like Lustre SCRATCH
-
-
 - Key pair and security group creation to connect to the instance
 ```
-aws ec2 create-key-pair --key-name fmri-preproc --query 'KeyMaterial' --output text > fmri-preproc.pem
-chmod 400 fmri-preproc.pem
+aws ec2 create-key-pair --key-name template-cluster --query 'KeyMaterial' --output text > template-cluster.pem
+chmod 400 template-cluster.pem
 
-aws ec2 create-security-group --group-name fmri-preproc-sg --description "fmri-preproc security group" --vpc-id [VPC-ID]
+export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
+aws ec2 create-security-group --group-name template-cluster-sg --description "template-cluster security group" --vpc-id $VPC_ID
 
 aws ec2 authorize-security-group-ingress \
-   --group-name fmri-preproc-sg \
+   --group-name template-cluster-sg \
    --protocol tcp \
    --port 22 \
-   --cidr [IP-ADDRESS]
+   --cidr [IP-ADDRESS]/32
 ```
 
 - Env set up to run instance (require `jq`)
 ```
 export AMI_ID=ami-0b2ca94b5b49e0132
 export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
-export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="fmri-preproc-sg"  | jq -j '.SecurityGroups[0].GroupId'`
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="template-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 ```
 
@@ -70,7 +59,7 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
 
 - Connect to running instance
 ```
-ssh -i "fmri-preproc.pem" ec2-user@[IP-ADDRESS].us-west-1.compute.amazonaws.com
+ssh -i "template-cluster.pem" ec2-user@[IP-ADDRESS].us-west-1.compute.amazonaws.com
 ```
 
 - Install docker on EC2 instance
@@ -86,22 +75,25 @@ sudo usermod -a -G docker ec2-user
 docker info
 ```
 
-- Download containers for heudiconv, mriqc, fmriprep,
+- Download containers for e.g. heudiconv, mriqc, fmriprep,
 ```
-docker pull nipy/heudiconv:latest
-docker pull poldracklab/mriqc:latest
-docker pull poldracklab/fmriprep:latest
+docker pull nipy/heudiconv:0.9.0
 ```
 
-[For single instance testing]
 - Give EC2 instance IAM role to access S3
 ```
 aws ec2 associate-iam-instance-profile --instance-id [INSTANCE_ID] --iam-instance-profile Name=S3FullAccessForEC2
 ```
 
-- Copy content from S3
+- Copy content from S3 to EC2 instance
 ```
 aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
+```
+
+- Terminate instance
+```
+export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].InstanceId'`
+aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 ```
 
 ######################################
@@ -111,7 +103,7 @@ aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
 - Use custom bootstrap actions to set up master and compute nodes
 ```
 export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
-export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="template_cluster"  | jq -j '.SecurityGroups[0].GroupId'`
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="template-cluster"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 export REGION=`aws configure get region`
