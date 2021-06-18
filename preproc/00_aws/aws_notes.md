@@ -88,9 +88,9 @@ docker info
 
 - Download containers for heudiconv, mriqc, fmriprep,
 ```
-sudo docker pull nipy/heudiconv:latest
-sudo docker pull poldracklab/mriqc:latest
-sudo docker pull poldracklab/fmriprep:latest
+docker pull nipy/heudiconv:latest
+docker pull poldracklab/mriqc:latest
+docker pull poldracklab/fmriprep:latest
 ```
 
 [For single instance testing]
@@ -107,3 +107,26 @@ aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
 ######################################
 # AWS ParallelCluster
 ######################################
+
+- Use custom bootstrap actions to set up master and compute nodes
+```
+export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="fmri-preproc-sg"  | jq -j '.SecurityGroups[0].GroupId'`
+export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
+export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
+export REGION=`aws configure get region`
+export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
+
+aws s3 cp $STUDY_DIR/00_aws/setup_cluster_env.sh s3://described-vs-experienced/setup_cluster_env.sh
+
+pcluster create fmri-preproc-cluster -c fmri-preproc-cluster.ini
+
+pcluster list --color
+
+pcluster ssh [NAME OF CLUSTER] -i [KEY FILE PATH]
+```
+
+- Delete cluster
+```
+pcluster delete fmri-preproc
+```
