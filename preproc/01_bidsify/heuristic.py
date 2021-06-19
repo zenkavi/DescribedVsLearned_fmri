@@ -12,8 +12,8 @@ def infotodict(seqinfo):
     t2w = create_key('sub-{subject}/anat/sub-{subject}_T2w') #anat
     task = create_key('sub-{subject}/func/sub-{subject}_task-bundles_run-{item:01d}_bold') #func
     sbref = create_key('sub-{subject}/func/sub-{subject}_task-bundles_run-{item:01d}_sbref') #func
-    fmap_pos = create_key('sub-{subject}/fmap/sub-{subject}_magnitude1') #fmap
-    fmap_neg = create_key('sub-{subject}/fmap/sub-{subject}_magnitude2') #fmap
+    fmap_pos = create_key('sub-{subject}/fmap/sub-{subject}_dir-AP_epi') #fmap
+    fmap_neg = create_key('sub-{subject}/fmap/sub-{subject}_dir-PA_epi') #fmap
 
     info = {t1w: [], t2w: [], task: [], sbref: [], fmap_pos: [], fmap_neg: []}
 
