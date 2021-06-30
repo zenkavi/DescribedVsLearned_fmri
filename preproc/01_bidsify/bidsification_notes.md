@@ -2,12 +2,11 @@
 ######################################
 # Heudiconv
 ######################################
-- Convert DICOMs to Nifti in BIDS format
-  - **NEED to figure out what the fieldmaps correspond to before running on all subjects**
+Convert DICOMs to Nifti in BIDS format  
 
 **IMPORTANT**: If you're using zsh, which is the new default on Mac Terminals you need to include `noglob` before running the docker image so it interprets the `*` wildcards correctly.
 
-Explore DICOM structures and specify the `heuristics` file.
+- Explore DICOM structures and specify the `heuristics` file.
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
 -d /base/raw_fMRI_data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
@@ -17,17 +16,7 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 -c none --overwrite
 ```
 
-On an EC2 instance
-```
-docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:0.9.0 \
--d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
--o /home/ \
--f convertall \
--s 01 \
--c none --overwrite
-```
-
-Get all subjects' ages from dicoms
+- Get all subjects' ages from dicoms
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
 -d /base/raw_fMRI_data/AR-GT-BUNDLES-{subject}_RANGEL/*/LOCALIZER_*/*.IMA \
@@ -37,17 +26,7 @@ noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitr
 -c none --overwrite
 ```
 
-Convert dicoms of subject 01 into BIDS on EC2 (note: need instance bigger than t2.micro)
-```
-docker run --rm -it -v /home/ec2-user:/home nipy/heudiconv:0.9.0 \
--d /home/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
--b -o /home/ \
--f /home/heuristic.py \
--s 01 \
--c dcm2niix --overwrite
-```
-
-Convert dicoms of subject 01 into BIDS locally
+- Convert dicoms of subject 01 into BIDS locally after copying single subject directory out to a temporary directory to avoid mounting the whole raw data directory. Check this then with the bidsvalidator on a browser to make sure the heuristics file is correct
 ```
 noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/tmp:/base  \
 -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/bids_nifti_wface:/out \
@@ -59,6 +38,8 @@ nipy/heudiconv:latest \
 -s 01 \
 -c dcm2niix --overwrite
 ```
+
+- How to run heudiconv parallel on cluster?
 
 ######################################
 # Physio

@@ -10,14 +10,12 @@
   docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/template-setup-env.sh s3://described-vs-experienced/template-setup-env.sh
   ```
 
-  - One subject folder
+  - One subject folder  
+  **note: mounting the whole raw data folder uses a lot of CPU**
   ```
-  aws s3 sync AR-GT-BUNDLES-02_RANGEL s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-02_RANGEL --exclude ".DS_Store"
+  docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 sync /aws/AR-GT-BUNDLES-03_RANGEL s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-03_RANGEL --exclude ".DS_Store"
   ```
-  - All data:
-  ```
-  aws s3 sync raw_fmri_data s3://described-vs-experienced/raw_fmri_data --exclude ".DS_Store"
-  ```
+
   - Template BIDS folder
   ```
   aws s3 sync bids_nifti_wface s3://described-vs-experienced/bids_nifti_wface --exclude ".DS_Store"
@@ -180,11 +178,6 @@ pcluster create template-cluster -c tmp.ini
 pcluster list --color
 
 pcluster ssh template-cluster -i [KEY FILE PATH]
-```
-
-- Check if computer node setup worked
-```
-less /var/log/cfn-init.log
 ```
 
 - Delete cluster
