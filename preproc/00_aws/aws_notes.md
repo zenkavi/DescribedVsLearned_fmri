@@ -107,19 +107,75 @@ aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 # AWS ParallelCluster
 ######################################
 
-- Use custom bootstrap actions to set up master and compute nodes
+Use custom bootstrap actions to set up master and compute nodes
+
+- Define env variables
 ```
 export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
 export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="template-cluster"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 export REGION=`aws configure get region`
+```
 
+- Copy script with bootstrap actions to s3
+```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
 cd $STUDY_DIR
 docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/template-setup-env.sh s3://described-vs-experienced/template-setup-env.sh
+```
+- Set up temporary cluster config file with the environment variables piped in
+```
+cat > tmp.ini << EOF
+[aws]
+aws_region_name = ${REGION}
 
-pcluster create template-cluster -c template-cluster-config.ini
+[global]
+cluster_template = default
+update_check = false
+sanity_check = true
+
+[cluster default]
+key_name = template-cluster
+vpc_settings = public
+base_os = alinux2
+ebs_settings = myebs
+fsx_settings = myfsx
+master_instance_type = t2.micro
+placement_group = DYNAMIC
+placement = compute
+disable_hyperthreading = true
+scheduler = slurm
+s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
+post_install = s3://described-vs-experienced/template-setup-env.sh
+
+[compute_resource default]
+instance_type = t2.micro
+min_count = 0
+max_count = 4
+
+[vpc public]
+vpc_id = ${VPC_ID}
+master_subnet_id = ${SUBNET_ID}
+
+[ebs myebs]
+shared_dir = /shared
+volume_type = gp2
+volume_size = 50
+
+[fsx myfsx]
+shared_dir = /lustre
+storage_capacity = 1200
+import_path =  s3://described-vs-experienced
+deployment_type = SCRATCH_2
+
+[aliases]
+ssh = ssh {CFN_USER}@{MASTER_IP} {ARGS}
+EOF
+```
+- Create cluster using temporary custom config
+```
+pcluster create template-cluster -c tmp.ini
 
 pcluster list --color
 
