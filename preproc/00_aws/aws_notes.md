@@ -7,7 +7,7 @@
   ```
   export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
   cd $STUDY_DIR
-  docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/template-setup-env.sh s3://described-vs-experienced/template-setup-env.sh
+  docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
   ```
 
   - One subject folder  
@@ -31,14 +31,14 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ######################################
 - Key pair and security group creation to connect to the instance
 ```
-aws ec2 create-key-pair --key-name template-cluster --query 'KeyMaterial' --output text > template-cluster.pem
-chmod 400 template-cluster.pem
+aws ec2 create-key-pair --key-name test-cluster --query 'KeyMaterial' --output text > test-cluster.pem
+chmod 400 test-cluster.pem
 
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
-aws ec2 create-security-group --group-name template-cluster-sg --description "template-cluster security group" --vpc-id $VPC_ID
+aws ec2 create-security-group --group-name test-cluster-sg --description "test-cluster security group" --vpc-id $VPC_ID
 
 aws ec2 authorize-security-group-ingress \
-   --group-name template-cluster-sg \
+   --group-name test-cluster-sg \
    --protocol tcp \
    --port 22 \
    --cidr [IP-ADDRESS]/32
@@ -48,7 +48,7 @@ aws ec2 authorize-security-group-ingress \
 ```
 export AMI_ID=ami-0b2ca94b5b49e0132
 export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
-export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="template-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 ```
 
@@ -59,7 +59,7 @@ docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli ec2 run-instances --imag
 
 - Run instance with user data
 ```
-docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data /base/template-setup-env.sh
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data /base/test-setup-env.sh
 ```
 
 - List running instances
@@ -69,7 +69,7 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
 
 - Connect to running instance
 ```
-ssh -i "template-cluster.pem" ec2-user@ec2-[IP-ADDRESS].us-west-1.compute.amazonaws.com
+ssh -i "test-cluster.pem" ec2-user@ec2-[IP-ADDRESS].us-west-1.compute.amazonaws.com
 ```
 
 - Install docker on EC2 instance
@@ -115,7 +115,7 @@ Use custom bootstrap actions to set up master and compute nodes
 - Define env variables
 ```
 export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
-export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="template-cluster"  | jq -j '.SecurityGroups[0].GroupId'`
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 export REGION=`aws configure get region`
@@ -125,7 +125,7 @@ export REGION=`aws configure get region`
 ```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
 cd $STUDY_DIR
-docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/template-setup-env.sh s3://described-vs-experienced/template-setup-env.sh
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
 ```
 - Set up temporary cluster config file with the environment variables piped in
 ```
@@ -139,7 +139,7 @@ update_check = false
 sanity_check = true
 
 [cluster default]
-key_name = template-cluster
+key_name = test-cluster
 vpc_settings = public
 base_os = alinux2
 ebs_settings = myebs
@@ -150,7 +150,7 @@ placement = compute
 disable_hyperthreading = true
 scheduler = slurm
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
-post_install = s3://described-vs-experienced/template-setup-env.sh
+post_install = s3://described-vs-experienced/test-setup-env.sh
 
 [compute_resource default]
 instance_type = t2.micro
@@ -178,14 +178,14 @@ EOF
 ```
 - Create cluster using temporary custom config
 ```
-pcluster create template-cluster -c tmp.ini
+pcluster create test-cluster -c tmp.ini
 
 pcluster list --color
 
-pcluster ssh template-cluster -i [KEY FILE PATH]
+pcluster ssh test-cluster -i [KEY FILE PATH]
 ```
 
 - Delete cluster
 ```
-pcluster delete template-cluster
+pcluster delete test-cluster
 ```
