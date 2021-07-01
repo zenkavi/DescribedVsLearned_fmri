@@ -2,6 +2,7 @@
 ######################################
 # S3: Data storage
 ######################################
+
 - Transfer data to S3
   - Single file
   ```
@@ -29,25 +30,32 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ######################################
 # EC2: Single instance for testing
 ######################################
-- Key pair and security group creation to connect to the instance
-```
-aws ec2 create-key-pair --key-name test-cluster --query 'KeyMaterial' --output text > test-cluster.pem
-chmod 400 test-cluster.pem
 
+- Create key pair
+```
+export KEYS_PATH=/Users/zeynepenkavi/aws_keys
+aws ec2 create-key-pair --key-name test-cluster --query 'KeyMaterial' --output text > $KEYS_PATH/test-cluster.pem
+chmod 400 $KEYS_PATH/test-cluster.pem
+```
+
+- Create security group
+```
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 aws ec2 create-security-group --group-name test-cluster-sg --description "test-cluster security group" --vpc-id $VPC_ID
+```
 
+- Allow SSH access to security group
+```
 aws ec2 authorize-security-group-ingress \
    --group-name test-cluster-sg \
    --protocol tcp \
-   --port 22 \
-   --cidr [IP-ADDRESS]/32
+   --port 22
 ```
 
 - Env set up to run instance (require `jq`)
 ```
 export AMI_ID=ami-0b2ca94b5b49e0132
-export KEY_NAME=`aws ec2 describe-key-pairs | jq -j '.KeyPairs[0].KeyName'`
+export KEY_NAME=test-cluster
 export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 ```
@@ -59,7 +67,8 @@ docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli ec2 run-instances --imag
 
 - Run instance with user data
 ```
-docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data /base/test-setup-env.sh
+export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
+docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data /base/test-setup-env.sh
 ```
 
 - List running instances
