@@ -71,7 +71,8 @@ docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli ec2 run-instances --imag
 - Run instance with user data
 ```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
-docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data /base/test-setup-env.sh
+cd $STUDY_DIR
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data file://base/test-setup-env.sh
 ```
 
 - List running instances
@@ -83,7 +84,7 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
 ```
 export INSTANCE_IP=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].PublicIpAddress'`
 INSTANCE_IP=${INSTANCE_IP//./-}
-ssh -i "test-cluster.pem" ec2-user@ec2-$INSTANCE_IP.us-west-1.compute.amazonaws.com
+ssh -i "$KEYS_PATH/test-cluster.pem" ec2-user@ec2-$INSTANCE_IP.us-west-1.compute.amazonaws.com
 ```
 
 - Install docker on EC2 instance
@@ -106,7 +107,8 @@ docker pull nipy/heudiconv:0.9.0
 
 - Give EC2 instance IAM role to access S3
 ```
-aws ec2 associate-iam-instance-profile --instance-id [INSTANCE_ID] --iam-instance-profile Name=S3FullAccessForEC2
+export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].InstanceId'`
+aws ec2 associate-iam-instance-profile --instance-id $INSTANCE_ID --iam-instance-profile Name=S3FullAccessForEC2
 ```
 
 - Copy content from S3 to EC2 instance
