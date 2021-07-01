@@ -46,10 +46,13 @@ aws ec2 create-security-group --group-name test-cluster-sg --description "test-c
 
 - Allow SSH access to security group
 ```
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
+export MY_IP=`curl ifconfig.me`
 aws ec2 authorize-security-group-ingress \
-   --group-name test-cluster-sg \
+   --group-id $SG_ID \
    --protocol tcp \
-   --port 22
+   --port 22 \
+   --cidr $MY_IP/32
 ```
 
 - Env set up to run instance (require `jq`)
@@ -78,7 +81,9 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
 
 - Connect to running instance
 ```
-ssh -i "test-cluster.pem" ec2-user@ec2-[IP-ADDRESS].us-west-1.compute.amazonaws.com
+export INSTANCE_IP=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].PublicIpAddress'`
+INSTANCE_IP=${INSTANCE_IP//./-}
+ssh -i "test-cluster.pem" ec2-user@ec2-$INSTANCE_IP.us-west-1.compute.amazonaws.com
 ```
 
 - Install docker on EC2 instance
