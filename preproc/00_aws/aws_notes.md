@@ -57,6 +57,11 @@ export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID
 ```
 
+- Run instance with user data
+```
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/base amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data /base/template-setup-env.sh
+```
+
 - List running instances
 ```
 aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Name`]| [0].Value,InstanceType, PrivateIpAddress, PublicIpAddress]' --filters Name=instance-state-name,Values=running --output table
@@ -64,7 +69,7 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Na
 
 - Connect to running instance
 ```
-ssh -i "template-cluster.pem" ec2-user@[IP-ADDRESS].us-west-1.compute.amazonaws.com
+ssh -i "template-cluster.pem" ec2-user@ec2-[IP-ADDRESS].us-west-1.compute.amazonaws.com
 ```
 
 - Install docker on EC2 instance
