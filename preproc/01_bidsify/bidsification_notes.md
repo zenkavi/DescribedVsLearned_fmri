@@ -40,6 +40,20 @@ nipy/heudiconv:latest \
 ```
 
 - How to run heudiconv parallel on cluster?
+  - Push code to s3 BUCKET
+  ```
+  aws s3 sync 01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
+  ```
+  - Submit heudiconv jobs
+  ```
+  /lustre/01_bidsify/run_heudiconv,sh
+  ```
+  - Export data to s3 bucket
+  ```
+  ```
+  - Delete cluster
+  ```
+  ```
 
 ######################################
 # Physio

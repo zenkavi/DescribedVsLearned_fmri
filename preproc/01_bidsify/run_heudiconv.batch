@@ -7,9 +7,9 @@
 #SBATCH -e .err/heudiconv-{SUBNUM}.err
 # ------------------------------------------
 
-export DATA_PATH=
+export DATA_PATH=/lustre/raw_fmri_data/
 export CODE_PATH=
-export OUT_PATH=
+export OUT_PATH=/lustre/bids_nifti_wface
 
 docker run --rm -it -v $DATA_PATH:/base  \
 -v $OUT_PATH:/out \
@@ -19,5 +19,5 @@ nipy/heudiconv:0.9.0 \
 -d /base/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /out/ \
 -f /code/heuristic.py \
--s $SUBNUM \
+-s {SUBNUM} \
 -c dcm2niix --overwrite
