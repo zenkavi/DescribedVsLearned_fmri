@@ -162,6 +162,21 @@ pcluster stop test-cluster
 pcluster start test-cluster
 ```
 
+- Update cluster
+```
+pcluster update test-cluster -c tmp.ini
+```
+
+- Check cluster resources
+```
+sinfo
+```
+
+- Change node status (see https://slurm.schedmd.com/scontrol.html for other state options)
+```
+scontrol: update NodeName={NODE_NAME} State=POWER_DOWN
+```
+
 - Delete cluster
 ```
 pcluster delete test-cluster
@@ -188,14 +203,31 @@ lfs hsm_state /lustre/{FILENAME}
 
 - Release file content
 ```
-sudo lfs hsm_release /lustre/{FILENAME
+sudo lfs hsm_release /lustre/{FILENAME}
 ```
 
-- To write data back to the S3 bucket
+- [Recommended] To write data back to the S3 bucket
 ```
 export FS_ID=`aws fsx describe-file-systems | jq -j '.FileSystems[0].FileSystemId'`
 aws fsx create-data-repository-task \
     --file-system-id $FS_ID \
     --type EXPORT_TO_REPOSITORY \
     --paths path1,path2/file1 \
+```
+
+- [Not recommended] Write single file back to s3
+```
+sudo lfs hsm_archive path/to/export/file
+sudo lfs hsm_action path/to/export/file
+```
+
+- [Not recommended] Write directory back to s3
+```
+```
+
+- To change data update policy (default with CLI is no update)
+```
+aws fsx update-file-system \
+    --file-system-id $FS_ID \
+    --lustre-configuration AutoImportPolicy=NEW_CHANGED
 ```

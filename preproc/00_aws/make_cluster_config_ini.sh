@@ -20,15 +20,18 @@ base_os = alinux2
 ebs_settings = myebs
 fsx_settings = myfsx
 master_instance_type = m5.xlarge
-placement_group = DYNAMIC
-placement = compute
 scheduler = slurm
+queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
 post_install = s3://described-vs-experienced/test-setup-env.sh
 
+[queue compute]
+compute_resource_settings = default
+placement_group = DYNAMIC
+disable_hyperthreading = true
+
 [compute_resource default]
 instance_type = m5.2xlarge
-disable_hyperthreading = true
 min_count = 0
 max_count = 8
 
@@ -45,6 +48,7 @@ volume_size = 50
 shared_dir = /lustre
 storage_capacity = 1200
 import_path =  s3://described-vs-experienced
+export_path =  s3://described-vs-experienced
 deployment_type = SCRATCH_2
 
 [aliases]
