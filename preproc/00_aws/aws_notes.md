@@ -7,8 +7,7 @@
   - Single file
   ```
   export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
-  cd $STUDY_DIR
-  docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/home amazon/aws-cli s3 cp /home/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
+  docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 cp /home/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
   ```
 
   - One subject folder  
@@ -144,7 +143,7 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aw
 ```
 - Set up temporary cluster config file with the environment variables piped in
 ```
-./make_cluster_config.ini.sh
+./make_cluster_config_ini.sh
 ```
 
 - Create cluster using temporary custom config
@@ -153,7 +152,14 @@ pcluster create test-cluster -c tmp.ini
 
 pcluster list --color
 
-pcluster ssh test-cluster -i [KEY FILE PATH]
+pcluster ssh test-cluster -i $KEYS_PATH/test-cluster.pem
+```
+
+- Stop and start compuate nodes of cluster
+```
+pcluster stop test-cluster
+
+pcluster start test-cluster
 ```
 
 - Delete cluster

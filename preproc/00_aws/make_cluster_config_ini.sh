@@ -5,7 +5,7 @@ export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 
 cat > tmp.ini << EOF
-[aws]
+[[aws]
 aws_region_name = ${REGION}
 
 [global]
@@ -19,7 +19,7 @@ vpc_settings = public
 base_os = alinux2
 ebs_settings = myebs
 fsx_settings = myfsx
-master_instance_type = t2.micro
+master_instance_type = m5.xlarge
 placement_group = DYNAMIC
 placement = compute
 scheduler = slurm
@@ -27,9 +27,10 @@ s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
 post_install = s3://described-vs-experienced/test-setup-env.sh
 
 [compute_resource default]
-instance_type = t2.micro
+instance_type = m5.2xlarge
+disable_hyperthreading = true
 min_count = 0
-max_count = 2
+max_count = 8
 
 [vpc public]
 vpc_id = ${VPC_ID}
