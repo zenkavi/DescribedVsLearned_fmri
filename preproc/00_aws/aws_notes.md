@@ -206,13 +206,14 @@ lfs hsm_state /lustre/{FILENAME}
 sudo lfs hsm_release /lustre/{FILENAME}
 ```
 
-- [Recommended] To write data back to the S3 bucket
+- [Recommended though user developement] To write data back to the S3 bucket
 ```
 export FS_ID=`aws fsx describe-file-systems | jq -j '.FileSystems[0].FileSystemId'`
 aws fsx create-data-repository-task \
     --file-system-id $FS_ID \
     --type EXPORT_TO_REPOSITORY \
-    --paths path1,path2/file1 \
+    --paths /lustre/bids_nifti_wface \
+    --report Enabled=false
 ```
 
 - [Not recommended] Write single file back to s3
@@ -223,6 +224,12 @@ sudo lfs hsm_action path/to/export/file
 
 - [Not recommended] Write directory back to s3
 ```
+nohup find local/directory -type f -print0 | xargs -0 -n 1 sudo lfs hsm_archive &
+```
+
+- Check if export completed (since the task above runs in background)
+```
+find path/to/export/file -type f -print0 | xargs -0 -n 1 -P 8 sudo lfs hsm_action | grep "ARCHIVE" | wc -l
 ```
 
 - To change data update policy (default with CLI is no update)

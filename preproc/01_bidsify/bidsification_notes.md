@@ -1,7 +1,7 @@
 
 ######################################
 # Heudiconv
-######################################
+######################################  
 Convert DICOMs to Nifti in BIDS format  
 
 **IMPORTANT**: If you're using zsh, which is the new default on Mac Terminals you need to include `noglob` before running the docker image so it interprets the `*` wildcards correctly.

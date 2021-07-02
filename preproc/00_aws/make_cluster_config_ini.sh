@@ -48,7 +48,7 @@ volume_size = 50
 shared_dir = /lustre
 storage_capacity = 1200
 import_path =  s3://described-vs-experienced
-export_path =  s3://described-vs-experienced
+export_path =  s3://described-vs-experienced/bids_nifti_wface
 deployment_type = SCRATCH_2
 
 [aliases]

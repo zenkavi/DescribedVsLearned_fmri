@@ -7,16 +7,16 @@
 #SBATCH -e .err/heudiconv-{SUBNUM}.err
 # ------------------------------------------
 
-export DATA_PATH=/lustre/raw_fmri_data/
-export CODE_PATH=
+export DATA_PATH=/lustre/raw_fmri_data
+export CODE_PATH=/lustre/01_bidsify
 export OUT_PATH=/lustre/bids_nifti_wface
 
-docker run --rm -it -v $DATA_PATH:/base  \
+docker run --rm -it -v $DATA_PATH:/data  \
 -v $OUT_PATH:/out \
 -v $CODE_PATH:/code \
 --env SUBNUM={SUBNUM}\
 nipy/heudiconv:0.9.0 \
--d /base/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+-d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /out/ \
 -f /code/heuristic.py \
 -s {SUBNUM} \
