@@ -42,11 +42,24 @@ nipy/heudiconv:latest \
 - How to run heudiconv parallel on cluster?
   - Push code to s3 BUCKET
   ```
-  aws s3 sync 01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
+  export $STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
+  docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
   ```
   - Submit heudiconv jobs
   ```
   /lustre/01_bidsify/run_heudiconv,sh
+  ```
+  - Test on master node
+  ```
+  docker run --rm -it -v $DATA_PATH:/data \
+  -v $OUT_PATH:/out \
+  -v $CODE_PATH:/code \
+  nipy/heudiconv:0.9.0 \
+  -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+  -b -o /out/ \
+  -f /code/heuristic.py \
+  -s 01 \
+  -c dcm2niix --overwrite
   ```
   - Export data to s3 bucket
   ```
