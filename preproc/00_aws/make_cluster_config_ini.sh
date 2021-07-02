@@ -1,3 +1,10 @@
+#! /bin/zsh
+alias aws='docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli'
+export REGION=`aws configure get region`
+export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
+export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
+
+cat > tmp.ini << EOF
 [aws]
 aws_region_name = ${REGION}
 
@@ -22,7 +29,7 @@ post_install = s3://described-vs-experienced/test-setup-env.sh
 [compute_resource default]
 instance_type = t2.micro
 min_count = 0
-max_count = 4
+max_count = 2
 
 [vpc public]
 vpc_id = ${VPC_ID}
@@ -41,3 +48,4 @@ deployment_type = SCRATCH_2
 
 [aliases]
 ssh = ssh {CFN_USER}@{MASTER_IP} {ARGS}
+EOF
