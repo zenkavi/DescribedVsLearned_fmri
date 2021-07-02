@@ -166,3 +166,36 @@ pcluster start test-cluster
 ```
 pcluster delete test-cluster
 ```
+
+######################################
+# Lustre filesystem
+######################################
+
+- List contents of filesystem
+```
+ls -lh /lustre
+```
+
+- View how much data is stored
+```
+lfs df -h
+```
+
+- View state of file
+```
+lfs hsm_state /lustre/{FILENAME}
+```
+
+- Release file content
+```
+sudo lfs hsm_release /lustre/{FILENAME
+```
+
+- To write data back to the S3 bucket
+```
+export FS_ID=`aws fsx describe-file-systems | jq -j '.FileSystems[0].FileSystemId'`
+aws fsx create-data-repository-task \
+    --file-system-id $FS_ID \
+    --type EXPORT_TO_REPOSITORY \
+    --paths path1,path2/file1 \
+```
