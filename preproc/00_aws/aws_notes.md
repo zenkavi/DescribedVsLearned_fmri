@@ -6,8 +6,8 @@
 - Transfer data to S3
   - Single file
   ```
-  export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc/00_aws
-  docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 cp /home/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
+  export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
+  docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR/00_aws:/home amazon/aws-cli s3 cp /home/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
   ```
 
   - One subject folder  
@@ -18,11 +18,6 @@
   cp /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/raw_fmri_data/AR-GT-BUNDLES-03_RANGEL $TMP_DIR/AR-GT-BUNDLES-03_RANGEL
   cd $TMP_DIR
   docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 sync /aws/AR-GT-BUNDLES-03_RANGEL s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-03_RANGEL --exclude ".DS_Store"
-  ```
-
-  - Template BIDS folder
-  ```
-  aws s3 sync bids_nifti_wface s3://described-vs-experienced/bids_nifti_wface --exclude ".DS_Store"
   ```
 
 - Check if transfer is successful. Trailing "/" matters for the content
@@ -102,7 +97,7 @@ sudo usermod -a -G docker ec2-user
 docker info
 ```
 
-- Download containers for e.g. heudiconv, mriqc, fmriprep,
+- Download containers for e.g. heudiconv, mriqc, fmriprep onto EC2
 ```
 docker pull nipy/heudiconv:0.9.0
 ```
@@ -113,9 +108,10 @@ export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-nam
 aws ec2 associate-iam-instance-profile --instance-id $INSTANCE_ID --iam-instance-profile Name=S3FullAccessForEC2
 ```
 
-- Copy content from S3 to EC2 instance
+- Copy content from S3 to EC2 instance after installing aws-cli
 ```
-aws s3 sync s3://[BUCKET-NAME]/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
+pip3 install awscli -U --user
+aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
 ```
 
 - Terminate instance
