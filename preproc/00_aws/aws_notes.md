@@ -212,6 +212,11 @@ lfs hsm_state /lustre/{FILENAME}
 sudo lfs hsm_release /lustre/{FILENAME}
 ```
 
+- Load content of a file
+```
+nohup find local/directory -type f -print0 | xargs -0 -n 1 sudo lfs hsm_restore &
+```
+
 - [Recommended though under development] To write data back to the S3 bucket
 ```
 export FS_ID=`aws fsx describe-file-systems | jq -j '.FileSystems[0].FileSystemId'`

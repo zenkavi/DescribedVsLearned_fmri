@@ -11,13 +11,17 @@ export DATA_PATH=/lustre/raw_fmri_data
 export CODE_PATH=/lustre/01_bidsify
 export OUT_PATH=/lustre/bids_nifti_wface
 
+nohup find $DATA_PATH/{SUBNUM} -type f -print0 | xargs -0 -n 1 sudo lfs hsm_restore &
+
 docker run --rm -it -v $DATA_PATH:/data\
 -v $OUT_PATH:/out \
 -v $CODE_PATH:/code \
---env SUBNUM={SUBNUM}\
+--cpus="7" --memory="32g" \
 nipy/heudiconv:0.9.0 \
 -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /out/ \
 -f /code/heuristic.py \
 -s {SUBNUM} \
 -c dcm2niix --overwrite
+
+nohup find $OUT_PATH/sub-{SUBNUM} -type f -print0 | xargs -0 -n 1 sudo lfs hsm_archive &

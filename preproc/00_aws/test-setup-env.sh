@@ -7,7 +7,7 @@ docker pull nipy/heudiconv:0.9.0
 
 . "/etc/parallelcluster/cfnconfig"
 
-if [[ "${cfn_node_type}" = "MasterServer" ]]
+if [[ "${cfn_node_type}" == "MasterServer" ]]
 then
   mkdir ~/.out
   mkdir ~/.err
