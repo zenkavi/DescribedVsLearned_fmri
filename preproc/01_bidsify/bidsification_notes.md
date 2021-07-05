@@ -45,27 +45,39 @@ nipy/heudiconv:latest \
   export $STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
   docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
   ```
-  - Submit heudiconv jobs
+
+  - Test on master node of cluster
   ```
-  /lustre/01_bidsify/run_heudiconv,sh
-  ```
-  - Test on master node
-  ```
+  export DATA_PATH=/lustre/raw_fmri_data
+  export CODE_PATH=/lustre/01_bidsify
+  export OUT_PATH=/lustre/bids_nifti_wface
+
   docker run --rm -it -v $DATA_PATH:/data \
   -v $OUT_PATH:/out \
   -v $CODE_PATH:/code \
   nipy/heudiconv:0.9.0 \
   -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
   -b -o /out/ \
-  -f /code/heuristic.py \
+  -f convertall \
   -s 01 \
-  -c dcm2niix --overwrite
+  -c none --overwrite
   ```
-  - Export data to s3 bucket
+
+
+
+  - Submit heudiconv jobs
   ```
+  /lustre/01_bidsify/run_heudiconv,sh
   ```
+
+  - Export hediconv output data to s3 bucket
+  ```
+
+  ```
+
   - Delete cluster
   ```
+  pcluster delete test-cluster
   ```
 
 ######################################

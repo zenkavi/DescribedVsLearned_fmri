@@ -11,8 +11,12 @@
   ```
 
   - One subject folder  
-  **note: mounting the whole raw data folder uses a lot of CPU**
+  **Note: mounting the whole raw data folder uses a lot of CPU sp you should prob copy the directory you want to copy into a temporary empty dir first**
   ```
+  export TMP_DIR=/Users/zeynepenkavi/Downloads/tmp
+  mkdir TMP_DIR
+  cp /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/raw_fmri_data/AR-GT-BUNDLES-03_RANGEL $TMP_DIR/AR-GT-BUNDLES-03_RANGEL
+  cd $TMP_DIR
   docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 sync /aws/AR-GT-BUNDLES-03_RANGEL s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-03_RANGEL --exclude ".DS_Store"
   ```
 
