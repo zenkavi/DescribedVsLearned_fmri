@@ -8,8 +8,8 @@ Convert DICOMs to Nifti in BIDS format
 
 - Explore DICOM structures and specify the `heuristics` file.
 ```
-noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/GTavares_2017_arbitration:/base nipy/heudiconv:latest \
--d /base/raw_fMRI_data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+noglob docker run --rm -it -v /Users/zeynepenkavi/Downloads/tmp:/base nipy/heudiconv:latest \
+-d /base/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -o /base/ \
 -f convertall \
 -s 03 \
@@ -54,7 +54,7 @@ nipy/heudiconv:latest \
 
   docker run --rm -it -v $DATA_PATH:/data \
   -v $OUT_PATH:/out \
-  -v $CODE_PATH:/code \
+  --cpus="4" --memory="8g" \
   nipy/heudiconv:0.9.0 \
   -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
   -b -o /out/ \
@@ -63,7 +63,10 @@ nipy/heudiconv:latest \
   -c none --overwrite
   ```
 
-
+  - To debug heudoconv on master node: override entrypoint executable and run shell in the container
+  ```
+  docker run --rm -it --cpus="4" --memory="8g"  $DATA_PATH:/data -v $OUT_PATH:/out --entrypoint /bin/bash nipy/heudiconv:0.9.0
+  ```
 
   - Submit heudiconv jobs
   ```

@@ -9,6 +9,6 @@ docker pull nipy/heudiconv:0.9.0
 
 if [[ "${cfn_node_type}" = "MasterServer" ]]
 then
-  mkdir .out
-  mkdir .err
+  mkdir ~/.out
+  mkdir ~/.err
 fi

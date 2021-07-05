@@ -149,13 +149,19 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aw
 - Create cluster using temporary custom config
 ```
 pcluster create test-cluster -c tmp.ini
+```
 
+- Check cluster status
+```
 pcluster list --color
+```
 
+- Log onto cluster
+```
 pcluster ssh test-cluster -i $KEYS_PATH/test-cluster.pem
 ```
 
-- Stop and start compuate nodes of cluster
+- Stop and start compute nodes of cluster
 ```
 pcluster stop test-cluster
 
@@ -206,7 +212,7 @@ lfs hsm_state /lustre/{FILENAME}
 sudo lfs hsm_release /lustre/{FILENAME}
 ```
 
-- [Recommended though user developement] To write data back to the S3 bucket
+- [Recommended though under development] To write data back to the S3 bucket
 ```
 export FS_ID=`aws fsx describe-file-systems | jq -j '.FileSystems[0].FileSystemId'`
 aws fsx create-data-repository-task \
@@ -234,6 +240,7 @@ find path/to/export/file -type f -print0 | xargs -0 -n 1 -P 8 sudo lfs hsm_actio
 
 - To change data update policy (default with CLI is no update)
 ```
+export FS_ID=`aws fsx describe-file-systems | jq -j '.FileSystems[0].FileSystemId'`
 aws fsx update-file-system \
     --file-system-id $FS_ID \
     --lustre-configuration AutoImportPolicy=NEW_CHANGED
