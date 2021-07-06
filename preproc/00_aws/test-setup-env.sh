@@ -1,4 +1,6 @@
 #! /bin/bash
+amazon-linux-extras install epel -y
+yum install s3fs-fuse
 amazon-linux-extras install docker -y
 service docker start
 usermod -a -G docker ec2-user
