@@ -14,3 +14,5 @@ then
   mkdir ~/.out
   mkdir ~/.err
 fi
+
+aws s3 sync s3://described-vs-experienced/01_bidsify /scratch/01_bidsify

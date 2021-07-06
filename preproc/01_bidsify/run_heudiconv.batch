@@ -7,9 +7,9 @@
 #SBATCH -e ~/.err/heudiconv-{SUBNUM}.err
 # ------------------------------------------
 
-export DATA_PATH=.../raw_fmri_data
-export CODE_PATH=.../01_bidsify
-export OUT_PATH=.../bids_nifti_wface
+export DATA_PATH=/scratch/raw_fmri_data
+export CODE_PATH=/scratch/01_bidsify
+export OUT_PATH=/scratch/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_RANGEL $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
 

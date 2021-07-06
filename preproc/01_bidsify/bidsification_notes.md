@@ -46,13 +46,13 @@ nipy/heudiconv:latest \
   docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
   ```
 
-  - Test on master node of cluster. Need to restore the data from lustre to give the container access to more than the metadata
+  - Test on master node of cluster. Need to download data necessary for the job from s3 bucket
   ```
-  export DATA_PATH=/lustre/raw_fmri_data
-  export CODE_PATH=/lustre/01_bidsify
-  export OUT_PATH=/lustre/bids_nifti_wface
+  export DATA_PATH=/scratch/raw_fmri_data
+  export CODE_PATH=/scratch/01_bidsify
+  export OUT_PATH=/scratch/bids_nifti_wface
 
-  nohup find $DATA_PATH/AR-GT-BUNDLES-01_RANGEL -type f -print0 | xargs -0 -n 1 sudo lfs hsm_restore &
+  aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL $DATA_PATH/AR-GT-BUNDLES-01_RANGEL
 
   docker run --rm -it -v $DATA_PATH:/data \
   -v $OUT_PATH:/out \
@@ -72,7 +72,7 @@ nipy/heudiconv:latest \
 
   - Submit heudiconv jobs
   ```
-  /lustre/01_bidsify/run_heudiconv.sh
+  /scratch/01_bidsify/run_heudiconv.sh
   ```
 
   - Delete cluster
