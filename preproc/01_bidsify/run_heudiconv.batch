@@ -3,8 +3,8 @@
 #SBATCH -J heudiconv-{SUBNUM}
 
 # Outputs ----------------------------------
-#SBATCH -o .out/heudiconv-{SUBNUM}.out
-#SBATCH -e .err/heudiconv-{SUBNUM}.err
+#SBATCH -o ~/.out/heudiconv-{SUBNUM}.out
+#SBATCH -e ~/.err/heudiconv-{SUBNUM}.err
 # ------------------------------------------
 
 export DATA_PATH=/lustre/raw_fmri_data
