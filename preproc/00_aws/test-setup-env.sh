@@ -1,6 +1,4 @@
 #! /bin/bash
-amazon-linux-extras install epel -y
-yum install s3fs-fuse
 amazon-linux-extras install docker -y
 service docker start
 usermod -a -G docker ec2-user
@@ -11,8 +9,21 @@ docker pull nipy/heudiconv:0.9.0
 
 if [[ "${cfn_node_type}" == "MasterServer" ]]
 then
-  mkdir /home/ec2-user/.out
-  mkdir /home/ec2-user/.err
+  mkdir /shared/.out
+  mkdir /shared/.err
 fi
 
-aws s3 sync s3://described-vs-experienced/01_bidsify /scratch/01_bidsify
+export DATA_PATH=/shared/raw_fmri_data
+export CODE_PATH=/shared/01_bidsify
+export OUT_PATH=/shared/bids_nifti_wface
+
+aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+
+if [[ ! -e $OUT_PATH ]]; then
+  mkdir $OUT_PATH
+  aws s3 sync s3://described-vs-experienced/bids_nifti_wface $OUT_PATH
+fi
+
+if [[ ! -e $DATA_PATH ]]; then
+  mkdir $DATA_PATH
+fi

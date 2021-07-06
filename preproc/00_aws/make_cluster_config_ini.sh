@@ -23,6 +23,7 @@ queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
 post_install = s3://described-vs-experienced/test-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
+shared_dir=/shared
 
 [queue compute]
 compute_resource_settings = default
