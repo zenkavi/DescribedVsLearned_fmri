@@ -11,8 +11,8 @@ docker pull nipy/heudiconv:0.9.0
 
 if [[ "${cfn_node_type}" == "MasterServer" ]]
 then
-  mkdir ~/.out
-  mkdir ~/.err
+  mkdir /home/ec2-user/.out
+  mkdir /home/ec2-user/.err
 fi
 
 aws s3 sync s3://described-vs-experienced/01_bidsify /scratch/01_bidsify

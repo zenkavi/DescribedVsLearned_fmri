@@ -3,8 +3,10 @@
 #SBATCH -J heudiconv-{SUBNUM}
 
 # Outputs ----------------------------------
-#SBATCH -o ~/.out/heudiconv-{SUBNUM}.out
-#SBATCH -e ~/.err/heudiconv-{SUBNUM}.err
+#SBATCH -o /home/ec2-user/.out/heudiconv-{SUBNUM}.out
+#SBATCH -e /home/ec2-user/.err/heudiconv-{SUBNUM}.err
+#SBATCH --mail-user=zenkavi@caltech.edu
+#SBATCH --mail-type=FAIL,END
 # ------------------------------------------
 
 export DATA_PATH=/scratch/raw_fmri_data

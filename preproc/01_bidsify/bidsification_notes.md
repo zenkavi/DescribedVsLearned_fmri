@@ -52,6 +52,11 @@ nipy/heudiconv:latest \
   export CODE_PATH=/scratch/01_bidsify
   export OUT_PATH=/scratch/bids_nifti_wface
 
+  if [[ ! -e $OUT_PATH ]]; then
+    mkdir $OUT_PATH
+    aws s3 sync s3://described-vs-experienced/bids_nifti_wface $OUT_PATH
+  fi
+
   aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL $DATA_PATH/AR-GT-BUNDLES-01_RANGEL
 
   docker run --rm -it -v $DATA_PATH:/data \
@@ -63,6 +68,17 @@ nipy/heudiconv:latest \
   -f convertall \
   -s 01 \
   -c none --overwrite
+
+  docker run --rm -it -v $DATA_PATH:/data\
+  -v $OUT_PATH:/out \
+  -v $CODE_PATH:/code \
+  --cpus="4" --memory="8g" \
+  nipy/heudiconv:0.9.0 \
+  -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
+  -b -o /out/ \
+  -f /code/heuristic.py \
+  -s 01 \
+  -c dcm2niix --overwrite
   ```
 
   - To debug heudiconv on master node: override entrypoint executable and run shell in the container
