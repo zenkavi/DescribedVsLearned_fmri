@@ -3,15 +3,13 @@
 #SBATCH -J heudiconv-{SUBNUM}
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/ec2-user/.out/heudiconv-{SUBNUM}.out
-#SBATCH -e /shared/ec2-user/.err/heudiconv-{SUBNUM}.err
-#SBATCH --mail-user=zenkavi@caltech.edu
-#SBATCH --mail-type=FAIL,END
+#SBATCH -o /home/ec2-user/.out/heudiconv-{SUBNUM}.out
+#SBATCH -e /home/ec2-user/.err/heudiconv-{SUBNUM}.err
 # ------------------------------------------
 
-export DATA_PATH=/shared/raw_fmri_data
-export CODE_PATH=/shared/01_bidsify
-export OUT_PATH=/shared/bids_nifti_wface
+export DATA_PATH=/home/raw_fmri_data
+export CODE_PATH=/home/01_bidsify
+export OUT_PATH=/home/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_RANGEL $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
 

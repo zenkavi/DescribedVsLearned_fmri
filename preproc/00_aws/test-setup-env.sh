@@ -9,13 +9,13 @@ docker pull nipy/heudiconv:0.9.0
 
 if [[ "${cfn_node_type}" == "MasterServer" ]]
 then
-  mkdir /shared/.out
-  mkdir /shared/.err
+  mkdir /home/.out
+  mkdir /home/.err
 fi
 
-export DATA_PATH=/shared/raw_fmri_data
-export CODE_PATH=/shared/01_bidsify
-export OUT_PATH=/shared/bids_nifti_wface
+export DATA_PATH=/home/raw_fmri_data
+export CODE_PATH=/home/01_bidsify
+export OUT_PATH=/home/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
 
