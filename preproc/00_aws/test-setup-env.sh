@@ -27,3 +27,5 @@ fi
 if [[ ! -e $DATA_PATH ]]; then
   mkdir $DATA_PATH
 fi
+
+alias squeue='squeue -o "%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R"'

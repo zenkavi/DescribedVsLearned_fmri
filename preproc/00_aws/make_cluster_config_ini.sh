@@ -17,13 +17,13 @@ sanity_check = true
 key_name = test-cluster
 vpc_settings = public
 base_os = alinux2
-master_instance_type = m5.xlarge
+master_instance_type = t3.xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
 post_install = s3://described-vs-experienced/test-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
-shared_dir=/shared
+ebs_settings = myebs
 
 [queue compute]
 compute_resource_settings = default
@@ -38,6 +38,11 @@ max_count = 8
 [vpc public]
 vpc_id = ${VPC_ID}
 master_subnet_id = ${SUBNET_ID}
+
+[ebs myebs]
+shared_dir = /shared
+volume_type = gp2
+volume_size = 50
 
 [aliases]
 ssh = ssh {CFN_USER}@{MASTER_IP} {ARGS}
