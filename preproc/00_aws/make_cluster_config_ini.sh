@@ -23,6 +23,7 @@ queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
 post_install = s3://described-vs-experienced/test-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
+ebs_settings = myebs
 
 [queue compute]
 compute_resource_settings = default
@@ -33,6 +34,11 @@ disable_hyperthreading = true
 instance_type = c5.4xlarge
 min_count = 0
 max_count = 8
+
+[ebs myebs]
+shared_dir = /shared
+volume_type = gp2
+volume_size = 50
 
 [vpc public]
 vpc_id = ${VPC_ID}

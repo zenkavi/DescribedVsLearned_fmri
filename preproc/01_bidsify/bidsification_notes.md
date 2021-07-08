@@ -69,7 +69,7 @@ nipy/heudiconv:latest \
   -s 01 \
   -c none --overwrite
 
-  docker run --rm -it -v $DATA_PATH:/data\
+  docker run --rm -it -v $DATA_PATH:/data \
   -v $OUT_PATH:/out \
   -v $CODE_PATH:/code \
   --cpus="4" --memory="8g" \

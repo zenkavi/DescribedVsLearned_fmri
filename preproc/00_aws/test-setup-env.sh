@@ -9,13 +9,13 @@ docker pull nipy/heudiconv:0.9.0
 
 if [[ "${cfn_node_type}" == "MasterServer" ]]
 then
-  mkdir /home/ec2-user/.out
-  mkdir /home/ec2-user/.err
+  mkdir /shared/.out
+  mkdir /shared/.err
 fi
 
-export DATA_PATH=/home/ec2-user/raw_fmri_data
-export CODE_PATH=/home/ec2-user/01_bidsify
-export OUT_PATH=/home/ec2-user/bids_nifti_wface
+export DATA_PATH=/shared/raw_fmri_data
+export CODE_PATH=/shared/01_bidsify
+export OUT_PATH=/shared/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
 
@@ -27,5 +27,9 @@ fi
 if [[ ! -e $DATA_PATH ]]; then
   mkdir $DATA_PATH
 fi
+
+chown -R ec2-user: $DATA_PATH
+chown -R ec2-user: $CODE_PATH
+chown -R ec2-user: $OUT_PATH
 
 alias squeue='squeue -o "%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R"'
