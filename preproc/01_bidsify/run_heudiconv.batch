@@ -13,10 +13,10 @@ export OUT_PATH=/sharedbids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_RANGEL $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
 
-docker run --rm -it -v $DATA_PATH:/data\
+docker run --rm -v $DATA_PATH:/data\
 -v $OUT_PATH:/out \
 -v $CODE_PATH:/code \
---cpus="4" --memory="32g" \
+--memory="16g" \
 nipy/heudiconv:0.9.0 \
 -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /out/ \
