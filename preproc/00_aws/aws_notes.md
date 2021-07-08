@@ -11,7 +11,7 @@
   ```
 
   - One subject folder  
-  **Note: mounting the whole raw data folder uses a lot of CPU sp you should prob copy the directory you want to copy into a temporary empty dir first**
+  **Note: mounting the whole raw data folder uses a lot of CPU so you should prob copy the directory you want to copy into a temporary empty dir first**
   ```
   export TMP_DIR=/Users/zeynepenkavi/Downloads/tmp
   mkdir $TMP_DIR
@@ -28,6 +28,8 @@ aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ######################################
 # EC2: Single instance for testing
 ######################################
+
+The following requires [`jq`](https://stedolan.github.io/jq/download/) for json processing.
 
 - Create key pair
 ```
@@ -53,7 +55,7 @@ aws ec2 authorize-security-group-ingress \
    --cidr $MY_IP/32
 ```
 
-- Env set up to run instance (require `jq`)
+- Env set up to run instance
 ```
 export AMI_ID=ami-0b2ca94b5b49e0132
 export KEY_NAME=test-cluster
