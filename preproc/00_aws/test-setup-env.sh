@@ -33,5 +33,5 @@ then
   chown -R ec2-user: /shared/.out
   chown -R ec2-user: /shared/.err
 
-  alias squeue='squeue -o "%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R"'
+  echo "alias squeue='squeue -o "%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R"'">> /home/ec2-user/.bash_profile
 fi
