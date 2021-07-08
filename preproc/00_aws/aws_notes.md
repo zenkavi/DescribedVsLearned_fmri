@@ -144,7 +144,7 @@ cd $STUDY_DIR
 docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli s3 cp /aws/test-setup-env.sh s3://described-vs-experienced/test-setup-env.sh
 ```
 
-- Set up temporary cluster config file with the environment variables piped in. Note the script below creates a `tmp.ini` file with the values piped in. Since I don't want to share these values publicly this file is not committed to my git history through a global setting in my `~/.gitignore` (ignores all files with `tmp` in the name).
+- Set up temporary cluster config file with the environment variables piped in. Note [`make_cluster_config_ini.sh`](https://github.com/zenkavi/DescribedVsLearned_fmri/blob/master/preproc/00_aws/make_cluster_config_ini.sh) creates a `tmp.ini` file with the values piped in. Since I don't want to share these values publicly this file is not committed to my git history through a global setting in my `~/.gitignore` (ignores all files with `tmp` in the name).
 ```
 ./make_cluster_config_ini.sh
 ```
