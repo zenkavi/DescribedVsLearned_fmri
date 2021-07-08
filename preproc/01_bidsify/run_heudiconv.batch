@@ -7,13 +7,13 @@
 #SBATCH -e /shared/.err/heudiconv-{SUBNUM}.err
 # ------------------------------------------
 
-export DATA_PATH=/sharedraw_fmri_data
-export CODE_PATH=/shared01_bidsify
-export OUT_PATH=/sharedbids_nifti_wface
+export DATA_PATH=/shared/raw_fmri_data
+export CODE_PATH=/shared/01_bidsify
+export OUT_PATH=/shared/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_RANGEL $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
 
-docker run --rm -v $DATA_PATH:/data\
+docker run --rm -v $DATA_PATH:/data \
 -v $OUT_PATH:/out \
 -v $CODE_PATH:/code \
 --memory="16g" \
@@ -23,3 +23,8 @@ nipy/heudiconv:0.9.0 \
 -f /code/heuristic.py \
 -s {SUBNUM} \
 -c dcm2niix --overwrite
+
+aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
+rm -rf $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
+sudo chown -R ec2-user: $OUT_PATH/sub-{SUBNUM}
+rm -rf $OUT_PATH/sub-{SUBNUM}
