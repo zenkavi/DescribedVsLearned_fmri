@@ -14,7 +14,7 @@ export OUT_PATH=/shared/bids_nifti_wface
 aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-02_RANGEL $DATA_PATH/AR-GT-BUNDLES-02_RANGEL
 
 sudo pip3 install pydicom
-python3 fixstudyuid.py
+python3 $CODE_PATH/fixstudyuid.py
 
 docker run --rm -v $DATA_PATH:/data \
 -v $OUT_PATH:/out \
@@ -24,10 +24,10 @@ nipy/heudiconv:0.9.0 \
 -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /out/ \
 -f /code/heuristic.py \
--s {SUBNUM} \
+-s 02 \
 -c dcm2niix --overwrite
 
-aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
-rm -rf $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
-sudo chown -R ec2-user: $OUT_PATH/sub-{SUBNUM}
-rm -rf $OUT_PATH/sub-{SUBNUM}
+aws s3 sync $OUT_PATH/sub-02 s3://described-vs-experienced/bids_nifti_wface/sub-02
+rm -rf $DATA_PATH/AR-GT-BUNDLES-02_RANGEL
+sudo chown -R ec2-user: $OUT_PATH/sub-02
+rm -rf $OUT_PATH/sub-02
