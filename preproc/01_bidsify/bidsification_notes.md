@@ -98,6 +98,9 @@ chmod +x run_heudiconv.sh
 ./run_heudiconv.sh
 ```
 
+- Subject 02's data was collected on two days so their DICOMs have differing `StudyUIDs`
+(see here for discussions of the [problem](https://neurostars.org/t/conflicting-study-identifiers/4729/5) and a [solution](https://github.com/nipy/heudiconv/issues/280))
+
 ######################################
 # Physio
 ######################################
