@@ -102,6 +102,17 @@ chmod +x run_heudiconv.sh
 # Physio
 ######################################
 
+**TSV files specified for phsyiological and other continuous recordings do not include a header line. Instead the name of columns are specified in the JSON file.**
+
+**Recordings with different sampling frequencies and/or starting times should be stored in separate files.**
+
+sub-<label>/
+  func/
+      sub-<label>_task-bundles_run-1_recording-breathing_physio.tsv.gz
+      sub-<label>_task-bundles_run-1_recording-breathing_physio.json
+      sub-<label>_task-bundles_run-1_recording-cardiac_physio.tsv.gz
+      sub-<label>_task-bundles_run-1_recording-cardiac_physio.json
+
 ######################################
 # Event files
 ######################################
