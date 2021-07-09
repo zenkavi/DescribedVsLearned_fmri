@@ -19,5 +19,7 @@ values = [int(v) for v in line.split(" ")[20:-1]]
 
 ts = np.array([v for v in values if v < 5000])
 
+*.resp line.split(" ")[20:-1]
+*.puls line.split(" ")[20:-1]
 *.ext line.split(" ")[25:-1]
 *.ecg line.split(" ")[28:]
