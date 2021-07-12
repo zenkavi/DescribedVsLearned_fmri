@@ -1,8 +1,6 @@
 
 
-Defacing anatomical images is a required step to share the data.
-https://github.com/PeerHerholz/BIDSonym
-
+Defacing anatomical images is a required step to share the data. I use the BIDS app [`BIDSonym`](https://github.com/PeerHerholz/BIDSonym) to do this
 
 ## Run bidsonym on cluster
 
@@ -22,12 +20,19 @@ if [[ ! -e $OUT_PATH ]]; then
   mkdir $OUT_PATH
 fi
 
-aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL $DATA_PATH/AR-GT-BUNDLES-01_RANGEL
+aws s3 sync s3://described-vs-experienced//bids_nifti_wface/sub-01 $DATA_PATH/sub-01
 
 docker run --rm -it -v $DATA_PATH:/data \
 -v $OUT_PATH:/out \
 --cpus="4" --memory="8g" \
 peerherholz/bidsonym:v0.0.4 \
+/data \
+participant \
+--participant_label 01 \
+--deid pydeface \
+--brain_extraction bet \
+--bet_frac 0.5 \
+--del_meta 'InstitutionAddress' \
 
 ```
 

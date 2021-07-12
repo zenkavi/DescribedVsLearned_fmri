@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#SBATCH -J bidsonym-{SUBNUM}
+
+# Outputs ----------------------------------
+#SBATCH -o /shared/.out/bidsonym-{SUBNUM}.out
+#SBATCH -e /shared/.err/bidsonym-{SUBNUM}.err
+# ------------------------------------------
+
+export DATA_PATH=/shared/bids_nifti_wface
+export CODE_PATH=/shared/02_deface
+export OUT_PATH=/shared/bids_nifti_wface
+
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
+
+-v $OUT_PATH:/out \
+--cpus="4" --memory="8g" \
+peerherholz/bidsonym:v0.0.4 \
+/data \
+participant \
+--participant_label {SUBNUM} \
+--deid pydeface \
+--brain_extraction bet \
+--bet_frac 0.5 \
+--del_meta 'InstitutionAddress' \
+
+aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
+sudo chown -R ec2-user: $OUT_PATH/sub-{SUBNUM}
+rm -rf $OUT_PATH/sub-{SUBNUM}
