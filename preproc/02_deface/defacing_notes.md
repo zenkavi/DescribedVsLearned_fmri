@@ -14,17 +14,14 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 s
 ```
 export DATA_PATH=/scratch/bids_nifti_wface
 export CODE_PATH=/scratch/02_deface
-export OUT_PATH=/scratch/bids_nifti_wface
 
-if [[ ! -e $OUT_PATH ]]; then
-  mkdir $OUT_PATH
+if [[ ! -e $DATA_PATH ]]; then
+  mkdir $DATA_PATH
 fi
 
 aws s3 sync s3://described-vs-experienced//bids_nifti_wface/sub-01 $DATA_PATH/sub-01
 
 docker run --rm -it -v $DATA_PATH:/data \
--v $OUT_PATH:/out \
---cpus="4" --memory="8g" \
 peerherholz/bidsonym:v0.0.4 \
 /data \
 participant \
