@@ -21,7 +21,7 @@ master_instance_type = c5.2xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
-post_install = s3://described-vs-experienced/test-setup-env.sh
+post_install = s3://described-vs-experienced/02_deface/bidsonym-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
 

@@ -13,6 +13,7 @@ export OUT_PATH=/shared/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
 
+docker run \
 -v $OUT_PATH:/out \
 --cpus="4" --memory="8g" \
 peerherholz/bidsonym:v0.0.4 \
