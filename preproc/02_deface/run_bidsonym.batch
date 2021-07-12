@@ -9,12 +9,11 @@
 
 export DATA_PATH=/shared/bids_nifti_wface
 export CODE_PATH=/shared/02_deface
-export OUT_PATH=/shared/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
 
 docker run \
--v $OUT_PATH:/out \
+-v $DATA_PATH:/out \
 --cpus="4" --memory="8g" \
 peerherholz/bidsonym:v0.0.4 \
 /data \
@@ -25,6 +24,9 @@ participant \
 --bet_frac 0.5 \
 --del_meta 'InstitutionAddress' \
 
-aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
-sudo chown -R ec2-user: $OUT_PATH/sub-{SUBNUM}
-rm -rf $OUT_PATH/sub-{SUBNUM}
+aws s3 sync $DATA_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
+aws s3 sync $DATA_PATH/sourcedata/bidsonym s3://described-vs-experienced/bids_nifti_wface/sourcedata/bidsonym
+sudo chown -R ec2-user: $DATA_PATH/sub-{SUBNUM}
+sudo chown -R ec2-user: $DATA_PATH/sourcedata/bidsonym
+rm -rf $DATA_PATH/sub-{SUBNUM}
+rm -rf $DATA_PATH/sourcedata/bidsonym/sub-{SUBNUM}
