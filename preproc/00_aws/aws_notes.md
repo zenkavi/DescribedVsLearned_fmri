@@ -195,6 +195,8 @@ pcluster delete test-cluster
 # Lustre filesystem
 ######################################
 
+FsX for Lustre is separate AWS service that can be linked up with ParallelCluster to build filesytems with read and write access from e.g. S3. For our purposes this option probably has more features than we'd need. It is good if you want large amounts of data available to all machines in the cluster at any time. It is setup by an `fsx` section in the cluster config. Below are some basic commands to interact with it.
+
 - List contents of filesystem
 ```
 ls -lh /lustre
