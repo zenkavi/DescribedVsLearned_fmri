@@ -40,3 +40,5 @@ cd $CODE_PATH
 chmod +x run_bidsonym.sh
 ./run_bidsonym.sh
 ```
+
+- **Subjects 01, 02, 04, 05, 06, 27 need attention. Also make sure to push BIDS root files that are edited**
