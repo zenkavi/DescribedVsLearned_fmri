@@ -1,6 +1,6 @@
-=======================================  
+================================================================================  
 Heudiconv
-=======================================  
+================================================================================  
 
 [Heudiconv](https://heudiconv.readthedocs.io/en/latest/) converts DICOMs to Nifti in BIDS format.
 
@@ -103,19 +103,20 @@ chmod +x run_heudiconv.sh
 sbatch run_heudiconv_sub02.batch
 ```
 
-=======================================  
+================================================================================  
 Physio
-=======================================  
+================================================================================  
 
 ### What do we have and how do we get it to be bids compatible?
 
 We have raw Siemens PMU data for pulse, respiration, ecg, and external trigger pulses
 They are sampled at different frequencies ().ecg 100 Hz, .puls 50 Hz, .resp 50 Hz, .ext 100 Hz). According to [BIDS specification](https://bids-specification.readthedocs.io/en/stable/04-modality-specific-files/06-physiological-and-other-continuous-recordings.html) "recordings with different sampling frequencies and/or starting times should be stored in separate files.""
 
-### Does fmriprep use physio? What format?
+### Does fmriprep use physio data?
+
 No, instead they use CompCor to derive confound regressors. See [this](https://neurostars.org/t/physiological-data-in-fmriprep/2846) and [this](https://neurostars.org/t/combining-physio-and-fmriprep/17891) thread.
 
-The SPM plug-in physIO takes care of these BUT the fmriprep CompCor components capture the same nuisance regressors so I might include them with minimal processing for the sake of completeness in the BIDS dataset but not bother with them in the GLMs
+Raw physio data can be turned into confound regressors by resampling and aligning using other software (e.g. the SPM plug-in physIO) **BUT** the fmriprep CompCor components capture the same nuisance regressors I'll include the physio data with minimal processing for the sake of completeness in the BIDS dataset but not use them in the GLMs.
 
 The output should look like:
 ```
@@ -128,11 +129,12 @@ sub-<label>/
 ```
 where the TSV files specified do not include a header line. Instead the name of columns are specified in the JSON file.
 
+================================================================================
+Event files
+================================================================================
 
-######################################
-# Event files
-######################################
+================================================================================
+bidsvalidator
+================================================================================
 
-######################################
-# bidsvalidator
-######################################
+Already ran once as part of defacing.
