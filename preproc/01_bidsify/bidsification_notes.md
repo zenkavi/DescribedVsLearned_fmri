@@ -1,7 +1,6 @@
-
-######################################
+=======================================  
 # Heudiconv
-######################################  
+=======================================  
 
 [Heudiconv](https://heudiconv.readthedocs.io/en/latest/) converts DICOMs to Nifti in BIDS format.
 
@@ -104,9 +103,9 @@ chmod +x run_heudiconv.sh
 sbatch run_heudiconv_sub02.batch
 ```
 
-######################################
+=======================================  
 # Physio
-######################################
+=======================================  
 
 ### What do we have and how do we get it to be bids compatible?
 

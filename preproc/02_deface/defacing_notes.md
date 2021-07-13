@@ -29,8 +29,8 @@ participant \
 --deid pydeface \
 --brain_extraction bet \
 --bet_frac 0.5 \
---del_meta 'InstitutionAddress' \
-
+--del_meta 'InstitutionAddress'
+--deface_t2w
 ```
 
 - Submit bidsonym jobs. Make sure to make the shell script executable as pulling from S3 this is no longer set.
