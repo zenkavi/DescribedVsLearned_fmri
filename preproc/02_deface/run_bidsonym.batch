@@ -23,7 +23,7 @@ participant \
 --brainextraction bet \
 --bet_frac 0.5 \
 --del_meta 'InstitutionAddress' \
--deface_t2w
+--deface_t2w
 
 aws s3 sync $DATA_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
 aws s3 sync $DATA_PATH/sourcedata/bidsonym s3://described-vs-experienced/bids_nifti_wface/sourcedata/bidsonym
