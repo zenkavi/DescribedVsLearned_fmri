@@ -137,11 +137,12 @@ export AMI_ID=ami-0b2ca94b5b49e0132
 export KEY_NAME=test-cluster
 export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
 export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
+export KEYS_PATH=/Users/zeynepenkavi/aws_keys
 ```
 
-- Run instance with user data
+- Run instance
 ```
-docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/home amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data file:///home/test-setup-env.sh
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/home amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.xlarge --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID
 ```
 
 - Push code to s3 BUCKET
