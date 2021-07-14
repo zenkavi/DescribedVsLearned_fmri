@@ -129,6 +129,53 @@ sub-<label>/
 ```
 where the TSV files specified do not include a header line. Instead the name of columns are specified in the JSON file.
 
+## Run preprocessing script on EC2
+
+- Env set up to run instance
+```
+export AMI_ID=ami-0b2ca94b5b49e0132
+export KEY_NAME=test-cluster
+export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
+export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
+```
+
+- Run instance with user data
+```
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/home amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.micro --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID --user-data file:///home/test-setup-env.sh
+```
+
+- Push code to s3 BUCKET
+```
+export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
+docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
+```
+
+- Connect to running instance
+```
+export INSTANCE_IP=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].PublicIpAddress'`
+INSTANCE_IP=${INSTANCE_IP//./-}
+export KEYS_PATH=/Users/zeynepenkavi/aws_keys
+ssh -i "$KEYS_PATH/test-cluster.pem" ec2-user@ec2-$INSTANCE_IP.us-west-1.compute.amazonaws.com
+```
+
+- Give EC2 instance IAM role to access S3
+```
+export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].InstanceId'`
+aws ec2 associate-iam-instance-profile --instance-id $INSTANCE_ID --iam-instance-profile Name=S3FullAccessForEC2
+```
+
+- Copy content from S3 to EC2 instance after installing aws-cli
+```
+pip3 install awscli -U --user
+aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
+```
+
+- Terminate instance
+```
+export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].InstanceId'`
+aws ec2 terminate-instances --instance-ids $INSTANCE_ID
+```
+
 ================================================================================
 Event files
 ================================================================================
