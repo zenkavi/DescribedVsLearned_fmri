@@ -155,7 +155,6 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 s
 ```
 export INSTANCE_IP=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].PublicIpAddress'`
 INSTANCE_IP=${INSTANCE_IP//./-}
-export KEYS_PATH=/Users/zeynepenkavi/aws_keys
 ssh -i "$KEYS_PATH/test-cluster.pem" ec2-user@ec2-$INSTANCE_IP.us-west-1.compute.amazonaws.com
 ```
 
