@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+
 import datetime
 import json
 import numpy as np
@@ -7,7 +7,8 @@ from pathlib import Path
 
 DATA_PATH='/Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/'
 
-subnums = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '22', '23', '24', '25', '27']
+#subnums = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '22', '23', '24', '25', '27']
+subnums = ['01']
 
 runnum_vals = ['1', '2', '3', '4', '5']
 
@@ -44,12 +45,15 @@ for i, cur_sub in enumerate(subnums):
         content = Path(os.path.join(files_path, cur_file)).read_text()
         lines = content.splitlines()
         line = lines.pop(0)
-        if 'ext' in cur_file:
+        if log_type == "trigger":
             values = [int(v) for v in line.split(" ")[25:-1]]
             num_dig = '%1d'
             samp_f = 100.0
         else:
-            values = [int(v) for v in line.split(" ")[20:-1]]
+            if log_type == "breathing":
+                values = [int(v) for v in line.split(" ")[21:-1]]
+            else:
+                values = [int(v) for v in line.split(" ")[20:-1]]
             num_dig = '%4d'
             samp_f = 50.0
         # Within the vector of voltage values are “trigger” events from the scanner. These are entered as 5000 (for trigger on) and 5003 (for trigger off). These values need to be stripped out of the vector. There will occasionally be extra values at the end of the voltage vector as final values in the buffer will be written to the file after the logging is stopped. This can result in the vector length being slightly longer than would be predicted from the log start and stop times described below.
