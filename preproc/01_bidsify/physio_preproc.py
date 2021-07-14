@@ -11,7 +11,7 @@ subnums = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12
 
 runnum_vals = ['1', '2', '3', '4', '5']
 
-log_type_dict = {'resp': 'breathing', 'puls': 'cardiac', 'ext': 'trigger'}
+log_type_dict = {'resp': "breathing", 'puls': "cardiac", 'ext': "trigger"}
 
 for i, cur_sub in enumerate(subnums):
 
@@ -47,14 +47,16 @@ for i, cur_sub in enumerate(subnums):
         if 'ext' in cur_file:
             values = [int(v) for v in line.split(" ")[25:-1]]
             num_dig = '%1d'
+            samp_f = 100.0
         else:
             values = [int(v) for v in line.split(" ")[20:-1]]
             num_dig = '%4d'
+            samp_f = 50.0
         # Within the vector of voltage values are “trigger” events from the scanner. These are entered as 5000 (for trigger on) and 5003 (for trigger off). These values need to be stripped out of the vector. There will occasionally be extra values at the end of the voltage vector as final values in the buffer will be written to the file after the logging is stopped. This can result in the vector length being slightly longer than would be predicted from the log start and stop times described below.
         ts = np.array([v for v in values if v < 5000])
 
         # Write output
-        fn = os.path.join(DATA_PATH, 'bids_nifti_wface/sub-%s/func/sub-%s_task-bundles_run-%s_recording-%s_physio.tsv'%(cur_sub, cur_sub, cur_run, log_type))
+        fn = os.path.join(DATA_PATH, 'bids_nifti_wface/sub-%s/func/sub-%s_task-bundles_run-%s_recording-%s_physio.tsv.gz'%(cur_sub, cur_sub, cur_run, log_type))
         np.savetxt(fn, ts, delimiter='\t', fmt=num_dig)
 
         # Get log start time
@@ -81,34 +83,7 @@ for i, cur_sub in enumerate(subnums):
         rel_start_time = (log_start_time - scan_start_time)/1000
 
         # Write sidecar
-        ...
-
-#OUTPUTS
-
-
-#.resp
-#'sub-%s_task-bundles_run-%s_recording-breathing_physio.tsv.gz'%(cur_sub, cur_run)
-#sub-%s_task-bundles_run-%s_recording-breathing_physio.json'%(cur_sub, cur_run)
-{
-   "SamplingFrequency": 50.0,
-   "StartTime": -22.345,
-   "Columns": ["respiratory"]
-}
-
-#.puls
-#sub-%s_task-bundles_run-%s_recording-cardiac_physio.tsv.gz'%(cur_sub, cur_run)
-#sub-%s_task-bundles_run-%s_recording-cardiac_physio.json'%(cur_sub, cur_run)
-{
-   "SamplingFrequency": 50.0,
-   "StartTime": -22.345,
-   "Columns": ["cardiac"]
-}
-
-#.ext
-#sub-%s_task-bundles_run-%s_recording-trigger_physio.tsv.gz'%(cur_sub, cur_run)
-#sub-%s_task-bundles_run-%s_recording-trigger_physio.json'%(cur_sub, cur_run)
-{
-   "SamplingFrequency": 100.0,
-   "StartTime": -22.345,
-   "Columns": ["trigger"]
-}
+        sidecar = {"SamplingFrequency": samp_f, "StartTime": rel_start_time, "Columns": [log_type]}
+        fn = os.path.join(DATA_PATH, 'bids_nifti_wface/sub-%s/func/sub-%s_task-bundles_run-%s_recording-%s_physio.json'%(cur_sub, cur_sub, cur_run, log_type))
+        with open(fn, 'w') as f:
+            json.dump(sidecar, f)
