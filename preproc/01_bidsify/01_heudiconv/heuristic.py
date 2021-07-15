@@ -27,7 +27,7 @@ def infotodict(seqinfo):
             info[t2w].append(s.series_id)
 
         if ('BOLD_MB' in s.protocol_name):
-            if (s.dim4 == 892):
+            if (s.dim4 > 800):
                 info[task].append({'item': s.series_id})
             elif (s.dim4 == 1):
                 info[sbref].append({'item': s.series_id})
