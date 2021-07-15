@@ -164,10 +164,10 @@ export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-nam
 aws ec2 associate-iam-instance-profile --instance-id $INSTANCE_ID --iam-instance-profile Name=S3FullAccessForEC2
 ```
 
-- Copy content from S3 to EC2 instance after installing aws-cli
+- Copy content from S3 to EC2 instance
 ```
-pip3 install awscli -U --user
-aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL ./AR-GT-BUNDLES-01_RANGEL
+chmod +x physio-setup-env.sh
+./physio-setup-env.sh
 ```
 
 - Terminate instance
