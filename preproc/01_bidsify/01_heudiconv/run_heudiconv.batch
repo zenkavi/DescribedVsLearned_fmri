@@ -11,7 +11,7 @@ export DATA_PATH=/shared/raw_fmri_data
 export CODE_PATH=/shared/01_bidsify/01_heudiconv
 export OUT_PATH=/shared/bids_nifti_wface
 
-aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_RANGEL $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL
+aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_RANGEL $DATA_PATH/AR-GT-BUNDLES-{SUBNUM}_RANGEL --exclude 'Physio*'
 
 docker run --rm -v $DATA_PATH:/data \
 -v $OUT_PATH:/out \
