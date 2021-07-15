@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J heudiconv-{SUBNUM}
+#SBATCH -N 8
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/heudiconv-{SUBNUM}.out
@@ -16,7 +17,7 @@ aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-{SUBNUM}_R
 docker run --rm -v $DATA_PATH:/data \
 -v $OUT_PATH:/out \
 -v $CODE_PATH:/code \
---memory="16g" \
+--memory="32g" \
 nipy/heudiconv:0.9.0 \
 -d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
 -b -o /out/ \
