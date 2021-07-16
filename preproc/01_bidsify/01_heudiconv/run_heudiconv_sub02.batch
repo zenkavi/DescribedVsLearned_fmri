@@ -13,7 +13,7 @@ export OUT_PATH=/shared/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-02_RANGEL $DATA_PATH/AR-GT-BUNDLES-02_RANGEL --exclude 'Physio*'
 
-pip3 install pydicom --user $USER
+pip3 install pydicom -U --user
 python3 $CODE_PATH/fix_studyuid.py
 
 docker run --rm -v $DATA_PATH:/data \
