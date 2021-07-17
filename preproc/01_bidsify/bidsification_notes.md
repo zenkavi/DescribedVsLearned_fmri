@@ -180,6 +180,23 @@ aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 Event files
 ================================================================================
 
+```
+sub-<label>_task-bundles_run-<label>_events.tsv
+```
+
+In .mat behavioral data files there are
+
+```
+onsetCross
+onsetProbabilities
+onsetStimulus
+onsetReward
+```
+
+================================================================================
+Double check sidecars (e.g. for fieldmaps)
+================================================================================
+
 ================================================================================
 bidsvalidator
 ================================================================================
