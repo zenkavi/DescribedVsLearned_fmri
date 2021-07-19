@@ -187,20 +187,35 @@ sub-<label>_task-bundles_run-<label>_events.tsv
 
 and columns
 ```
-onset
-duration
-trial_type
-response_time
+onset duration  trial_type  response_time
 ```
 
-In .mat behavioral data files there are
-
+In .mat behavioral data files there are the following columns that should be stacked and sorted
 ```
 onsetCross
 onsetProbabilities
 onsetStimulus
 onsetReward
 ```
+
+What is the duration of each trial type?
+
+```
+trial_type == 'cross':
+  durationCross = onsetProbabilities - onsetCross
+
+trial_type == 'fractalProb'
+  durationProbabilities = onsetStimulus - onsetProbabilities (should be 2)
+
+trial_type == 'stimulus'
+  durationStimuls = reactionTime
+
+trial_type == 'reward'
+  durationReward = onsetCross[next trial] - onsetReward (should be 3)
+```
+
+What should be the `response_time` value for events that do not involve a response?
+"n/a" denotes a missed response
 
 ================================================================================
 Double check sidecars (e.g. for fieldmaps)

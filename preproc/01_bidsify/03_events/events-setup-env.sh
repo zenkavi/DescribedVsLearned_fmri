@@ -13,3 +13,6 @@ aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
 chown -R ec2-user: $DATA_PATH
 chown -R ec2-user: $OUT_PATH
 chown -R ec2-user: $CODE_PATH
+
+pip3 install scipy -U --user
+pip3 install pandas -U --user
