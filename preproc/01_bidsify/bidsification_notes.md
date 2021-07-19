@@ -49,41 +49,6 @@ export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri
 docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
 ```
 
-- Test on master node of cluster. Need to download data necessary for the job from s3 bucket
-```
-export DATA_PATH=/scratch/raw_fmri_data
-export CODE_PATH=/scratch/01_bidsify
-export OUT_PATH=/scratch/bids_nifti_wface
-
-if [[ ! -e $OUT_PATH ]]; then
-  mkdir $OUT_PATH
-  aws s3 sync s3://described-vs-experienced/bids_nifti_wface $OUT_PATH
-fi
-
-aws s3 sync s3://described-vs-experienced/raw_fmri_data/AR-GT-BUNDLES-01_RANGEL $DATA_PATH/AR-GT-BUNDLES-01_RANGEL
-
-docker run --rm -it -v $DATA_PATH:/data \
--v $OUT_PATH:/out \
---cpus="4" --memory="8g" \
-nipy/heudiconv:0.9.0 \
--d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
--b -o /out/ \
--f convertall \
--s 01 \
--c none --overwrite
-
-docker run --rm -it -v $DATA_PATH:/data \
--v $OUT_PATH:/out \
--v $CODE_PATH:/code \
---cpus="4" --memory="8g" \
-nipy/heudiconv:0.9.0 \
--d /data/AR-GT-BUNDLES-{subject}_RANGEL/*/*/*.IMA \
--b -o /out/ \
--f /code/heuristic.py \
--s 01 \
--c dcm2niix --overwrite
-```
-
 - To debug heudiconv docker container on master node: override entrypoint executable and run shell in the container
 ```
 docker run --rm -it --cpus="4" --memory="8g" -v $DATA_PATH:/data -v $OUT_PATH:/out --entrypoint /bin/bash nipy/heudiconv:0.9.0
@@ -91,7 +56,7 @@ docker run --rm -it --cpus="4" --memory="8g" -v $DATA_PATH:/data -v $OUT_PATH:/o
 
 - Submit heudiconv jobs. Make sure to make the shell script executable as pulling from S3 this is no longer set.
 ```
-export CODE_PATH=/scratch/01_bidsify
+export CODE_PATH=/shared/01_bidsify
 cd $CODE_PATH
 chmod +x run_heudiconv.sh
 ./run_heudiconv.sh
@@ -131,91 +96,64 @@ where the TSV files specified do not include a header line. Instead the name of 
 
 ## Run preprocessing script on EC2
 
-- Env set up to run instance
-```
-export AMI_ID=ami-0b2ca94b5b49e0132
-export KEY_NAME=test-cluster
-export SG_ID=`aws ec2 describe-security-groups --filters Name=group-name,Values="test-cluster-sg"  | jq -j '.SecurityGroups[0].GroupId'`
-export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
-export KEYS_PATH=/Users/zeynepenkavi/aws_keys
-```
-
-- Run instance
-```
-docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/home amazon/aws-cli ec2 run-instances --image-id $AMI_ID --count 1 --instance-type t2.xlarge --key-name $KEY_NAME --security-group-ids $SG_ID --subnet-id $SUBNET_ID
-```
-
-- Push code to s3 BUCKET
+- Push code to s3 bucket
 ```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
 docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
 ```
 
-- Connect to running instance
+- Setup environment in an EC2 instance (either standalone or Cloud9)
 ```
-export INSTANCE_IP=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].PublicIpAddress'`
-INSTANCE_IP=${INSTANCE_IP//./-}
-ssh -i "$KEYS_PATH/test-cluster.pem" ec2-user@ec2-$INSTANCE_IP.us-west-1.compute.amazonaws.com
-```
-
-- Give EC2 instance IAM role to access S3
-```
-export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].InstanceId'`
-aws ec2 associate-iam-instance-profile --instance-id $INSTANCE_ID --iam-instance-profile Name=S3FullAccessForEC2
-```
-
-- Copy content from S3 to EC2 instance
-```
+export CODE_PATH=/shared/01_bidsify
+aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+cd $CODE_PATH/02_physio
 chmod +x physio-setup-env.sh
 ./physio-setup-env.sh
 ```
 
-- Terminate instance
+- Run preprocessing script
 ```
-export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-name,Values=running | jq -j '.Reservations[0].Instances[0].InstanceId'`
-aws ec2 terminate-instances --instance-ids $INSTANCE_ID
+python3 physio_preproc.py
+```
+
+- Push physio outputs back to s3
+```
+chmod +x physio_push_outputs.sh
+./physio_push_outputs.sh
 ```
 
 ================================================================================
 Event files
 ================================================================================
 
-Files describing what happened in each bold run with the name format:
-```
-sub-<label>_task-bundles_run-<label>_events.tsv
-```
+## Run preprocessing script on EC2
 
-and columns
+- Push code to s3 bucket
 ```
-onset duration  trial_type  response_time
+export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
+docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
 ```
 
-In .mat behavioral data files there are the following columns that should be stacked and sorted
+- Setup environment in an EC2 instance (either standalone or Cloud9)
 ```
-onsetCross
-onsetProbabilities
-onsetStimulus
-onsetReward
-```
-
-What is the duration of each trial type?
-
-```
-trial_type == 'cross':
-  durationCross = onsetProbabilities - onsetCross
-
-trial_type == 'fractalProb'
-  durationProbabilities = onsetStimulus - onsetProbabilities (should be 2)
-
-trial_type == 'stimulus'
-  durationStimuls = reactionTime
-
-trial_type == 'reward'
-  durationReward = onsetCross[next trial] - onsetReward (should be 3)
+export CODE_PATH=/shared/01_bidsify
+aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+cd $CODE_PATH/03_events
+chmod +x events-setup-env.sh
+./events-setup-env.sh
 ```
 
-What should be the `response_time` value for events that do not involve a response?
-"n/a" denotes a missed response
+- Run preprocessing script
+```
+python3 events_preproc.py
+```
+
+- Push physio outputs back to s3
+```
+chmod +x events_push_outputs.sh
+./events_push_outputs.sh
+```
+
 
 ================================================================================
 Double check sidecars (e.g. for fieldmaps)
@@ -224,5 +162,3 @@ Double check sidecars (e.g. for fieldmaps)
 ================================================================================
 bidsvalidator
 ================================================================================
-
-Already ran once as part of defacing.
