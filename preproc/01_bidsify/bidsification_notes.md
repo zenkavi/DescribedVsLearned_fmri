@@ -180,8 +180,17 @@ aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 Event files
 ================================================================================
 
+Files describing what happened in each bold run with the name format:
 ```
 sub-<label>_task-bundles_run-<label>_events.tsv
+```
+
+and columns
+```
+onset
+duration
+trial_type
+response_time
 ```
 
 In .mat behavioral data files there are
