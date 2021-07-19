@@ -1,7 +1,9 @@
 import json
 import os
-from scipy.io import loadmat
+import numpy as np
 import pandas as pd
+from scipy.io import loadmat
+
 
 DATA_PATH='/shared/behavioral_data'
 
@@ -71,7 +73,7 @@ for i, cur_file in enumerate(file_names):
     durations = np.concatenate((durationCross, durationProbabilities, durationStimulus, durationReward), axis=None)
 
     # Trial_type column
-    numTrials = len(onsetCross[0])
+    numTrials = len(onsetCross)
     trialTypes = np.concatenate((np.repeat(['cross'], numTrials), np.repeat(['fractalProb'], numTrials), np.repeat(['stimulus'], numTrials), np.repeat(['reward'], numTrials)), axis=None)
 
     # Response_time column

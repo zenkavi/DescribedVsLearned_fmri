@@ -99,7 +99,7 @@ where the TSV files specified do not include a header line. Instead the name of 
 - Push code to s3 bucket
 ```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
-docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
+docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/base amazon/aws-cli s3 sync /base/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
 ```
 
 - Setup environment in an EC2 instance (either standalone or Cloud9)
