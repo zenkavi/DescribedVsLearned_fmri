@@ -1,7 +1,5 @@
-
-######################################
-# S3: Data storage
-######################################
+S3: Data storage
+================================================================================
 
 - Transfer data to S3
   - Single file
@@ -25,9 +23,9 @@
 aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ```
 
-######################################
-# EC2: Single instance for testing
-######################################
+
+EC2: Single instance for testing
+================================================================================
 
 The following requires [`jq`](https://stedolan.github.io/jq/download/) for json processing.
 
@@ -122,9 +120,8 @@ export INSTANCE_ID=`aws ec2 describe-instances --filters Name=instance-state-nam
 aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 ```
 
-######################################
-# AWS ParallelCluster
-######################################
+AWS ParallelCluster
+================================================================================
 
 Use custom bootstrap actions to set up master and compute nodes
 
@@ -191,9 +188,8 @@ scontrol: update NodeName={NODE_NAME} State=POWER_DOWN
 pcluster delete test-cluster
 ```
 
-######################################
-# Lustre filesystem
-######################################
+Lustre filesystem
+================================================================================
 
 FsX for Lustre is separate AWS service that can be linked up with ParallelCluster to build filesytems with read and write access from e.g. S3. For our purposes this option probably has more features than we'd need. It is good if you want large amounts of data available to all machines in the cluster at any time. It is setup by an `fsx` section in the cluster config. Below are some basic commands to interact with it.
 
