@@ -73,7 +73,7 @@ Physio
 ### What do we have and how do we get it to be bids compatible?
 
 We have raw Siemens PMU data for pulse, respiration, ecg, and external trigger pulses
-They are sampled at different frequencies ().ecg 100 Hz, .puls 50 Hz, .resp 50 Hz, .ext 100 Hz). According to [BIDS specification](https://bids-specification.readthedocs.io/en/stable/04-modality-specific-files/06-physiological-and-other-continuous-recordings.html) "recordings with different sampling frequencies and/or starting times should be stored in separate files.""
+They are sampled at different frequencies (.ecg 100 Hz, .puls 50 Hz, .resp 50 Hz, .ext 100 Hz). According to [BIDS specification](https://bids-specification.readthedocs.io/en/stable/04-modality-specific-files/06-physiological-and-other-continuous-recordings.html) "recordings with different sampling frequencies and/or starting times should be stored in separate files.""
 
 ### Does fmriprep use physio data?
 
