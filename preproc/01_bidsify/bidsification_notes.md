@@ -158,3 +158,26 @@ bidsvalidator
 - This would take a while
 - Instead I'll try running it similar to the defacing pipeline where I download files in the parent directory and a single subject directory and run the validator on this subset of the dataset (as if it were a dataset with a single subject)
 - You could run it in a cluster but I prefer doing it interactively so I can fix things as they come up
+
+- Push code to s3 bucket
+```
+export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
+docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/01_bidsify s3://described-vs-experienced/01_bidsify --exclude ".DS_Store"
+```
+
+- Setup environment in an EC2 instance (either standalone or Cloud9)
+```
+export CODE_PATH=/shared/01_bidsify
+aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+cd $CODE_PATH/04_bidsvalidator
+chmod +x bidsvalidator-setup-env.sh
+./bidsvalidator-setup-env.sh
+```
+
+- Run bidsvalidator shell script for every subject (replacing the first argument for the shell script)
+```
+chmod +x run_bidsvalitdator.sh
+./run_bidsvalitdator 04
+```
+
+- Examine output and change anything if necessary
