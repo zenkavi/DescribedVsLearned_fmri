@@ -30,7 +30,7 @@ sidecar = {
   "response_time": {
     "Description": "Amount of time in seconds it took subjects to make a decision between the bundles of lotteries and fractals"
   },
-  "stim_file": {
+  "identifier": {
     "Description": "Path to fractals used for the session. Fractal images can be found in root directory."
   },
   "StimulusPresentation": {
@@ -79,11 +79,11 @@ for i, cur_file in enumerate(file_names):
     # Response_time column
     response_times = np.concatenate(np.repeat([reactionTime], 4, axis=0))
 
-    # Stim_file column
-    stim_files = np.repeat(['images/%s.jpg, images/%s.jpg'%(leftFractal, rightFractal)], len(trialTypes))
+    # Identifier column. Not using Stim_file column bc bidsvalidator doesn't accept paths to two images
+    identifiers = np.repeat(['images/%s.jpg, images/%s.jpg'%(leftFractal, rightFractal)], len(trialTypes))
 
     # Put everything together for the events file
-    cur_events = pd.DataFrame(data = {'onset': onsets, 'duration': durations, 'trial_type': trialTypes, 'response_time': response_times, 'stim_file': stim_files})
+    cur_events = pd.DataFrame(data = {'onset': onsets, 'duration': durations, 'trial_type': trialTypes, 'response_time': response_times, 'identifier': identifiers})
     cur_events = cur_events.sort_values(by=['onset'])
 
     # Create output path if needed
