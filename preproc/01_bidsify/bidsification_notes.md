@@ -153,3 +153,8 @@ chmod +x events_push_outputs.sh
 
 bidsvalidator
 ================================================================================
+
+- To run on all subjects would have to download all data onto the same machine
+- This would take a while
+- Instead I'll try running it similar to the defacing pipeline where I download files in the parent directory and a single subject directory and run the validator on this subset of the dataset (as if it were a dataset with a single subject)
+- You could run it in a cluster but I prefer doing it interactively so I can fix things as they come up
