@@ -1,5 +1,17 @@
-set -e
-for subnum in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 22 23 24 25 27
-do
-sed -e "s/{SUBNUM}/$subnum/g" run_bidsonym.batch | sbatch
-done
+#!/bin/bash
+
+export DATA_PATH=/shared/bids_nifti_wface
+
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-$1 $DATA_PATH/sub-$1
+
+docker run \
+-v $DATA_PATH:/data \
+peerherholz/bidsonym:v0.0.4 \
+/data \
+participant \
+--participant_label $1 \
+--deid pydeface \
+--brainextraction bet \
+--bet_frac 0.5 \
+--del_meta 'InstitutionAddress' \
+--deface_t2w
