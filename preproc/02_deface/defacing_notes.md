@@ -6,7 +6,7 @@ Initially I used parallel jobs on a cluster to do this but there were some error
 
 ## Run bidsonym on EC2
 
-- Push code to s3 BUCKET
+- Push code to s3 BUCKET **why does this hang sometimes?!**
 ```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
 docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/02_deface s3://described-vs-experienced/02_deface --exclude ".DS_Store"
