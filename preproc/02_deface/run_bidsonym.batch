@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J bidsonym-{SUBNUM}
+#SBATCH -c 7
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/bidsonym-{SUBNUM}.out

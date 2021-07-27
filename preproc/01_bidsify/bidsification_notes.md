@@ -180,4 +180,14 @@ chmod +x run_bidsvalitdator.sh
 ./run_bidsvalitdator 04
 ```
 
-- Examine output and change anything if necessary
+- Examine output and change anything if necessary  
+
+For this dataset:  
+
+- Ignored the warning below because using `stim_file` column in the `*_event.tsv` file was leading to bidsvalidator error since there were multiple image paths. Changed to column name to `identifier` and described where to find the stimuli images in the sidecar instead. 
+```
+2: [WARN] There are files in the /stimuli directory that are not utilized in any _events.tsv file. (code: 77 - UNUSED_STIMULUS)
+              ... and 14 more files having this issue (Use --verbose to see them all).
+```
+
+- **Unfixable warning: Sub-02 is missing 75 TRs in task run 5. The behavioral data is there but the images are missing.**
