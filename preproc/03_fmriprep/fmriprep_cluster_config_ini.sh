@@ -17,7 +17,7 @@ sanity_check = true
 key_name = test-cluster
 vpc_settings = public
 base_os = alinux2
-master_instance_type = c5.2xlarge
+master_instance_type = t3.2xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
@@ -31,14 +31,14 @@ placement_group = DYNAMIC
 disable_hyperthreading = true
 
 [compute_resource default]
-instance_type = c5.4xlarge
+instance_type = c6g.4xlarge
 min_count = 0
-max_count = 8
+max_count = 12
 
 [ebs myebs]
 shared_dir = /shared
 volume_type = gp2
-volume_size = 50
+volume_size = 128
 
 [vpc public]
 vpc_id = ${VPC_ID}
