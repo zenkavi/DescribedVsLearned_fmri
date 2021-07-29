@@ -24,6 +24,8 @@ s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
 post_install = s3://described-vs-experienced/03_fmriprep/fmriprep-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
+master_root_volume_size = 128
+compute_root_volume_size = 128
 
 [queue compute]
 compute_resource_settings = default
@@ -31,9 +33,9 @@ placement_group = DYNAMIC
 disable_hyperthreading = true
 
 [compute_resource default]
-instance_type = c5.4xlarge
+instance_type = c5.9xlarge
 min_count = 0
-max_count = 25
+max_count = 13
 
 [ebs myebs]
 shared_dir = /shared

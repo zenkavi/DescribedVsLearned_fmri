@@ -16,6 +16,8 @@ pcluster ssh test-cluster -i $KEYS_PATH/test-cluster.pem
 What kind of instance do you need for the compute fleet?  
 - 8GB memory per subject
 - 8-16 CPUs per subject
+- Note on AWS s vCPU are CPU x 2 because each CPU allows hyper-threading
+- Note also that you need to make that your root volumes are big enough for the fmriprep docker image (as specified with the `master_root_volume_size` and `compute_root_volume_size` in the cluster configuration; these arguments are not listed in the AWS ParallelCluster documentation)
 
 ## fmriprep command template
 ```
