@@ -33,7 +33,7 @@ disable_hyperthreading = true
 [compute_resource default]
 instance_type = c6g.4xlarge
 min_count = 0
-max_count = 12
+max_count = 25
 
 [ebs myebs]
 shared_dir = /shared
