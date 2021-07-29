@@ -21,7 +21,7 @@ master_instance_type = t3.2xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
-post_install = s3://described-vs-experienced/04_fmriprep/fmriprep-setup-env.sh
+post_install = s3://described-vs-experienced/03_fmriprep/fmriprep-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
 
@@ -31,7 +31,7 @@ placement_group = DYNAMIC
 disable_hyperthreading = true
 
 [compute_resource default]
-instance_type = c6g.4xlarge
+instance_type = c5.4xlarge
 min_count = 0
 max_count = 25
 
