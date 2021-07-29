@@ -25,6 +25,3 @@ nipreps/fmriprep:20.2.3  \
 /data /out participant  \
 --participant-label {SUBNUM} \
 -w /work --skip_bids_validation
-
-aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}
-rm -rf $DATA_PATH/sub-{SUBNUM}

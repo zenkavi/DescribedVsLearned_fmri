@@ -1,12 +1,11 @@
 
-Push code to s3 bucket
-
+## Push code to s3 bucket
 ```
 export STUDY_DIR=/Users/zeynepenkavi/Documents/RangelLab/DescribedVsLearned_fmri/preproc
 docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 sync /home/03_fmriprep s3://described-vs-experienced/03_fmriprep
 ```
 
-Make cluster
+## Make cluster
 ```
 ./fmriprep_cluster_config_ini.sh
 pcluster create test-cluster -c tmp.ini
@@ -14,12 +13,11 @@ export KEYS_PATH=/Users/zeynepenkavi/aws_keys
 pcluster ssh test-cluster -i $KEYS_PATH/test-cluster.pem
 ```
 
-What kind of instance do you need?  
+What kind of instance do you need for the compute fleet?  
 - 8GB memory per subject
 - 8-16 CPUs per subject
 
-Command template
-
+## fmriprep command template
 ```
 export DATA_PATH=/shared/bids_nifti_wface
 export TMP_PATH=/shared/tmp
