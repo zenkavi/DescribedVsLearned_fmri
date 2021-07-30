@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J heudiconv-02
+#SBATCH -c 7
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/heudiconv-02.out

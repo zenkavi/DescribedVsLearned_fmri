@@ -6,7 +6,7 @@ import glob
 
 DATA_PATH = '/shared/raw_fmri_data/'
 
-alldcm = glob.glob(DATA_PATH + '/*/*/*/*.IMA')
+alldcm = glob.glob(DATA_PATH + '/AR-GT-BUNDLES-02_RANGEL/*/*/*.IMA')
 for jj in range(0,len(alldcm)):
     ds = pydicom.dcmread(alldcm[jj])
     if jj is 0:

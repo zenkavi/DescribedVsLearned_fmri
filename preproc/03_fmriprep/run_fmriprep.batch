@@ -24,4 +24,4 @@ docker run --rm  \
 nipreps/fmriprep:20.2.3  \
 /data /out participant  \
 --participant-label {SUBNUM} \
--w /work --skip_bids_validation
+-w /work --skip_bids_validation --fs-no-reconall

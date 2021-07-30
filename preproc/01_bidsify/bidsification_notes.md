@@ -111,6 +111,7 @@ chmod +x physio-setup-env.sh
 
 - Run preprocessing script
 ```
+pip3 install numpy -U --user
 python3 physio_preproc.py
 ```
 

@@ -8,5 +8,5 @@ aws s3 sync s3://described-vs-experienced/bids_nifti_wface $DATA_PATH/bids_nifti
 
 aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
 
-chown -R ec2-user: $DATA_PATH
-chown -R ec2-user: $CODE_PATH
+sudo chown -R ec2-user: $DATA_PATH
+sudo chown -R ec2-user: $CODE_PATH
