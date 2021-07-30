@@ -28,7 +28,6 @@ participant \
 --deid pydeface \
 --brain_extraction bet \
 --bet_frac 0.5 \
---del_meta 'InstitutionAddress'
 --deface_t2w
 ```
 - Check outputs  

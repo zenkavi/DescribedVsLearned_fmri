@@ -13,5 +13,4 @@ participant \
 --deid pydeface \
 --brainextraction bet \
 --bet_frac 0.5 \
---del_meta 'InstitutionAddress' \
 --deface_t2w
