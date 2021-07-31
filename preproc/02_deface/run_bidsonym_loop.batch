@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#SBATCH -J bidsonym-loop
+
+# Outputs ----------------------------------
+#SBATCH -o /shared/.out/bidsonym-loop.out
+#SBATCH -e /shared/.err/bidsonym-loop.err
+# ------------------------------------------
+
+export DATA_PATH=/shared/bids_nifti_wface
+
+for subnum in 08 09 10 11 12 13 14 15 16 17 18 19
+do
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-$subnum $DATA_PATH/sub-$subnum
+
+docker run \
+-v $DATA_PATH:/data \
+peerherholz/bidsonym:v0.0.4 \
+/data \
+participant \
+--participant_label $subnum \
+--deid pydeface \
+--brainextraction bet \
+--bet_frac 0.5 \
+--deface_t2w --skip_bids_validation
+
+aws s3 sync $DATA_PATH/sub-$subnum/anat s3://described-vs-experienced/bids_nifti_wface/sub-$subnum/anat
+aws s3 sync $DATA_PATH/sourcedata/bidsonym/sub-$subnum/images s3://described-vs-experienced/bids_nifti_wface/sourcedata/bidsonym/sub-$subnum/images
+sudo chown -R ec2-user: $DATA_PATH/sub-$subnum
+sudo chown -R ec2-user: $DATA_PATH/sourcedata/bidsonym/
+rm -rf $DATA_PATH/sub-$subnum
+rm -rf $DATA_PATH/sourcedata/bidsonym/sub-$subnum
+done
