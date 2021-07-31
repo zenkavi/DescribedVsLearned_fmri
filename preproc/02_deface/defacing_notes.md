@@ -30,17 +30,16 @@ participant \
 --bet_frac 0.5 \
 --deface_t2w
 ```
-- Check outputs  
+
+- Once testing is done you can either submit each subject to run parallel
 ```
 cd $CODE_PATH
-chmod +x check_bidsonym_outputs.sh
-./check_bidsonym_outputs $SUBNUM
+chmod +x run_bidsonym.sh
+./run_bidsonym.sh
 ```
 
-
-- Push to S3 when all is ready
+- Or you can run the jobs as a loop. This would be much slower but when run in parallel some jobs can error out due to changes in the BIDS layout of the root directory from other jobs finishing and cleaning up before a job is done.
 ```
 cd $CODE_PATH
-chmod +x push_bidsonym_outputs.sh
-./push_bidsonym_outputs $SUBNUM
+sbatch run_bidsonym_loop.batch
 ```
