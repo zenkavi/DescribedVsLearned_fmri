@@ -37,17 +37,13 @@ docker run -ti --rm  \
 nipreps/fmriprep:20.2.3  \
 /data /out participant  \
 --participant-label 01 \
--w /work --skip_bids_validation
+-w /work --skip_bids_validation --output-spaces MNI152NLin2009cAsym:res-2 --fs-no-reconall
 ```
 
-Do you need other templates?
-```
---output-spaces MNI152NLin2009cAsym:res-2
-```
-
-To test without freesurfer recon all use
+To get subject freesurfer segmentation remove
 ```
 --fs-no-reconall
 ```
+but note that this will take at least 20hrs per subject.
 
 What outputs need to be pushed back to s3?
