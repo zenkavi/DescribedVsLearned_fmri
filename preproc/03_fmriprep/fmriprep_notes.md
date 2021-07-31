@@ -29,7 +29,7 @@ aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-01 $DATA_PATH/sub
 
 docker run -ti --rm  \
 -v $DATA_PATH:/data:ro  \
--v $DATA_PATH/derivatives/fmriprep:/out  \
+-v $DATA_PATH/derivatives:/out  \
 -v $TMP_DIR:/work  \
 -v $FS_LICENSE:/opt/freesurfer/license.txt  \
 -m=16g  \
