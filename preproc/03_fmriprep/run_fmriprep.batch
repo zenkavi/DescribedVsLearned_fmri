@@ -24,3 +24,6 @@ nipreps/fmriprep:20.2.3  \
 /data /out participant  \
 --participant-label {SUBNUM} \
 -w /work --skip_bids_validation --fs-no-reconall --output-spaces MNI152NLin2009cAsym:res-2
+
+aws s3 sync /shared/bids_nifti_wface/derivatives/fmriprep s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep
+sudo rm -rf $DATA_PATH/derivatives/fmriprep/sub-{SUBNUM}
