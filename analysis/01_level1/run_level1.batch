@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#SBATCH -J level1-{SUBNUM}
+#SBATCH -c =15
+
+# Outputs ----------------------------------
+#SBATCH -o /shared/.out/level1-{SUBNUM}.out
+#SBATCH -e /shared/.err/level1-{SUBNUM}.err
+# ------------------------------------------
+
+export DATA_PATH=/shared/bids_nifti_wface
+export CODE_PATH=/shared/01_level1
+
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
+
+sudo chmod +x $CODE_PATH/level1.py
+./level1.py -s {SUBNUM}
