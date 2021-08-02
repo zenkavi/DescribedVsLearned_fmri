@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J fmriprep-{SUBNUM}
-#SBATCH -c 8
+#SBATCH -c =15
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/fmriprep-{SUBNUM}.out
@@ -19,8 +19,7 @@ docker run --rm  \
 -v $DATA_PATH/derivatives/:/out  \
 -v $TMP_DIR:/work  \
 -v $FS_LICENSE:/opt/freesurfer/license.txt  \
--m=16g  \
---cpus="8"  \
+--cpus="15"  \
 nipreps/fmriprep:20.2.3  \
 /data /out participant  \
 --participant-label {SUBNUM} \
