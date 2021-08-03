@@ -8,7 +8,7 @@ import pandas as pd
 
 
 def make_contrasts(design_matrix):
-        # first generate canonical contrasts (i.e. regressors vs. baseline)
+    # first generate canonical contrasts (i.e. regressors vs. baseline)
     contrast_matrix = np.eye(design_matrix.shape[1])
     contrasts = dict([(column, contrast_matrix[i])
                       for i, column in enumerate(design_matrix.columns)])
@@ -25,7 +25,22 @@ def make_contrasts(design_matrix):
 
     return contrasts
 
-def get_conditions(cur_events, runnum, mean_rt, sub_pes, pe, sub_evs, ev):
+def get_confounds(confounds, scrub_thresh = .5):
+    
+    confound_cols = [x for x in confounds.columns if 'trans' in x]+[x for x in confounds.columns if 'rot' in x]+['std_dvars', 'framewise_displacement']
+    
+    formatted_confounds = confounds[confound_cols]
+    
+    formatted_confounds = formatted_confounds.fillna(0)
+    
+    formatted_confounds['scrub'] = np.where(formatted_confounds.framewise_displacement>scrub_thresh,1,0)
+    
+    formatted_confounds = formatted_confounds.assign(
+        scrub = lambda dataframe: dataframe['framewise_displacement'].map(lambda framewise_displacement: 1 if framewise_displacement > scrub_thresh else 0))
+    
+    return formatted_confounds
+
+def make_design_matrix(events):
     #process events for GLM
     #events: 4 col events file for WHOLE RUN with onset, duration, trial_type, modulation
     #trial_type column:
@@ -39,7 +54,6 @@ def get_conditions(cur_events, runnum, mean_rt, sub_pes, pe, sub_evs, ev):
     rt = cur_events.response_time
     cur_events.loc[:,'response_time'] = rt - rt[rt>0].mean()
     cur_events['rt_shift'] = cur_events.response_time.shift(-1)
-    
 
     cond_m1 = cur_events.query('trial_type == "stim_presentation" & stimulus == 1')[['onset']]
     cond_m1['duration'] = mean_rt
@@ -80,63 +94,31 @@ def get_conditions(cur_events, runnum, mean_rt, sub_pes, pe, sub_evs, ev):
 
     return formatted_events
 
-def get_confounds(confounds, scrub_thresh = .5):
-    
-    confound_cols = [x for x in confounds.columns if 'trans' in x]+[x for x in confounds.columns if 'rot' in x]+['std_dvars', 'framewise_displacement']
-    
-    formatted_confounds = confounds[confound_cols]
-    
-    formatted_confounds = formatted_confounds.fillna(0)
-    
-    formatted_confounds['scrub'] = np.where(formatted_confounds.framewise_displacement>scrub_thresh,1,0)
-    
-    formatted_confounds = formatted_confounds.assign(
-        scrub = lambda dataframe: dataframe['framewise_displacement'].map(lambda framewise_displacement: 1 if framewise_displacement > scrub_thresh else 0))
-    
-    return formatted_confounds
 
-def run_level1(subnum, out_path, pe, pe_path, ev, ev_path, beta):
 
-    data_loc = os.environ['DATA_LOC']
-    events_files = glob.glob('%s/sub-*/func/sub-*_task-machinegame_run-*_events.tsv'%(data_loc))
-    events_files.sort()
+def run_level1(subnum, beta):
 
+    data_path = os.environ['DATA_PATH']
+    out_path = os.path.join(data_path, "derivatives/nilearn/glm/level1/")
+    
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
-    contrasts_path = "%s/contrasts"%(out_path)
+    contrasts_path = os.path.join(out_path, "sub-%s/contrasts"%(subnum))
     if not os.path.exists(contrasts_path):
         os.makedirs(contrasts_path)
-
     
-    mean_rt = ...
-
-    sub_events = [x for x in events_files if subnum in x]
-
-    if pe:
-        all_pes = pd.read_csv(pe_path)
-        sub_pes = all_pes.query('sub_id == @subnum')
-        del all_pes
-    else:
-        sub_pe = None
-
-    if ev:
-        all_evs = pd.read_csv(ev_path)
-        sub_evs = all_evs.query('sub_id == @subnum')
-        del all_evs
-    else:
-        sub_evs = None
+    sub_events = glob.glob(os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-*_events.tsv'%(subnum, subnum))
+    sub_events.sort()
 
     for run_events in sub_events:
 
         runnum = re.findall('\d+', os.path.basename(run_events))[1]
+        
+        #fmri_img: path to preproc_bold that the model will be fit on
+        fmri_img = os.path.join(data_path,"derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"%(subnum, subnum, runnum))
 
-        exists = os.path.isfile(os.path.join(data_loc,"derivatives/fmriprep_1.4.0/fmriprep/sub-%s/func/sub-%s_task-machinegame_run-%s_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"%(subnum, subnum, runnum)))
-
-        if exists:
-
-            #fmri_img: path to preproc_bold that the model will be fit on
-            fmri_img = os.path.join(data_loc,"derivatives/fmriprep_1.4.0/fmriprep/sub-%s/func/sub-%s_task-machinegame_run-%s_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"%(subnum, subnum, runnum))
+        if os.path.isfile(fmri_img):
 
             #read in preproc_bold for that run
             cur_img = nib.load(fmri_img)
@@ -144,12 +126,7 @@ def run_level1(subnum, out_path, pe, pe_path, ev, ev_path, beta):
 
             #read in events.tsv for that run
             cur_events = pd.read_csv(run_events, sep = '\t')
-            formatted_events = get_conditions(cur_events, runnum, mean_rt, sub_pes, pe, sub_evs, ev)
-
-            #process confounds
-            #['X','Y','Z','RotX','RotY','RotY','<-firsttemporalderivative','stdDVARs','FD','scrub']
-            cur_confounds = pd.read_csv(os.path.join(data_loc,"derivatives/fmriprep_1.4.0/fmriprep/sub-%s/func/sub-%s_task-machinegame_run-%s_desc-confounds_regressors.tsv"%(subnum, subnum, runnum)), sep='\t')
-            formatted_confounds = get_confounds(cur_confounds)
+            design_matrix = make_design_matrix(cur_events)
 
             #define GLM parmeters
             fmri_glm = FirstLevelModel(t_r=cur_img_tr,
@@ -158,18 +135,19 @@ def run_level1(subnum, out_path, pe, pe_path, ev, ev_path, beta):
                                    hrf_model='spm + derivative',
                                    drift_model='cosine',
                                    smoothing_fwhm=5,
-                                   mask='%s/derivatives/fmriprep_1.4.0/fmriprep/sub-%s/func/sub-%s_task-machinegame_run-%s_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz'%(data_loc, subnum, subnum, runnum))
+                                   mask='%s/derivatives/fmriprep/sub-%s/func/sub-%s_task-machinegame_run-%s_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz'%(data_path, subnum, subnum, runnum))
 
             #fit glm to run image using run events
             print("***********************************************")
             print("Running GLM for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            fmri_glm = fmri_glm.fit(fmri_img, events = formatted_events, confounds = formatted_confounds)
+            fmri_glm = fmri_glm.fit(fmri_img, design_matrices = design_matrix)
 
             print("***********************************************")
             print("Saving GLM for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            f = open('%s/sub-%s_run-%s_l1_glm.pkl' %(out_path,subnum, runnum), 'wb')
+            fn = os.path.join(out_path, 'sub-%s/sub-%s_run-%s_level1_glm.pkl' %(subnum, subnum, runnum))
+            f = open(fn, 'wb')
             pickle.dump(fmri_glm, f)
             f.close()
 
@@ -178,7 +156,7 @@ def run_level1(subnum, out_path, pe, pe_path, ev, ev_path, beta):
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            design_matrix.to_csv(os.path.join(out_path, 'sub-%s_run-%s_level1_design_matrix.csv' %(subnum, runnum)))
+            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_level1_design_matrix.csv' %(subnum, subnum, runnum)))
 
             print("***********************************************")
             print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
