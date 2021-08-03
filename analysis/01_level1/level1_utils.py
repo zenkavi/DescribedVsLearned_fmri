@@ -80,20 +80,19 @@ def get_conditions(cur_events, runnum, mean_rt, sub_pes, pe, sub_evs, ev):
 
     return formatted_events
 
-def get_confounds(cur_confounds):
-    if "trans_x_derivative1" not in cur_confounds.columns:
-        formatted_confounds = cur_confounds[['trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']]
-        add_transform(formatted_confounds, type="sq")
-        add_transform(formatted_confounds, type="td")
-    else:
-        motion_cols = ['trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']
-        formatted_confounds = cur_confounds[[s for s in cur_confounds.columns if any(xs in s for xs in motion_cols)]]
-        where_are_NaNs = np.isnan(formatted_confounds)
-        formatted_confounds[where_are_NaNs] = 0
-    formatted_confounds[['std_dvars', 'framewise_displacement']] = cur_confounds[['std_dvars', 'framewise_displacement']]
-    formatted_confounds['std_dvars'].iloc[0] = 0
-    formatted_confounds['framewise_displacement'].iloc[0] = 0
-    formatted_confounds['scrub'] = np.where(formatted_confounds.framewise_displacement>0.5,1,0)
+def get_confounds(confounds, scrub_thresh = .5):
+    
+    confound_cols = [x for x in confounds.columns if 'trans' in x]+[x for x in confounds.columns if 'rot' in x]+['std_dvars', 'framewise_displacement']
+    
+    formatted_confounds = confounds[confound_cols]
+    
+    formatted_confounds = formatted_confounds.fillna(0)
+    
+    formatted_confounds['scrub'] = np.where(formatted_confounds.framewise_displacement>scrub_thresh,1,0)
+    
+    formatted_confounds = formatted_confounds.assign(
+        scrub = lambda dataframe: dataframe['framewise_displacement'].map(lambda framewise_displacement: 1 if framewise_displacement > scrub_thresh else 0))
+    
     return formatted_confounds
 
 def run_level1(subnum, out_path, pe, pe_path, ev, ev_path, beta):
