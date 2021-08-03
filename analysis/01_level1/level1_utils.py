@@ -1,6 +1,7 @@
 import glob
 import nibabel as nib
-from nilearn.first_level_model import FirstLevelModel
+from nilearn.glm.first_level import FirstLevelModel
+from nilearn.glm.first_level import make_first_level_design_matrix
 import numpy as np
 import os
 import pandas as pd
@@ -109,7 +110,7 @@ def run_level1(subnum, out_path, pe, pe_path, ev, ev_path, beta):
         os.makedirs(contrasts_path)
 
     
-    mean_rt = 1.1206937019969279
+    mean_rt = ...
 
     sub_events = [x for x in events_files if subnum in x]
 
