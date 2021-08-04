@@ -60,22 +60,38 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
     return out
 
 
-def get_events(subnum, runnnum, data_path):
+def get_events(subnum, runnnum, data_path, behavior_path):
     
     # Read in fmri events
     fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_events.tsv' %(subnum, subnum, runnum))
     events = pd.read_csv(fn, sep='\t')
     
     # Read in behavioral data with modeled value and RPE estimates
+    behavior = pd.read_csv(behavior_path)
     
     # Extract the correct subnum and runnum from behavioral data
+    run_behavior = behavior.query('subnum == %d & session == %d'%(int(subnum), int(runnum)))
     
-    # Regressors - grouped by onsets
-    cond_cross
-    cond_crossRt
+    # Regressors
+    cond_cross = events.query('trial_type == "cross"')[['onset']]
+    mean_cross_dur = float(np.mean(events.query('trial_type == "cross"')[['duration']]))
+    cond_cross['duration'] = mean_cross_dur
+    cond_cross['trial_type'] = "cross"
+    cond_cross['modulation'] = 1
     
-    cond_fractalProb
-    cond_fractalProbParam
+    cond_crossRt = events.query('trial_type == "cross"')[['onset']]
+    cond_crossRt['duration'] = mean_cross_dur
+    cond_crossRt['trial_type'] = "crossRt"
+    cond_crossRt['modulation'] = events.query('trial_type == "cross"')[['duration']] - mean_cross_dur
+    
+    cond_fractalProb = events.query('trial_type == "fractalProb"')[['onset', 'duration']]
+    cond_fractalProb['trial_type'] = 'fractalProb'
+    cond_fractalProb['modulation'] = 1
+
+    cond_fractalProbParam = events.query('trial_type == "fractalProb"')[['onset', 'duration']]
+    cond_fractalProbParam['trial_type'] = 'fractalProbParam'
+    cond_fractalProbParam = cond_fractalProbParam.reset_index(drop=True) 
+    cond_fractalProbParam['modulation'] = run_behavior['probFractalDraw'] - np.mean(run_behavior['probFractalDraw'])
     
     cond_stim
     cond_stimRt
