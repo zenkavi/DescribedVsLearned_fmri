@@ -62,31 +62,56 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
 
 def get_events(subnum, runnnum, data_path):
     
+    # Read in fmri events
     fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_events.tsv' %(subnum, subnum, runnum))
     events = pd.read_csv(fn, sep='\t')
     
-    # Replace duration with mean_rt
+    # Read in behavioral data with modeled value and RPE estimates
     
-    # Parametric RT regressor (Grinband et al., 2008; Yarkoni et al., 2009)
+    # Extract the correct subnum and runnum from behavioral data
     
-    # Junk regressor for non-response trials
+    # Regressors - grouped by onsets
+    cond_cross
+    cond_crossRt
+    
+    cond_fractalProb
+    cond_fractalProbParam
+    
+    cond_stim
+    cond_stimRt
+    cond_valDiff
+    cond_choiceLeft
+    cond_conflict
+    cond_noconflict
+    
+    cond_reward
+    cond_rewardParam
+    cond_rpe
+    
+    cond_junk
+    
+    formatted_events = pd.concat([cond_.., cond_..,], ignore_index=True)
+
+    formatted_events = formatted_events.sort_values(by='onset')
+
+    formatted_events = formatted_events[['onset', 'duration', 'trial_type', 'modulation']].reset_index(drop=True)
     
     return formatted_events
 
-def make_level1_design_matrix(subnum, runnum, data_path, hrf_model = 'spm + derivative', drift_model='cosine'):
+def make_level1_design_matrix(subnum, runnum, data_path, hrf_model = 'spm', drift_model='cosine'):
     
     tr = get_from_sidecar(subnum, runnum, ['RepetitionTime'], data_path)
     n_scans = get_from_sidecar(subnum, runnum, ['dcmmeta_shape'], data_path)[3]
     frame_times = np.arange(n_scans) * tr 
     
-    
     formatted_events = get_events(subnum, runnum)
     formatted_confounds = get_confounds(subnum, runnum)
     
+    #takes care of derivative for condition columns if specified in hrf_model
     design_matrix = make_first_level_design_matrix(frame_times, 
                                                formatted_events, 
                                                drift_model=drift_model, 
-                                               add_regs= ..., 
+                                               add_regs= formatted_confounds, 
                                                hrf_model=hrf_model)
     
     return design_matrix
