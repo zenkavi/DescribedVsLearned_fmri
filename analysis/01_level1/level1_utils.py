@@ -25,7 +25,11 @@ def make_contrasts(design_matrix):
 
     return contrasts
 
-def get_confounds(confounds, scrub_thresh = .5):
+def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
+    
+    fn = os.path.join(DATA_PATH, 'derivatives/sub-%s/func/sub-%s_task-bundles_run-%s_desc-confounds_timeseries.tsv'%(subnum, subnum, runnum))
+    
+    confounds = pd.read_csv(fn,  sep='\t')
     
     confound_cols = [x for x in confounds.columns if 'trans' in x]+[x for x in confounds.columns if 'rot' in x]+['std_dvars', 'framewise_displacement']
     
@@ -40,59 +44,52 @@ def get_confounds(confounds, scrub_thresh = .5):
     
     return formatted_confounds
 
-def make_design_matrix(events):
-    #process events for GLM
-    #events: 4 col events file for WHOLE RUN with onset, duration, trial_type, modulation
-    #trial_type column:
-        #m1, m2, m3, m4 - onset: stimulus_presentation onset, duration: mean_rt, modulation: 1
-        #m1_rt, m2_rt, m3_rt, m4_rt - onset: stimulus_presentation, duration: mean_rt, modulation: rt-mean_rt
-        #gain - onset: response onset, duration: response duration, modulation: gain-mean_gain
-        #loss - onset: reponse onset, duration: response duration, modulation: loss-mean_loss
-        #junk: onset: response onset, duration: response duration, modulation: 1
+def get_from_sidecar(subnum, runnum, keyname, data_path):
+    
+    fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_bold.json'%(subnum, subnum, runnum))
+    f = open(fn)
+    bold_sidecar = json.load(f)
+    f.close()
+    
+    # Currently can only extract first level keys from the json. Can extract multiple first level keys.
+    if type(keyname)==list:
+        out = [bold_sidecar.get(key) for key in keyname]
+    else:
+        out = bold_sidecar[keyname]
+    
+    return out
 
-    cur_events.response_time = cur_events.response_time/1000
-    rt = cur_events.response_time
-    cur_events.loc[:,'response_time'] = rt - rt[rt>0].mean()
-    cur_events['rt_shift'] = cur_events.response_time.shift(-1)
 
-    cond_m1 = cur_events.query('trial_type == "stim_presentation" & stimulus == 1')[['onset']]
-    cond_m1['duration'] = mean_rt
-    cond_m1['modulation'] = 1
-    cond_m1['trial_type'] = 'm1'
+def get_events(subnum, runnnum, data_path):
     
-    cond_ev = cur_events.query('trial_type == "stim_presentation"')
-    cond_ev = pd.concat([cond_ev.reset_index(drop=True), run_evs['EV'].reset_index(drop=True)], axis=1)
-    cond_m1_ev = cond_ev.query('trial_type == "stim_presentation" & stimulus == 1')
+    fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_events.tsv' %(subnum, subnum, runnum))
+    events = pd.read_csv(fn, sep='\t')
     
+    # Replace duration with mean_rt
     
-    #Demeaning for parametric regressors
-    cond_m1_ev['EV'] = cond_m1_ev['EV'].sub(cond_m1_ev['EV'].mean())
+    # Parametric RT regressor (Grinband et al., 2008; Yarkoni et al., 2009)
     
-    cond_m1_ev = cond_m1_ev[['onset', 'duration', 'EV']]
-    cond_m1_ev = cond_m1_ev.rename(index=str, columns={"EV": "modulation"})
-    cond_m1_ev['trial_type'] = 'm1_ev'
+    # Junk regressor for non-response trials
     
-    cond_m1_rt = cur_events.query('trial_type == "stim_presentation" & stimulus == 1')[['onset', 'rt_shift']]
-    cond_m1_rt['duration'] = mean_rt
-    cond_m1_rt['modulation'] = cond_m1_rt['rt_shift']
-    cond_m1_rt = cond_m1_rt.drop(['rt_shift'], axis=1)
-    cond_m1_rt['trial_type'] = "m1_rt"
-    
-    cond_gain = cur_events.query('points_earned>0')[['onset', 'duration','points_earned']]
-    cond_gain = cond_gain.rename(index=str, columns={"points_earned": "modulation"})
-    cond_gain['trial_type'] =  "gain"
-    
-    cond_junk = cur_events.query('response == 0')[['onset', 'duration']]
-    cond_junk['modulation'] = 1
-    cond_junk['trial_type'] = "junk"
-
-    formatted_events = pd.concat([cond_m1, cond_m2, cond_m3, cond_m4, cond_m1_rt, cond_m2_rt, cond_m3_rt, cond_m4_rt, cond_gain, cond_loss, cond_junk], ignore_index=True)
-
-    formatted_events = formatted_events.sort_values(by='onset')
-
-    formatted_events = formatted_events[['onset', 'duration', 'trial_type', 'modulation']].reset_index(drop=True)
-
     return formatted_events
+
+def make_level1_design_matrix(subnum, runnum, data_path, hrf_model = 'spm + derivative', drift_model='cosine'):
+    
+    tr = get_from_sidecar(subnum, runnum, ['RepetitionTime'], data_path)
+    n_scans = get_from_sidecar(subnum, runnum, ['dcmmeta_shape'], data_path)[3]
+    frame_times = np.arange(n_scans) * tr 
+    
+    
+    formatted_events = get_events(subnum, runnum)
+    formatted_confounds = get_confounds(subnum, runnum)
+    
+    design_matrix = make_first_level_design_matrix(frame_times, 
+                                               formatted_events, 
+                                               drift_model=drift_model, 
+                                               add_regs= ..., 
+                                               hrf_model=hrf_model)
+    
+    return design_matrix
 
 
 
@@ -121,12 +118,11 @@ def run_level1(subnum, beta):
         if os.path.isfile(fmri_img):
 
             #read in preproc_bold for that run
-            cur_img = nib.load(fmri_img)
-            cur_img_tr = cur_img.header['pixdim'][4]
+            cur_img_tr = get_from_sidecar(subnum, runnum, data_path, 'Re)
 
             #read in events.tsv for that run
             cur_events = pd.read_csv(run_events, sep = '\t')
-            design_matrix = make_design_matrix(cur_events)
+            design_matrix = make_leve1_design_matrix(subnum, runnum)
 
             #define GLM parmeters
             fmri_glm = FirstLevelModel(t_r=cur_img_tr,
