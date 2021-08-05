@@ -6,7 +6,8 @@ from nilearn.glm.first_level import make_first_level_design_matrix
 import numpy as np
 import os
 import pandas as pd
-
+import re
+import pickle
 
 def make_contrasts(design_matrix):
     # first generate canonical contrasts (i.e. regressors vs. baseline)
@@ -16,19 +17,17 @@ def make_contrasts(design_matrix):
 
     dictfilt = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
     
-    wanted_keys = ['m1', 'm2', 'm3', 'm4', 'm1_ev', 'm2_ev', 'm3_ev', 'm4_ev', 'm1_rt', 'm2_rt', 'm3_rt', 'm4_rt','hpe', 'lpe','gain', 'loss','junk']
+    wanted_keys = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stim', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rewardParam', 'rpe']
     
     contrasts = dictfilt(contrasts, wanted_keys)
     
-    contrasts.update({'rt': (contrasts['m1_rt'] + contrasts['m2_rt'] + contrasts['m3_rt'] + contrasts['m4_rt'])})
-    
-    contrasts.update({'task_on': (contrasts['m1'] + contrasts['m2'] + contrasts['m3'] + contrasts['m4'])})
+    contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['stim'] + contrasts['reward'])})
 
     return contrasts
 
 def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
     
-    fn = os.path.join(data_path, 'derivatives/sub-%s/func/sub-%s_task-bundles_run-%s_desc-confounds_timeseries.tsv'%(subnum, subnum, runnum))
+    fn = os.path.join(data_path, 'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_desc-confounds_timeseries.tsv'%(subnum, subnum, runnum))
     
     confounds = pd.read_csv(fn,  sep='\t')
     
@@ -149,14 +148,14 @@ def get_events(subnum, runnum, data_path, behavior_path):
     
     return formatted_events
 
-def make_level1_design_matrix(subnum, runnum, data_path, hrf_model = 'spm', drift_model='cosine'):
+def make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_model = 'spm', drift_model='cosine'):
     
     tr = get_from_sidecar(subnum, runnum, 'RepetitionTime', data_path)
     n_scans = get_from_sidecar(subnum, runnum, 'dcmmeta_shape', data_path)[3]
     frame_times = np.arange(n_scans) * tr 
     
-    formatted_events = get_events(subnum, runnum)
-    formatted_confounds = get_confounds(subnum, runnum)
+    formatted_events = get_events(subnum, runnum, data_path, behavior_path)
+    formatted_confounds = get_confounds(subnum, runnum, data_path)
     
     #takes care of derivative for condition columns if specified in hrf_model
     design_matrix = make_first_level_design_matrix(frame_times, 
@@ -169,11 +168,8 @@ def make_level1_design_matrix(subnum, runnum, data_path, hrf_model = 'spm', drif
 
 
 
-def run_level1(subnum, beta):
+def run_level1(subnum, data_path, out_path, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
-    data_path = os.environ['DATA_PATH']
-    out_path = os.path.join(data_path, "derivatives/nilearn/glm/level1/")
-    
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
@@ -189,7 +185,7 @@ def run_level1(subnum, beta):
         runnum = re.findall('\d+', os.path.basename(run_events))[1]
         
         #fmri_img: path to preproc_bold that the model will be fit on
-        fmri_img = os.path.join(data_path,"derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"%(subnum, subnum, runnum))
+        fmri_img = os.path.join(data_path,"derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"%(subnum, subnum, runnum))
 
         if os.path.isfile(fmri_img):
 
@@ -198,16 +194,16 @@ def run_level1(subnum, beta):
 
             #read in events.tsv for that run
             cur_events = pd.read_csv(run_events, sep = '\t')
-            design_matrix = make_leve1_design_matrix(subnum, runnum)
+            design_matrix = make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_model = hrf_model, drift_model=drift_model)
 
             #define GLM parmeters
             fmri_glm = FirstLevelModel(t_r=cur_img_tr,
-                                   noise_model='ar1',
+                                   noise_model=noise_model,
                                    standardize=False,
-                                   hrf_model='spm + derivative',
-                                   drift_model='cosine',
-                                   smoothing_fwhm=5,
-                                   mask='%s/derivatives/fmriprep/sub-%s/func/sub-%s_task-machinegame_run-%s_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz'%(data_path, subnum, subnum, runnum))
+                                   hrf_model=hrf_model,
+                                   drift_model=drift_model,
+                                   smoothing_fwhm=smoothing_fwhm,
+                                   mask_img='%s/derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(data_path, subnum, subnum, runnum))
 
             #fit glm to run image using run events
             print("***********************************************")
