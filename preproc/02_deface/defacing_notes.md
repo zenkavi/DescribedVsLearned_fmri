@@ -15,9 +15,9 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 s
 - Test on single subject Need to download data necessary for the job from s3 bucket
 ```
 export DATA_PATH=/scratch/bids_nifti_wface
-export CODE_PATH=/scratch/02_deface
+export CODE_PATH=/scratch/code/preproc/02_deface
 
-aws s3 sync s3://described-vs-experienced/02_deface $CODE_PATH
+aws s3 sync s3://described-vs-experienced/code/preproc/02_deface $CODE_PATH
 aws s3 sync s3://described-vs-experienced//bids_nifti_wface/sub-01 $DATA_PATH/sub-01
 
 docker run --rm -it -v $DATA_PATH:/data \

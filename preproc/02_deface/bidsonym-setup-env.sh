@@ -13,9 +13,9 @@ then
   mkdir /shared/.err
 
   export DATA_PATH=/shared/bids_nifti_wface
-  export CODE_PATH=/shared/02_deface
+  export CODE_PATH=/shared/code/preproc/02_deface
 
-  aws s3 sync s3://described-vs-experienced/02_deface $CODE_PATH
+  aws s3 sync s3://described-vs-experienced/code/preproc/02_deface $CODE_PATH
 
   if [[ ! -e $DATA_PATH ]]; then
     mkdir $DATA_PATH

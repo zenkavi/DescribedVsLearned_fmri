@@ -55,7 +55,7 @@ docker run --rm -it --cpus="4" --memory="8g" -v $DATA_PATH:/data -v $OUT_PATH:/o
 
 - Submit heudiconv jobs. Make sure to make the shell script executable as pulling from S3 this is no longer set.
 ```
-export CODE_PATH=/shared/01_bidsify
+export CODE_PATH=/shared/code/preproc/01_bidsify
 cd $CODE_PATH
 chmod +x run_heudiconv.sh
 ./run_heudiconv.sh
@@ -102,8 +102,8 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/base amazon/aws-cli s3 s
 
 - Setup environment in an EC2 instance (either standalone or Cloud9)
 ```
-export CODE_PATH=/shared/01_bidsify
-aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+export CODE_PATH=/shared/code/preproc/01_bidsify
+aws s3 sync s3://described-vs-experienced/code/preproc/01_bidsify $CODE_PATH
 cd $CODE_PATH/02_physio
 chmod +x physio-setup-env.sh
 ./physio-setup-env.sh
@@ -134,8 +134,8 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 s
 
 - Setup environment in an EC2 instance (either standalone or Cloud9)
 ```
-export CODE_PATH=/shared/01_bidsify
-aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+export CODE_PATH=/shared/code/preproc/01_bidsify
+aws s3 sync s3://described-vs-experienced/code/preproc/01_bidsify $CODE_PATH
 cd $CODE_PATH/03_events
 chmod +x events-setup-env.sh
 ./events-setup-env.sh
@@ -168,8 +168,8 @@ docker run --rm -it -v ~/.aws:/root/.aws -v $STUDY_DIR:/home amazon/aws-cli s3 s
 
 - Setup environment in an EC2 instance (either standalone or Cloud9)
 ```
-export CODE_PATH=/shared/01_bidsify
-aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+export CODE_PATH=/shared/code/preproc/01_bidsify
+aws s3 sync s3://described-vs-experienced/code/preproc/01_bidsify $CODE_PATH
 cd $CODE_PATH/04_bidsvalidator
 chmod +x bidsvalidator-setup-env.sh
 ./bidsvalidator-setup-env.sh

@@ -13,10 +13,10 @@ then
   mkdir /shared/.err
 
   export DATA_PATH=/shared/bids_nifti_wface
-  export CODE_PATH=/shared/03_fmriprep
+  export CODE_PATH=/shared/code/preproc/03_fmriprep
   export TMP_PATH=/shared/tmp
 
-  aws s3 sync s3://described-vs-experienced/03_fmriprep $CODE_PATH
+  aws s3 sync s3://described-vs-experienced/code/preproc/03_fmriprep $CODE_PATH
   aws s3 cp s3://described-vs-experienced/license.txt /shared/license.txt
 
   if [[ ! -e $TMP_PATH ]]; then

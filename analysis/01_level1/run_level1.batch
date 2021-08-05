@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J level1-{SUBNUM}
-#SBATCH -c =15
+#SBATCH -c = 4
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/level1-{SUBNUM}.out
@@ -9,10 +9,12 @@
 # ------------------------------------------
 
 export DATA_PATH=/shared/bids_nifti_wface
-export CODE_PATH=/shared/01_level1
-export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn
+export BEHAVIOR_PATH=/shared/behavioral_data/all_trials.csv
+export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
+export DATA_PATH=/shared/bids_nifti_wface
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
 
 sudo chmod +x $CODE_PATH/level1.py
+cd $CODE_PATH
 ./level1.py -s {SUBNUM}

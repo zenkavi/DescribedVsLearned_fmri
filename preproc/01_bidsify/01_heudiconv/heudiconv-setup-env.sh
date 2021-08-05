@@ -13,10 +13,10 @@ then
   mkdir /shared/.err
 
   export DATA_PATH=/shared/raw_fmri_data
-  export CODE_PATH=/shared/01_bidsify
+  export CODE_PATH=/shared/code/preproc/01_bidsify
   export OUT_PATH=/shared/bids_nifti_wface
 
-  aws s3 sync s3://described-vs-experienced/01_bidsify $CODE_PATH
+  aws s3 sync s3://described-vs-experienced/code/preproc/01_bidsify $CODE_PATH
 
   if [[ ! -e $OUT_PATH ]]; then
     mkdir $OUT_PATH
