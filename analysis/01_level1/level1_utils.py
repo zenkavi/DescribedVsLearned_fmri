@@ -168,7 +168,7 @@ def make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_mode
 
 
 
-def run_level1(subnum, data_path, out_path, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
+def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
