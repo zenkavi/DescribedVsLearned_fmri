@@ -48,7 +48,7 @@ for c in contrasts:
         print("***********************************************")
         print("Saving GLM for sub-%s contrast %s"%(subnum, c))
         print("***********************************************")
-        f = open('%s/sub-%s_%s_level2_glm.pkl' %(out_path,subnum, c), 'wb')
+        f = open('%s/sub-%s/sub-%s_%s_level2_glm.pkl' %(out_path,subnum, subnum, c), 'wb')
         pickle.dump(model, f)
         f.close()
 
@@ -61,7 +61,7 @@ for c in contrasts:
         print("***********************************************")
         print("Done saving contrasts for sub-%s contrast %s"%(subnum, c))
         print("***********************************************")
-        
+
     elif len(second_level_input) == 1:
         print("***********************************************")
         print("1 level 1 image found for sub-%s contrast %s"%(subnum, c))

@@ -8,7 +8,7 @@
 #SBATCH -e /shared/.err/level2-{SUBNUM}.err
 # ------------------------------------------
 
-export DATA_PATH=/shared/bids_nifti_wface/derivative/nilearn/glm/level1
+export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
 export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2
 export CODE_PATH=/shared/code/analysis/02_level2
 
