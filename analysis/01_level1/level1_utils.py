@@ -190,20 +190,21 @@ def run_level1(subnum, data_path, out_path, beta=False, noise_model='ar1', hrf_m
         if os.path.isfile(fmri_img):
 
             #read in preproc_bold for that run
-            cur_img_tr = get_from_sidecar(subnum, runnum, ['RepetitionTime'], data_path)
+            cur_img_tr = get_from_sidecar(subnum, runnum, 'RepetitionTime', data_path)
 
             #read in events.tsv for that run
             cur_events = pd.read_csv(run_events, sep = '\t')
             design_matrix = make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_model = hrf_model, drift_model=drift_model)
 
             #define GLM parmeters
+            mask_img = nib.load(os.path.join(data_path,'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(subnum, subnum, runnum)))
             fmri_glm = FirstLevelModel(t_r=cur_img_tr,
                                    noise_model=noise_model,
                                    standardize=False,
                                    hrf_model=hrf_model,
                                    drift_model=drift_model,
                                    smoothing_fwhm=smoothing_fwhm,
-                                   mask_img='%s/derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(data_path, subnum, subnum, runnum))
+                                   mask_img=mask_img)
 
             #fit glm to run image using run events
             print("***********************************************")
@@ -220,7 +221,6 @@ def run_level1(subnum, data_path, out_path, beta=False, noise_model='ar1', hrf_m
             f.close()
 
             #Save design matrix
-            design_matrix = fmri_glm.design_matrices_[0]
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
