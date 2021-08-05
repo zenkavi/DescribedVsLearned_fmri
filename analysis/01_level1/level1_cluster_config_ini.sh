@@ -17,13 +17,15 @@ sanity_check = true
 key_name = test-cluster
 vpc_settings = public
 base_os = alinux2
-master_instance_type = c5.2xlarge
+master_instance_type = t3.2xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
-post_install = s3://described-vs-experienced/code/preproc/01_bidsify/01_heudiconv/heudiconv-setup-env.sh
+post_install = s3://described-vs-experienced/code/analysis/01_level1/level1-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
+master_root_volume_size = 128
+compute_root_volume_size = 128
 
 [queue compute]
 compute_resource_settings = default
@@ -31,14 +33,14 @@ placement_group = DYNAMIC
 disable_hyperthreading = true
 
 [compute_resource default]
-instance_type = c5.4xlarge
+instance_type = c5.9xlarge
 min_count = 0
-max_count = 8
+max_count = 13
 
 [ebs myebs]
 shared_dir = /shared
 volume_type = gp2
-volume_size = 50
+volume_size = 128
 
 [vpc public]
 vpc_id = ${VPC_ID}

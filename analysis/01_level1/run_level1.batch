@@ -11,10 +11,11 @@
 export DATA_PATH=/shared/bids_nifti_wface
 export BEHAVIOR_PATH=/shared/behavioral_data/all_trials.csv
 export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
-export DATA_PATH=/shared/bids_nifti_wface
+export CODE_PATH=/shared/code/analysis/01_level1
 
-aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/func
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/func
 
-sudo chmod +x $CODE_PATH/level1.py
+
 cd $CODE_PATH
 ./level1.py -s {SUBNUM}
