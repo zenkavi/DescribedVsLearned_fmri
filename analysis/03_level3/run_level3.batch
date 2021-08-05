@@ -1,18 +1,19 @@
 #!/bin/bash
 
-#SBATCH -J level3-{REGNAME}
+#SBATCH -J level3-{MODELNUM}-{REGNAME}
 #SBATCH -c 8
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/.out/level3-{REGNAME}.out
-#SBATCH -e /shared/.err/level3-{REGNAME}.err
+#SBATCH -o /shared/.out/level3-{MODELNUM}-{REGNAME}.out
+#SBATCH -e /shared/.err/level3-{MODELNUM}-{REGNAME}.err
 # ------------------------------------------
 
-export DATA_PATH=/shared/bids_nifti_wface/derivative/nilearn/glm/level2
-export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/model1
+export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2
+export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}
 export CODE_PATH=/shared/code/analysis/03_level3
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/ $DATA_PATH/
+pip install nipype -U --user
 
 cd $CODE_PATH
-./level3.py -r {REGNAME}
+./level3.py -m {MODELNUM} -r {REGNAME}

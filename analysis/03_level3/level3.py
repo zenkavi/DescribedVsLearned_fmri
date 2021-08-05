@@ -12,11 +12,9 @@ import os
 import pandas as pd
 import pickle
 import re
-from save_randomise import save_randomise
 randomise = mem.cache(fsl.Randomise)
 
-#Usage: ./level_3.py -m MNUM -r REG
-
+#Usage: ./level3.py -m MNUM -r REG
 
 parser = ArgumentParser()
 parser.add_argument("-m", "--mnum", help="model number")
@@ -36,19 +34,19 @@ c_thresh = int(args.c_thresh)
 num_perm = int(args.num_perm)
 var_smooth = int(args.var_smooth)
 
-data_loc = os.environ['DATA_LOC']
+data_path = os.environ['DATA_PATH']
+out_path = os.environ['OUT_PATH']
 
-l2_in_path = "%s/derivatives/nistats/level_2/sub-*/contrasts"%(data_loc)
-mnum_path = "%s/derivatives/nistats/level_3/%s"%(data_loc,mnum)
+l2_in_path = "%s/sub-*/contrasts"%(data_path)
 
-out_path = "%s/%s"%(mnum_path,reg)
-if not os.path.exists(out_path):
-    os.makedirs(out_path)
+reg_path = "%s/%s"%(out_path, reg)
+if not os.path.exists(reg_path):
+    os.makedirs(reg_path)
 
 level2_images = glob.glob('%s/sub-*_%s.nii.gz'%(l2_in_path, reg))
-    level2_images.sort()
+level2_images.sort()
 
-    if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(out_path,mnum,reg)) == False:
+if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(out_path,mnum,reg)) == False:
     print("***********************************************")
     print("Concatenating level 2 images for %s regressor %s"%(mnum, reg))
     print("***********************************************")
@@ -64,7 +62,7 @@ level2_images = glob.glob('%s/sub-*_%s.nii.gz'%(l2_in_path, reg))
     print("***********************************************")
     print("Making group_mask")
     print("***********************************************")
-    brainmasks = glob.glob("%s/derivatives/fmriprep_1.4.0/fmriprep/sub-*/func/*brain_mask.nii*"%(data_loc))
+    brainmasks = glob.glob("%s/derivatives/fmriprep_1.4.0/fmriprep/sub-*/func/*brain_mask.nii*"%(data_path))
     mean_mask = mean_img(brainmasks)
     group_mask = math_img("a>=0.95", a=mean_mask)
     group_mask = resample_to_img(group_mask, all_l2_images, interpolation='nearest')

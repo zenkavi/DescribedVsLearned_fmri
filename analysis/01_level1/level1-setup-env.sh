@@ -3,6 +3,7 @@ pip install --upgrade setuptools -U --user
 pip install Cython -U --user
 pip install nibabel -U --user
 pip install nilearn -U --user
+pip install nipype -U --user
 pip install numpy -U --user
 pip install pandas -U --user
 
