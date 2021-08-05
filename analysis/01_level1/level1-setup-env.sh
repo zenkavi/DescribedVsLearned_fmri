@@ -15,13 +15,15 @@ then
 
   export DATA_PATH=/shared/bids_nifti_wface
   export CODE_PATH=/shared/code/analysis/01_level1
-  export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn
+  export BEHAVIOR_PATH=/shared/behavioral_data/
+  export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
 
   if [[ ! -e $DATA_PATH ]]; then
     mkdir $DATA_PATH
   fi
 
-  aws s3 sync s3://described-vs-experienced/01_level1 $CODE_PATH
+  aws s3 sync s3://described-vs-experienced/code/analysis/01_level1 $CODE_PATH
+  aws s3 cp s3://described-vs-experienced/behavioral_data/all_trials.csv $BEHAVIOR_PATH
 
   if [[ ! -e $OUT_PATH ]]; then
     mkdir $OUT_PATH
@@ -32,7 +34,7 @@ then
   chown -R ec2-user: $OUT_PATH
   chown -R ec2-user: /shared/.out
   chown -R ec2-user: /shared/.err
-  sudo chmod +x $CODE_PATH/level1.py
+  chmod +x $CODE_PATH/level1.py
 
   echo "alias squeue='squeue -o \"%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R\"'">> /home/ec2-user/.bash_profile
 fi

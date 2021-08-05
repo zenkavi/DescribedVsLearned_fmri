@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J level1-{SUBNUM}
-#SBATCH -c = 4
+#SBATCH -c =4
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/level1-{SUBNUM}.out
@@ -14,8 +14,7 @@ export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
 export CODE_PATH=/shared/code/analysis/01_level1
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/func
-aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/func
-
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/derivatives/fmriprep/func
 
 cd $CODE_PATH
 ./level1.py -s {SUBNUM}

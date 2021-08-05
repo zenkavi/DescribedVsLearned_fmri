@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from level1_utils import run_level1
 import os
-#Usage: python level1.py -s SUBNUM -pe
+#Usage: python level1.py -s SUBNUM
 
 parser = ArgumentParser()
 parser.add_argument("-s", "--subnum", help="subject number")

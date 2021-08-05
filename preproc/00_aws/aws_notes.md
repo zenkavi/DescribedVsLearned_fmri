@@ -180,7 +180,7 @@ sinfo
 
 - Change node status (see https://slurm.schedmd.com/scontrol.html for other state options)
 ```
-scontrol: update NodeName={NODE_NAME} State=POWER_DOWN
+scontrol update NodeName={NODE_NAME} State=POWER_DOWN
 ```
 
 - Delete cluster
