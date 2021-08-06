@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH -J level3-{MODELNUM}-{REGNAME}
+#SBATCH -J level3-{MODELNUM}-{REGNAME}-tfce-{TFCE}
 #SBATCH -c 8
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/.out/level3-{MODELNUM}-{REGNAME}.out
-#SBATCH -e /shared/.err/level3-{MODELNUM}-{REGNAME}.err
+#SBATCH -o /shared/.out/level3-{MODELNUM}-{REGNAME}-tfce-{TFCE}.out
+#SBATCH -e /shared/.err/level3-{MODELNUM}-{REGNAME}-tfce-{TFCE}.err
 # ------------------------------------------
 
 export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2
@@ -19,9 +19,6 @@ aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/
 cd $CODE_PATH
 # ./level3.py -m {MODELNUM} -r {REGNAME}
 
-docker run --rm -v $CODE_PATH:/code fsl:6.0.3 ./code/level3.py -m {MODELNUM} -r {REGNAME}
-
-
-docker run --rm -it -e DATA_PATH=/data -e OUT_PATH=/out -e BM_PATH=/bm \
+docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out -e BM_PATH=/bm \
 -v $DATA_PATH:/data -v $OUT_PATH:/out -v $BM_PATH:/bm -v $CODE_PATH:/code \
-fsl:6.0.3 bash
+fsl:6.0.3 ./code/level3.py -m {MODELNUM} -r {REGNAME} -tf {TFCE}
