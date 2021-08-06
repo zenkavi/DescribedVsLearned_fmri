@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /opt/miniconda-4.10.3/bin/python
 
 from argparse import ArgumentParser
 import glob
@@ -12,7 +12,7 @@ import os
 import pandas as pd
 import pickle
 import re
-from save_randomise import save_randomise
+from save_randomise_output import save_randomise_output
 randomise = mem.cache(fsl.Randomise)
 
 #Usage: ./level3.py -m MNUM -r REG
@@ -20,17 +20,21 @@ randomise = mem.cache(fsl.Randomise)
 parser = ArgumentParser()
 parser.add_argument("-m", "--mnum", help="model number")
 parser.add_argument("-r", "--reg", help="regressor name")
-parser.add_argument("-tf", "--tfce", help="tfce", action='store_true')
+parser.add_argument("-tf", "--tfce", help="tfce", default=1)
 parser.add_argument("-c", "--c_thresh", help="cluster_threshold", default=3)
 parser.add_argument("-np", "--num_perm", help="number of permutations", default=1000)
 parser.add_argument("-vs", "--var_smooth", help="variance smoothing", default=5)
 parser.add_argument("-s", "--sign", help="calculate p values for positive or negative t's")
-
+args = parser.parse_args()
 mnum = args.mnum
 reg = args.reg
 if mnum == "model1":
     one = True
-tfce = args.tfce
+tfce = int(args.tfce)
+if tfce == 1:
+    tfce = True
+else:
+    tfce = False
 c_thresh = int(args.c_thresh)
 num_perm = int(args.num_perm)
 var_smooth = int(args.var_smooth)
@@ -111,3 +115,8 @@ if mnum == "model1":
                               vox_p_values=True,
                               num_perm=num_perm,
                               var_smooth = var_smooth)
+
+if sign == "neg":
+    save_randomise_output(randomise_results, reg_path, mnum+'_neg', reg, tfce)
+else:
+    save_randomise_output(randomise_results, reg_path, mnum, reg, tfce)

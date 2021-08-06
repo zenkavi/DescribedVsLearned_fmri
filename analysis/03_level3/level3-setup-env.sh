@@ -1,4 +1,10 @@
 #! /bin/bash
+amazon-linux-extras install docker -y
+service docker start
+usermod -a -G docker ec2-user
+chkconfig docker on
+docker pull zenkavi/fsl:6.0.3
+
 . "/etc/parallelcluster/cfnconfig"
 
 if [[ "${cfn_node_type}" == "MasterServer" ]]
@@ -27,6 +33,7 @@ then
   chown -R ec2-user: /shared/.out
   chown -R ec2-user: /shared/.err
   chmod +x $CODE_PATH/level3.py
+  chmod +x $CODE_PATH/run_level3.sh
 
   echo "alias squeue='squeue -o \"%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R\"'">> /home/ec2-user/.bash_profile
 fi

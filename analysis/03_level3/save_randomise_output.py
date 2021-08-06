@@ -2,7 +2,7 @@ import shutil
 
 # This is pretty inefficient. If you figure out a better way to iterate through 'nipype.interfaces.fsl.model.RandomiseOutputSpec' it would be better
 
-def save_randomise(randomise_results, reg_path, mnum, reg, tfce):
+def save_randomise_output(randomise_results, reg_path, mnum, reg, tfce):
 
     if len(randomise_results.outputs.tstat_files)>0:
         randomise_results.outputs.tstat_files.sort()
