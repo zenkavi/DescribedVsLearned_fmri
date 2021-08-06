@@ -19,4 +19,9 @@ aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/
 cd $CODE_PATH
 # ./level3.py -m {MODELNUM} -r {REGNAME}
 
-docker run --rm -v $CODE_PATH:/code fsl:6.0.4 ./code/level3.py -m {MODELNUM} -r {REGNAME}
+docker run --rm -v $CODE_PATH:/code fsl:6.0.3 ./code/level3.py -m {MODELNUM} -r {REGNAME}
+
+
+docker run --rm -it -e DATA_PATH=/data -e OUT_PATH=/out -e BM_PATH=/bm \
+-v $DATA_PATH:/data -v $OUT_PATH:/out -v $BM_PATH:/bm -v $CODE_PATH:/code \
+fsl:6.0.3 bash

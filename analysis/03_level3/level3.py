@@ -12,6 +12,7 @@ import os
 import pandas as pd
 import pickle
 import re
+from save_randomise import save_randomise
 randomise = mem.cache(fsl.Randomise)
 
 #Usage: ./level3.py -m MNUM -r REG
@@ -23,7 +24,7 @@ parser.add_argument("-tf", "--tfce", help="tfce", action='store_true')
 parser.add_argument("-c", "--c_thresh", help="cluster_threshold", default=3)
 parser.add_argument("-np", "--num_perm", help="number of permutations", default=1000)
 parser.add_argument("-vs", "--var_smooth", help="variance smoothing", default=5)
-parser.add_argument("-s", "--sign", help="calculate p values for positive t's")
+parser.add_argument("-s", "--sign", help="calculate p values for positive or negative t's")
 
 mnum = args.mnum
 reg = args.reg
@@ -33,6 +34,7 @@ tfce = args.tfce
 c_thresh = int(args.c_thresh)
 num_perm = int(args.num_perm)
 var_smooth = int(args.var_smooth)
+sign = args.sign
 
 data_path = os.environ['DATA_PATH']
 out_path = os.environ['OUT_PATH']
@@ -47,7 +49,7 @@ if not os.path.exists(reg_path):
 level2_images = glob.glob('%s/sub-*_%s.nii.gz'%(l2_in_path, reg))
 level2_images.sort()
 
-if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(out_path,mnum,reg)) == False:
+if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(reg_path,mnum,reg)) == False:
     print("***********************************************")
     print("Concatenating level 2 images for %s regressor %s"%(mnum, reg))
     print("***********************************************")
@@ -60,7 +62,7 @@ if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False or os
     print("***********************************************")
     print("Saving level 2 images for %s regressor %s"%(mnum, reg))
     print("***********************************************")
-    nib.save(all_l2_images, '%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg))
+    nib.save(all_l2_images, '%s/all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg))
 
     print("***********************************************")
     print("Making group_mask")
@@ -69,12 +71,12 @@ if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False or os
     mean_mask = mean_img(brainmasks)
     group_mask = math_img("a>=0.95", a=mean_mask)
     group_mask = resample_to_img(group_mask, all_l2_images, interpolation='nearest')
-    group_mask.to_filename("%s/group_mask_%s_%s.nii.gz"%(out_path,mnum,reg))
+    group_mask.to_filename("%s/group_mask_%s_%s.nii.gz"%(reg_path,mnum,reg))
     print("***********************************************")
     print("Group mask saved for: %s %s"%(mnum, reg))
     print("***********************************************")
 
-if os.path.exists('%s/neg_all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False:
+if os.path.exists('%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg)) == False:
     print("***********************************************")
     print("Concatenating level 2 images for %s regressor %s"%(mnum, reg))
     print("***********************************************")
@@ -87,22 +89,22 @@ if os.path.exists('%s/neg_all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False:
     print("***********************************************")
     print("Saving negative level 2 images for %s regressor %s"%(mnum, reg))
     print("***********************************************")
-    binaryMaths(in_file='%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg),
+    binaryMaths(in_file='%s/all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg),
                 operation = "mul",
                 operand_value = -1,
-                out_file = '%s/neg_all_l2_%s_%s.nii.gz'%(out_path, mnum, reg))
+                out_file = '%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg))
 
 if sign == "pos":
-    in_file_name = "%s/all_l2_%s_%s.nii.gz"%(out_path, mnum, reg)
+    in_file_name = "%s/all_l2_%s_%s.nii.gz"%(reg_path, mnum, reg)
 if sign == "neg":
-    in_file_name = "%s/neg_all_l2_%s_%s.nii.gz"%(out_path, mnum, reg)
+    in_file_name = "%s/neg_all_l2_%s_%s.nii.gz"%(reg_path, mnum, reg)
 
 print("***********************************************")
 print("Beginning randomise")
 print("***********************************************")
 if mnum == "model1":
     randomise_results = randomise(in_file=in_file_name,
-                              mask= "%s/group_mask_%s_%s.nii.gz"%(out_path, mnum, reg),
+                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mnum, reg),
                               one_sample_group_mean=one,
                               tfce=tfce,
                               c_thresh = c_thresh,
