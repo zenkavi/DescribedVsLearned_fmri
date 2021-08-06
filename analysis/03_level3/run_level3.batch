@@ -16,7 +16,7 @@ export BM_PATH=/shared/bids_nifti_wface/derivatives/fmriprep
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/ $DATA_PATH/
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/ $BM_PATH/ --exclude "*" --include "*brain_mask.nii.gz"
 
-pip install nipype -U --user
-
 cd $CODE_PATH
-./level3.py -m {MODELNUM} -r {REGNAME}
+# ./level3.py -m {MODELNUM} -r {REGNAME}
+
+docker run --rm -v $CODE_PATH:/code fsl:6.0.4 ./code/level3.py -m {MODELNUM} -r {REGNAME}
