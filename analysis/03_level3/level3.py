@@ -36,6 +36,7 @@ var_smooth = int(args.var_smooth)
 
 data_path = os.environ['DATA_PATH']
 out_path = os.environ['OUT_PATH']
+bm_path = os.environ['BM_PATH']
 
 l2_in_path = "%s/sub-*/contrasts"%(data_path)
 
@@ -55,14 +56,16 @@ if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg)) == False or os
         smooth_l2 = smooth_img(l, 5)
         smooth_l2s.append(smooth_l2)
     all_l2_images = concat_imgs(smooth_l2s, auto_resample=True)
+
     print("***********************************************")
     print("Saving level 2 images for %s regressor %s"%(mnum, reg))
     print("***********************************************")
     nib.save(all_l2_images, '%s/all_l2_%s_%s.nii.gz'%(out_path, mnum, reg))
+
     print("***********************************************")
     print("Making group_mask")
     print("***********************************************")
-    brainmasks = glob.glob("%s/derivatives/fmriprep_1.4.0/fmriprep/sub-*/func/*brain_mask.nii*"%(data_path))
+    brainmasks = glob.glob("%s/sub-*/func/*brain_mask.nii*"%(bm_path))
     mean_mask = mean_img(brainmasks)
     group_mask = math_img("a>=0.95", a=mean_mask)
     group_mask = resample_to_img(group_mask, all_l2_images, interpolation='nearest')
