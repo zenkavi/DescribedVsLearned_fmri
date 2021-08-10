@@ -3,7 +3,7 @@ for modelnum in model1
 do
   for sign in pos neg
   do
-    for tfce in 1 0
+    for tfce in 1
     do
       for regname in cross crossRt fractalProb fractalProbParam stim stimRt valDiff choiceLeft conflict noconflict reward rewardParam rpe
       do

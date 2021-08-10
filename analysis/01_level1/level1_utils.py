@@ -21,7 +21,8 @@ def make_contrasts(design_matrix):
 
     contrasts = dictfilt(contrasts, wanted_keys)
 
-    contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['stim'] + contrasts['reward'])})
+    contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['stim'] + contrasts['reward']),
+                     'conflict_vs_noconflict': (contrasts['conflict'] - contrasts['noconflict'])})
 
     return contrasts
 
@@ -224,7 +225,7 @@ def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_mod
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_level1_design_matrix.csv' %(subnum, subnum, runnum)))
+            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_level1_design_matrix.csv' %(subnum, subnum, runnum)), index=False)
 
             print("***********************************************")
             print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
