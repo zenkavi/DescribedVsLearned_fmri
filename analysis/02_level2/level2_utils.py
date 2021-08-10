@@ -23,7 +23,7 @@ def run_level2(subnum, contrasts, data_path, out_path):
     if contrasts is None:
         contrasts = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stim', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rewardParam', 'rpe', 'task_on']
 
-    if len(contrasts) == 1:
+    if isinstance(contrasts, str):
         contrasts = [contrasts]
 
     for c in contrasts:
