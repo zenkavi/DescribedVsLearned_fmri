@@ -23,6 +23,9 @@ def run_level2(subnum, contrasts, data_path, out_path):
     if contrasts is None:
         contrasts = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stim', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rewardParam', 'rpe', 'task_on']
 
+    if len(contrasts) == 1:
+        contrasts = [contrasts]
+
     for c in contrasts:
         second_level_input = [os.path.join(in_path,x) for x in sub_l1_contrasts if c+'.nii.gz' in x]
         design_matrix = pd.DataFrame([1] * len(second_level_input), columns=['intercept'])

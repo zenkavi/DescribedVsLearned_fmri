@@ -17,7 +17,7 @@ export L3_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODE
 export L3_CODE_PATH=/shared/code/analysis/03_level3
 export BM_PATH=/shared/bids_nifti_wface/derivatives/fmriprep
 
-aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/ $L1_OUT_PATH/ --exclude "*" --include "*_glm.pkl" --include "*_design_matrix.csv"
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/ $L1_OUT_PATH/
 aws s3 sync s3://described-vs-experienced/code/analysis /shared/code/analysis/
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/ $BM_PATH/ --exclude "*" --include "*brain_mask.nii.gz"
 
@@ -25,6 +25,10 @@ docker run --rm -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/
 -v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
 zenkavi/fsl:6.0.3 ./code/posthoc_contrasts.py -c {CONTRAST} -m {MODELNUM}  -s {SIGN} -tf {TFCE}
 
-docker run --rm -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
+docker run --rm -it -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
 -v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
 zenkavi/fsl:6.0.3 ./code/posthoc_contrasts.py -c conflict_vs_noconflict -m model1  -s pos -tf 1
+
+docker run --rm -it -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
+-v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
+zenkavi/fsl:6.0.3 bash

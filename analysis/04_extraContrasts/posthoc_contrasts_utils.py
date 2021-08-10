@@ -4,8 +4,9 @@ import os
 import pickle
 import pandas as pd
 import sys
+import re
 
-def run_posthoc_contrast(contrast, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, sign, tfce, c_thresh, num_perm, var_smooth):
+def run_posthoc_contrast(contrast_id, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, sign, tfce, c_thresh, num_perm, var_smooth):
 
     #################################
     # Level 1
@@ -16,12 +17,14 @@ def run_posthoc_contrast(contrast, l1_out_path, l1_code_path, l2_out_path, l2_co
     from level1_utils import make_contrasts
 
     glms = glob.glob(os.path.join(l1_out_path, '*/*.pkl'))
+    glms.sort()
     desmats = glob.glob(os.path.join(l1_out_path, '*/*.csv'))
+    desmats.sort()
 
     for cur_glm, cur_desmat in zip(glms, desmats):
 
         subnum = re.findall('\d+', os.path.basename(cur_glm))[0]
-        subnum = re.findall('\d+', os.path.basename(cur_glm))[1]
+        runnum = re.findall('\d+', os.path.basename(cur_glm))[1]
 
         # Load level 1 glm
         f = open(cur_glm, 'rb')
@@ -42,7 +45,7 @@ def run_posthoc_contrast(contrast, l1_out_path, l1_code_path, l2_out_path, l2_co
         # Computer contrast map for subjects and run
         z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
 
-        nib.save(z_map, '%s/contrasts/sub-%s_run-%s_%s.nii.gz'%(l1_out_path, subnum, runnum, contrast_id))
+        nib.save(z_map, '%s/sub-%s/contrasts/sub-%s_run-%s_%s.nii.gz'%(l1_out_path, subnum, subnum, runnum, contrast_id))
         print("***********************************************")
         print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
         print("***********************************************")
@@ -54,7 +57,7 @@ def run_posthoc_contrast(contrast, l1_out_path, l1_code_path, l2_out_path, l2_co
     sys.path.append(l2_code_path)
     from level2_utils import run_level2
 
-    run_level2(subnum, contrasts, l1_out_path, l2_out_path)
+    run_level2(subnum, contrast_id, l1_out_path, l2_out_path)
 
     #################################
     # Level 3
@@ -63,4 +66,4 @@ def run_posthoc_contrast(contrast, l1_out_path, l1_code_path, l2_out_path, l2_co
     sys.path.append(l3_code_path)
     from level3_utils import run_level3
 
-    run_level3(mnum, reg, sign, tfce, l2_out_path, l3_out_path, bm_path, c_thresh, num_perm, var_smooth)
+    run_level3(mnum, contrast_id, sign, tfce, l2_out_path, l3_out_path, bm_path, c_thresh, num_perm, var_smooth)
