@@ -5,7 +5,7 @@ import pickle
 import pandas as pd
 import sys
 
-run_posthoc_contrast(contrast, l1_out_path, l1_code_path):
+def run_posthoc_contrast(contrast, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, sign, tfce, c_thresh, num_perm, var_smooth):
 
     #################################
     # Level 1

@@ -7,7 +7,7 @@ import pandas as pd
 import pickle
 import re
 
-run_level2(subnum, contrasts, data_path, out_path):
+def run_level2(subnum, contrasts, data_path, out_path):
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)

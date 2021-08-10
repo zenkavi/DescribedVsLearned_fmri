@@ -1,9 +1,13 @@
 #! /opt/miniconda-4.10.3/bin/python
 
 from argparse import ArgumentParser
-from posthoc_contrast_utils import run_posthoc_contrast
 import os
 #Usage: ./posthoc_contrast.py -c CONTRAST
+
+import sys
+code_path = os.environ['CODE_PATH']
+sys.path.append(code_path)
+from posthoc_contrasts_utils import run_posthoc_contrast
 
 parser = ArgumentParser()
 parser.add_argument("-c", "--contrast", help="contrast name")

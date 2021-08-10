@@ -13,7 +13,7 @@ import re
 from save_randomise_output import save_randomise_output
 randomise = mem.cache(fsl.Randomise)
 
-run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth):
+def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth):
 
     l2_in_path = "%s/sub-*/contrasts"%(data_path)
 
