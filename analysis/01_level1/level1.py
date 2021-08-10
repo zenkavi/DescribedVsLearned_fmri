@@ -1,4 +1,5 @@
-#! /usr/bin/python3
+#! /opt/miniconda-4.10.3/bin/python
+
 from argparse import ArgumentParser
 from level1_utils import run_level1
 import os

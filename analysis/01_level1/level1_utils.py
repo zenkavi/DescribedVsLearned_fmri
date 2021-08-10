@@ -21,6 +21,7 @@ def make_contrasts(design_matrix):
 
     contrasts = dictfilt(contrasts, wanted_keys)
 
+    # Add on any additional contrasts
     contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['stim'] + contrasts['reward']),
                      'conflict_vs_noconflict': (contrasts['conflict'] - contrasts['noconflict'])})
 
@@ -76,7 +77,7 @@ def get_events(subnum, runnum, data_path, behavior_path):
     # Regressors - grouped by onsets
     mean_cross_dur = float(np.mean(events.query('trial_type == "cross"')[['duration']]))
 
-    ## Group 1
+    ## Events group 1
     cond_cross = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
     cond_cross['duration'] = mean_cross_dur
     cond_cross['trial_type'] = "cross"
@@ -87,7 +88,7 @@ def get_events(subnum, runnum, data_path, behavior_path):
     cond_crossRt['trial_type'] = "crossRt"
     cond_crossRt['modulation'] = events.query('trial_type == "cross"')[['duration']].reset_index(drop=True) - mean_cross_dur
 
-    ## Group 2
+    ## Events group 2
     cond_fractalProb = events.query('trial_type == "fractalProb"')[['onset', 'duration']].reset_index(drop=True)
     cond_fractalProb['trial_type'] = 'fractalProb'
     cond_fractalProb['modulation'] = 1
@@ -96,7 +97,7 @@ def get_events(subnum, runnum, data_path, behavior_path):
     cond_fractalProbParam['trial_type'] = 'fractalProbParam'
     cond_fractalProbParam['modulation'] = run_behavior['probFractalDraw'].sub(run_behavior['probFractalDraw'].mean()).reset_index(drop=True)
 
-    ## Group 3
+    ## Events group 3
     mean_rt = float(np.mean(events.query('trial_type == "stimulus"')[['duration']]))
 
     cond_stim = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
@@ -129,7 +130,7 @@ def get_events(subnum, runnum, data_path, behavior_path):
     cond_noconflict['trial_type'] = 'noconflict'
     cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
 
-    ## Group 4
+    ## Events group 4
     cond_reward = events.query('trial_type == "reward"')[['onset', 'duration', 'trial_type']].reset_index(drop=True)
     cond_reward['modulation'] = 1
 

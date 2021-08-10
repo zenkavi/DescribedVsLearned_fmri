@@ -14,8 +14,11 @@ export CODE_PATH=/shared/code/analysis/02_level2
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
 
-cd $CODE_PATH
-./level2.py -s {SUBNUM}
+# cd $CODE_PATH
+# ./level2.py -s {SUBNUM}
+docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out \
+-v $DATA_PATH:/data -v $OUT_PATH:/out -v $CODE_PATH:/code \
+zenkavi/fsl:6.0.3 ./code/level2.py -s {SUBNUM}
 
 aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/sub-{SUBNUM}
 sudo rm -rf $DATA_PATH/sub-{SUBNUM}

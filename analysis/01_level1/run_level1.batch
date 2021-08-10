@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J level1-{SUBNUM}
-#SBATCH -c 4
+#SBATCH -c 8
 
 # Outputs ----------------------------------
 #SBATCH -o /shared/.out/level1-{SUBNUM}.out
@@ -16,8 +16,11 @@ export CODE_PATH=/shared/code/analysis/01_level1
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/func
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/sub-{SUBNUM}/func $DATA_PATH/derivatives/fmriprep/sub-{SUBNUM}/func
 
-cd $CODE_PATH
-./level1.py -s {SUBNUM}
+# cd $CODE_PATH
+# ./level1.py -s {SUBNUM}
+docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out -e BEHAVIOR_PATH=/beh \
+-v $DATA_PATH:/data -v $OUT_PATH:/out -v $BEHAVIOR_PATH:/beh -v $CODE_PATH:/code \
+zenkavi/fsl:6.0.3 ./code/level1.py -s {SUBNUM}
 
 aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/sub-{SUBNUM}
 sudo rm -rf $DATA_PATH/sub-{SUBNUM}

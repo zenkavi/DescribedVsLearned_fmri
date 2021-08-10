@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#SBATCH -J posthoc-contrast-{CONTRAST}-{MODELNUM}
+#SBATCH -c 8
+
+# Outputs ----------------------------------
+#SBATCH -o /shared/.out/posthoc-contrast-{CONTRAST}-{MODELNUM}.out
+#SBATCH -e /shared/.err/posthoc-contrast-{CONTRAST}-{MODELNUM}.err
+# ------------------------------------------
+
+export L1_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
+export L1_CODE_PATH=/shared/code/analysis/01_level1
+export L2_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2
+export L2_CODE_PATH=/shared/code/analysis/02_level2
+export L3_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}
+export L3_CODE_PATH=/shared/code/analysis/03_level3
+export BM_PATH=/shared/bids_nifti_wface/derivatives/fmriprep
+
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/ $L1_OUT_PATH/ --exclude "*" --include "*_glm.pkl" --include "*_design_matrix.csv"
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/code/analysis /shared/code/analysis/
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/ $BM_PATH/ --exclude "*" --include "*brain_mask.nii.gz"
+
+docker run --rm -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
+-v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
+zenkavi/fsl:6.0.3 ./code/posthoc_contrast.py -c {CONTRAST} -m {MODELNUM}  -s {SIGN} -tf {TFCE}
