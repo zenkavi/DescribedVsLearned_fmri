@@ -17,13 +17,15 @@ def make_contrasts(design_matrix):
 
     dictfilt = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
 
-    wanted_keys = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stim', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rewardParam', 'rpe']
+    wanted_keys = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rpe']
 
     contrasts = dictfilt(contrasts, wanted_keys)
 
     # Add on any additional contrasts
-    contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['stim'] + contrasts['reward']),
-                     'conflict_vs_noconflict': (contrasts['conflict'] - contrasts['noconflict'])})
+    contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
+                     'conflict_gt_noconflict': (contrasts['conflict'] - contrasts['noconflict']),
+                     'noconflict_gt_conflict': (contrasts['noconflict'] - contrasts['conflict']),
+                     'stim': (contrasts['conflict'] + contrasts['noconflict'])})
 
     return contrasts
 
@@ -62,7 +64,7 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
     return out
 
 
-def get_events(subnum, runnum, data_path, behavior_path):
+def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
 
     # Read in fmri events
     fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_events.tsv' %(subnum, subnum, runnum))
@@ -74,19 +76,71 @@ def get_events(subnum, runnum, data_path, behavior_path):
     # Extract the correct subnum and runnum from behavioral data
     run_behavior = behavior.query('subnum == %d & session == %d'%(int(subnum), int(runnum)))
 
-    # Regressors - grouped by onsets
-    mean_cross_dur = float(np.mean(events.query('trial_type == "cross"')[['duration']]))
+    if regress_rt:
+        # Regressors - grouped by onsets
+        mean_cross_dur = float(np.mean(events.query('trial_type == "cross"')[['duration']]))
 
-    ## Events group 1
-    cond_cross = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
-    cond_cross['duration'] = mean_cross_dur
-    cond_cross['trial_type'] = "cross"
-    cond_cross['modulation'] = 1
+        ## Events group 1
+        cond_cross = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
+        cond_cross['duration'] = mean_cross_dur
+        cond_cross['trial_type'] = "cross"
+        cond_cross['modulation'] = 1
 
-    cond_crossRt = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
-    cond_crossRt['duration'] = mean_cross_dur
-    cond_crossRt['trial_type'] = "crossRt"
-    cond_crossRt['modulation'] = events.query('trial_type == "cross"')[['duration']].reset_index(drop=True) - mean_cross_dur
+        cond_crossRt = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
+        cond_crossRt['duration'] = mean_cross_dur
+        cond_crossRt['trial_type'] = "crossRt"
+        cond_crossRt['modulation'] = events.query('trial_type == "cross"')[['duration']].reset_index(drop=True) - mean_cross_dur
+
+        ## Events group 3
+        mean_rt = float(np.mean(events.query('trial_type == "stimulus"')[['duration']]))
+
+        cond_stimRt = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_stimRt['duration'] = mean_rt
+        cond_stimRt['trial_type'] = 'stimRt'
+        cond_stimRt['modulation'] = events.query('trial_type == "stimulus"')[['duration']].reset_index(drop=True) - mean_rt
+
+        cond_valDiff = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_valDiff['duration'] = mean_rt
+        cond_valDiff['trial_type'] = 'valDiff'
+        cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
+
+        cond_choiceLeft = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_choiceLeft['duration'] = mean_rt
+        cond_choiceLeft['trial_type'] = 'choiceLeft'
+        cond_choiceLeft['modulation'] = run_behavior['choiceLeft'].reset_index(drop=True)
+
+        cond_conflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_conflict['duration'] = mean_rt
+        cond_conflict['trial_type'] = 'conflict'
+        cond_conflict['modulation'] = np.where(run_behavior['conflictTrial'] == "conflict", 1, 0)
+
+        cond_noconflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_noconflict['duration'] = mean_rt
+        cond_noconflict['trial_type'] = 'noconflict'
+        cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
+    else:
+        ## Events group 1
+        cond_cross = events.query('trial_type == "cross"')[['onset', 'duration']].reset_index(drop=True)
+        cond_cross['trial_type'] = "cross"
+        cond_cross['modulation'] = 1
+
+        ## Events group 3
+        cond_valDiff = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+        cond_valDiff['trial_type'] = 'valDiff'
+        cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
+
+        cond_choiceLeft = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+        cond_choiceLeft['trial_type'] = 'choiceLeft'
+        cond_choiceLeft['modulation'] = run_behavior['choiceLeft'].reset_index(drop=True)
+
+        cond_conflict = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+        cond_conflict['trial_type'] = 'conflict'
+        cond_conflict['modulation'] = np.where(run_behavior['conflictTrial'] == "conflict", 1, 0)
+
+        cond_noconflict = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+        cond_noconflict['trial_type'] = 'noconflict'
+        cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
+
 
     ## Events group 2
     cond_fractalProb = events.query('trial_type == "fractalProb"')[['onset', 'duration']].reset_index(drop=True)
@@ -97,66 +151,31 @@ def get_events(subnum, runnum, data_path, behavior_path):
     cond_fractalProbParam['trial_type'] = 'fractalProbParam'
     cond_fractalProbParam['modulation'] = run_behavior['probFractalDraw'].sub(run_behavior['probFractalDraw'].mean()).reset_index(drop=True)
 
-    ## Events group 3
-    mean_rt = float(np.mean(events.query('trial_type == "stimulus"')[['duration']]))
-
-    cond_stim = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-    cond_stim['duration'] = mean_rt
-    cond_stim['trial_type'] = 'stim'
-    cond_stim['modulation'] = 1
-
-    cond_stimRt = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-    cond_stimRt['duration'] = mean_rt
-    cond_stimRt['trial_type'] = 'stimRt'
-    cond_stimRt['modulation'] = events.query('trial_type == "stimulus"')[['duration']].reset_index(drop=True) - mean_rt
-
-    cond_valDiff = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-    cond_valDiff['duration'] = mean_rt
-    cond_valDiff['trial_type'] = 'valDiff'
-    cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
-
-    cond_choiceLeft = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-    cond_choiceLeft['duration'] = mean_rt
-    cond_choiceLeft['trial_type'] = 'choiceLeft'
-    cond_choiceLeft['modulation'] = run_behavior['choiceLeft'].reset_index(drop=True)
-
-    cond_conflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-    cond_conflict['duration'] = mean_rt
-    cond_conflict['trial_type'] = 'conflict'
-    cond_conflict['modulation'] = np.where(run_behavior['conflictTrial'] == "conflict", 1, 0)
-
-    cond_noconflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-    cond_noconflict['duration'] = mean_rt
-    cond_noconflict['trial_type'] = 'noconflict'
-    cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
-
     ## Events group 4
     cond_reward = events.query('trial_type == "reward"')[['onset', 'duration', 'trial_type']].reset_index(drop=True)
     cond_reward['modulation'] = 1
-
-    cond_rewardParam = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
-    cond_rewardParam['trial_type'] = 'rewardParam'
-    cond_rewardParam['modulation'] = run_behavior['reward'].sub(run_behavior['reward'].mean()).reset_index(drop=True)
 
     cond_rpe = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
     cond_rpe['trial_type'] = 'rpe'
     cond_rpe['modulation'] = run_behavior['rpe'].sub(run_behavior['rpe'].mean()).reset_index(drop=True)
 
-    formatted_events = pd.concat([cond_cross, cond_crossRt, cond_fractalProb, cond_fractalProbParam, cond_stim, cond_stimRt, cond_valDiff, cond_choiceLeft, cond_conflict, cond_noconflict, cond_reward, cond_rewardParam, cond_rpe], ignore_index=True)
+    if (regress_rt == 1):
+        formatted_events = pd.concat([cond_cross, cond_crossRt, cond_fractalProb, cond_fractalProbParam, cond_stim, cond_stimRt, cond_valDiff, cond_choiceLeft, cond_conflict, cond_noconflict, cond_reward, cond_rewardParam, cond_rpe], ignore_index=True)
+    else:
+        formatted_events = pd.concat([cond_cross, cond_fractalProb, cond_fractalProbParam, cond_stim, cond_valDiff, cond_choiceLeft, cond_conflict, cond_noconflict, cond_reward, cond_rewardParam, cond_rpe], ignore_index=True)
+
 
     formatted_events = formatted_events.sort_values(by='onset')
-
     formatted_events = formatted_events[['onset', 'duration', 'trial_type', 'modulation']].reset_index(drop=True)
-
     return formatted_events
 
-def make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_model = 'spm', drift_model='cosine'):
+def make_level1_design_matrix(subnum, runnum, data_path, behavior_path, regress_rt=1, hrf_model = 'spm', drift_model='cosine'):
 
     tr = get_from_sidecar(subnum, runnum, 'RepetitionTime', data_path)
     n_scans = get_from_sidecar(subnum, runnum, 'dcmmeta_shape', data_path)[3]
     frame_times = np.arange(n_scans) * tr
 
-    formatted_events = get_events(subnum, runnum, data_path, behavior_path)
+    formatted_events = get_events(subnum, runnum, data_path, behavior_path, regress_rt=regress_rt)
     formatted_confounds = get_confounds(subnum, runnum, data_path)
 
     #takes care of derivative for condition columns if specified in hrf_model
@@ -170,7 +189,7 @@ def make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_mode
 
 
 
-def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
+def run_level1(subnum, data_path, behavior_path, out_path, regress_rt=1, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
@@ -196,7 +215,7 @@ def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_mod
 
             #read in events.tsv for that run
             cur_events = pd.read_csv(run_events, sep = '\t')
-            design_matrix = make_level1_design_matrix(subnum, runnum, data_path, behavior_path, hrf_model = hrf_model, drift_model=drift_model)
+            design_matrix = make_level1_design_matrix(subnum, runnum, data_path, behavior_path, regress_rt=regress_rt, hrf_model = hrf_model, drift_model=drift_model)
 
             #define GLM parmeters
             mask_img = nib.load(os.path.join(data_path,'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(subnum, subnum, runnum)))
@@ -217,7 +236,7 @@ def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_mod
             print("***********************************************")
             print("Saving GLM for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            fn = os.path.join(out_path, 'sub-%s/sub-%s_run-%s_level1_glm.pkl' %(subnum, subnum, runnum))
+            fn = os.path.join(out_path, 'sub-%s/sub-%s_run-%s_reg-rt%s_level1_glm.pkl' %(subnum, subnum, runnum, str(regress_rt)))
             f = open(fn, 'wb')
             pickle.dump(fmri_glm, f)
             f.close()
@@ -226,7 +245,7 @@ def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_mod
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_level1_design_matrix.csv' %(subnum, subnum, runnum)), index=False)
+            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_reg-rt%s_level1_design_matrix.csv' %(subnum, subnum, runnum, str(regress_rt))), index=False)
 
             print("***********************************************")
             print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
@@ -234,10 +253,10 @@ def run_level1(subnum, data_path, behavior_path, out_path, beta=False, noise_mod
             contrasts = make_contrasts(design_matrix)
             for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
                 z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
-                nib.save(z_map, '%s/sub-%s_run-%s_%s.nii.gz'%(contrasts_path, subnum, runnum, contrast_id))
+                nib.save(z_map, '%s/sub-%s_run-%s_reg-rt%s_%s.nii.gz'%(contrasts_path, subnum, runnum, str(regress_rt), contrast_id))
                 if beta:
                     b_map = fmri_glm.compute_contrast(contrast_val, output_type='effect_size')
-                    nib.save(b_map, '%s/sub-%s_run-%s_%s_betas.nii.gz'%(contrasts_path, subnum, runnum, contrast_id))
+                    nib.save(b_map, '%s/sub-%s_run-%s_reg-rt%s_%s_betas.nii.gz'%(contrasts_path, subnum, runnum, str(regress_rt), contrast_id))
             print("***********************************************")
             print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")

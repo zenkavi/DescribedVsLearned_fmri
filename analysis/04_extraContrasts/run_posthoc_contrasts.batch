@@ -25,10 +25,4 @@ docker run --rm -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/
 -v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
 zenkavi/fsl:6.0.3 ./code/posthoc_contrasts.py -c {CONTRAST} -m {MODELNUM}  -s {SIGN} -tf {TFCE}
 
-docker run --rm -it -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
--v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
-zenkavi/fsl:6.0.3 ./code/posthoc_contrasts.py -c conflict_vs_noconflict -m model1  -s pos -tf 1
-
-docker run --rm -it -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
--v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
-zenkavi/fsl:6.0.3 bash
+aws s3 sync /shared/bids_nifti_wface/derivatives/nilearn/glm s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/

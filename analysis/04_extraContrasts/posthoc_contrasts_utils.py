@@ -65,7 +65,8 @@ def run_posthoc_contrast(contrast_id, l1_out_path, l1_code_path, l2_out_path, l2
     subnums.sort()
 
     for cur_sub in subnums:
-        run_level2(cur_sub, contrast_id, l1_out_path, l2_out_path)
+        if(os.path.exists('%s/%s/contrasts/sub-%s_%s.nii.gz'%(l2_out_path, subnum, cur_sub, contrast_id)) == False):
+            run_level2(cur_sub, contrast_id, l1_out_path, l2_out_path)
 
     #################################
     # Level 3

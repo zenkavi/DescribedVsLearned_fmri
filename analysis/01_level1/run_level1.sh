@@ -1,5 +1,8 @@
 set -e
 for subnum in 04 05
 do
-sed -e "s/{SUBNUM}/$subnum/g" run_level1.batch | sbatch
+  for reg_rt in 1
+  do
+    sed -e "s/{SUBNUM}/$subnum/g" "s/{REG_RT}/$reg_rt/g" run_level1.batch | sbatch
+  done
 done
