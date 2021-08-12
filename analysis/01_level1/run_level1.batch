@@ -14,7 +14,7 @@ export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
 export CODE_PATH=/shared/code/analysis/01_level1
 
 aws s3 sync s3://described-vs-experienced/bids_nifti_wface/sub-{SUBNUM}/func $DATA_PATH/sub-{SUBNUM}/func --exclude '*' --include '*_events.tsv' --include '*_bold.json'
-aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/sub-{SUBNUM}/func $DATA_PATH/derivatives/fmriprep/sub-{SUBNUM}/func --exclude '*' --include '*desc-preproc_bold.nii.gz' --include '*desc-confounds_timeseries.tsv'
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/sub-{SUBNUM}/func $DATA_PATH/derivatives/fmriprep/sub-{SUBNUM}/func --exclude '*' --include '*desc-preproc_bold.nii.gz' --include '*desc-confounds_timeseries.tsv' --include '*_desc-brain_mask.nii.gz'
 
 # cd $CODE_PATH
 # ./level1.py -s {SUBNUM}
@@ -23,5 +23,3 @@ docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out -e BEHAVIOR_PATH=/beh \
 zenkavi/fsl:6.0.3 ./code/level1.py -s {SUBNUM} --reg_rt {REG_RT}
 
 aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/sub-{SUBNUM}
-sudo rm -rf $DATA_PATH/sub-{SUBNUM}
-sudo rm -rf $DATA_PATH/derivatives/fmriprep/sub-{SUBNUM}
