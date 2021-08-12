@@ -83,8 +83,6 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
         ## Events group 1
         cond_cross = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
         cond_cross['duration'] = mean_cross_dur
-        cond_cross['trial_type'] = "cross"
-        cond_cross['modulation'] = 1
 
         cond_crossRt = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
         cond_crossRt['duration'] = mean_cross_dur
@@ -99,39 +97,44 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
         cond_stimRt['trial_type'] = 'stimRt'
         cond_stimRt['modulation'] = events.query('trial_type == "stimulus"')[['duration']].reset_index(drop=True) - mean_rt
 
-        # cond_valDiff = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-        # cond_valDiff['duration'] = mean_rt
-        # cond_valDiff['trial_type'] = 'valDiff'
-        # cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
+        cond_valChosen = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_valChosen['duration'] = mean_rt
+
+        cond_valUnchosen = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        cond_valUnchosen['duration'] = mean_rt
 
         cond_conflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
         cond_conflict['duration'] = mean_rt
-        cond_conflict['trial_type'] = 'conflict'
-        cond_conflict['modulation'] = np.where(run_behavior['conflictTrial'] == "conflict", 1, 0)
 
         cond_noconflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
         cond_noconflict['duration'] = mean_rt
-        cond_noconflict['trial_type'] = 'noconflict'
-        cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
     else:
         ## Events group 1
         cond_cross = events.query('trial_type == "cross"')[['onset', 'duration']].reset_index(drop=True)
-        cond_cross['trial_type'] = "cross"
-        cond_cross['modulation'] = 1
 
         ## Events group 3
-        # cond_valDiff = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
-        # cond_valDiff['trial_type'] = 'valDiff'
-        # cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
+        cond_valChosen = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+
+        cond_valUnchosen = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
 
         cond_conflict = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
-        cond_conflict['trial_type'] = 'conflict'
-        cond_conflict['modulation'] = np.where(run_behavior['conflictTrial'] == "conflict", 1, 0)
 
         cond_noconflict = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
-        cond_noconflict['trial_type'] = 'noconflict'
-        cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
 
+    cond_cross['trial_type'] = "cross"
+    cond_cross['modulation'] = 1
+
+    cond_valChosen['trial_type'] = 'valChosen'
+    cond_valChosen['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['leftBundleVal'], 0)
+
+    cond_valUnchosen['trial_type'] = 'valUnchosen'
+    cond_valUnchosen['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['rightBundleVal'], 0)
+
+    cond_conflict['trial_type'] = 'conflict'
+    cond_conflict['modulation'] = np.where(run_behavior['conflictTrial'] == "conflict", 1, 0)
+
+    cond_noconflict['trial_type'] = 'noconflict'
+    cond_noconflict['modulation'] = np.where(run_behavior['conflictTrial'] == "no conflict", 1, 0)
 
     ## Events group 2
     cond_fractalProb = events.query('trial_type == "fractalProb"')[['onset', 'duration']].reset_index(drop=True)
