@@ -17,9 +17,12 @@ def make_contrasts(design_matrix):
 
     dictfilt = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
 
-    wanted_keys = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rpe']
+    beh_regs = design_matrix.columns
+    beh_regs = [i for i in beh_regs if '_' not in i]
+    beh_regs = [i for i in beh_regs if 'scrub' not in i]
+    beh_regs = [i for i in beh_regs if 'constant' not in i]
 
-    contrasts = dictfilt(contrasts, wanted_keys)
+    contrasts = dictfilt(contrasts, beh_regs)
 
     # Add on any additional contrasts
     contrasts.update({'task-on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
