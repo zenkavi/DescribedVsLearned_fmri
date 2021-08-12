@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from level2_utils import run_level2
 import os
-#Usage: python level2.py -s SUBNUM -c CONTRAST
+#Usage: python level2.py -s SUBNUM -c CONTRAST --reg_rt REG_RT
 
 parser = ArgumentParser()
 parser.add_argument("-s", "--subnum", help="subject number")

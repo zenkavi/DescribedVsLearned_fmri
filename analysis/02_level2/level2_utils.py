@@ -27,13 +27,16 @@ def run_level2(subnum, contrasts, data_path, out_path, regress_rt=1):
         contrasts = [contrasts]
 
     for c in contrasts:
+
+        # Get level1's for all runs with this contrast
         second_level_input = [os.path.join(in_path,x) for x in sub_l1_contrasts if c in x]
 
         # 1's for all runs to get average for subject per contrast
         design_matrix = pd.DataFrame([1] * len(second_level_input), columns=['intercept'])
         model = SecondLevelModel(smoothing_fwhm=5.0)
 
-        c = re.sub("\.","",c)
+        # Drop the suffix and add reg-rt info for saving file names
+        c = c.split('.')[0]+'_reg-rt%s'%str(regress_rt)
 
         if len(second_level_input)>1:
             print("***********************************************")

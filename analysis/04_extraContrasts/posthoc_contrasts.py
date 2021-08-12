@@ -17,9 +17,11 @@ parser.add_argument("-s", "--sign", help="calculate p values for positive or neg
 parser.add_argument("-ct", "--c_thresh", help="cluster_threshold", default=3)
 parser.add_argument("-np", "--num_perm", help="number of permutations", default=1000)
 parser.add_argument("-vs", "--var_smooth", help="variance smoothing", default=5)
+parser.add_argument("--reg_rt", help="regress rt", default=1)
 
 args = parser.parse_args()
 contrast_id = args.contrast
+reg_rt = args.reg_rt
 
 mnum = args.mnum
 if mnum == "model1":
@@ -44,4 +46,4 @@ l3_out_path = os.environ['L3_OUT_PATH']
 l3_code_path = os.environ['L3_CODE_PATH']
 bm_path = os.environ['BM_PATH']
 
-run_posthoc_contrast(contrast_id, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, sign, tfce, c_thresh, num_perm, var_smooth, one)
+run_posthoc_contrast(contrast_id, regress_rt=reg_rt, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, sign, tfce, c_thresh, num_perm, var_smooth, one)
