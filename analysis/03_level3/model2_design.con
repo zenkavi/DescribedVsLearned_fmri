@@ -1,0 +1,9 @@
+/ContrastName1	fast_learner>slow_learner
+/ContrastName2	fast_learner<slow_learner
+/NumWaves	2
+/NumContrasts	2
+/PPheights		1.000000e+00	1.000000e+00
+/Matrix
+        
+1 -1
+-1 1
