@@ -99,15 +99,10 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
         cond_stimRt['trial_type'] = 'stimRt'
         cond_stimRt['modulation'] = events.query('trial_type == "stimulus"')[['duration']].reset_index(drop=True) - mean_rt
 
-        cond_valDiff = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-        cond_valDiff['duration'] = mean_rt
-        cond_valDiff['trial_type'] = 'valDiff'
-        cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
-
-        cond_choiceLeft = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
-        cond_choiceLeft['duration'] = mean_rt
-        cond_choiceLeft['trial_type'] = 'choiceLeft'
-        cond_choiceLeft['modulation'] = run_behavior['choiceLeft'].reset_index(drop=True)
+        # cond_valDiff = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+        # cond_valDiff['duration'] = mean_rt
+        # cond_valDiff['trial_type'] = 'valDiff'
+        # cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
 
         cond_conflict = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
         cond_conflict['duration'] = mean_rt
@@ -125,13 +120,9 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
         cond_cross['modulation'] = 1
 
         ## Events group 3
-        cond_valDiff = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
-        cond_valDiff['trial_type'] = 'valDiff'
-        cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
-
-        cond_choiceLeft = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
-        cond_choiceLeft['trial_type'] = 'choiceLeft'
-        cond_choiceLeft['modulation'] = run_behavior['choiceLeft'].reset_index(drop=True)
+        # cond_valDiff = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+        # cond_valDiff['trial_type'] = 'valDiff'
+        # cond_valDiff['modulation'] = run_behavior['leftbundleValAdv'].sub(run_behavior['leftbundleValAdv'].mean()).reset_index(drop=True)
 
         cond_conflict = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
         cond_conflict['trial_type'] = 'conflict'
@@ -151,6 +142,17 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
     cond_fractalProbParam['trial_type'] = 'fractalProbParam'
     cond_fractalProbParam['modulation'] = run_behavior['probFractalDraw'].sub(run_behavior['probFractalDraw'].mean()).reset_index(drop=True)
 
+    ## Events group 3
+    cond_choiceLeft = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+    cond_choiceLeft['duration'] = 0
+    cond_choiceLeft['trial_type'] = 'choiceLeft'
+    cond_choiceLeft['modulation'] = run_behavior['choiceLeft'].reset_index(drop=True)
+
+    cond_choiceRight = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+    cond_choiceRight['duration'] = 0
+    cond_choiceRight['trial_type'] = 'choiceRight'
+    cond_choiceRight['modulation'] = 1 - run_behavior['choiceLeft'].reset_index(drop=True)
+
     ## Events group 4
     cond_reward = events.query('trial_type == "reward"')[['onset', 'duration', 'trial_type']].reset_index(drop=True)
     cond_reward['modulation'] = 1
@@ -159,11 +161,12 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
     cond_rpe['trial_type'] = 'rpe'
     cond_rpe['modulation'] = run_behavior['rpe'].sub(run_behavior['rpe'].mean()).reset_index(drop=True)
 
-    if (regress_rt == 1):
-        formatted_events = pd.concat([cond_cross, cond_crossRt, cond_fractalProb, cond_fractalProbParam, cond_stim, cond_stimRt, cond_valDiff, cond_choiceLeft, cond_conflict, cond_noconflict, cond_reward, cond_rewardParam, cond_rpe], ignore_index=True)
-    else:
-        formatted_events = pd.concat([cond_cross, cond_fractalProb, cond_fractalProbParam, cond_stim, cond_valDiff, cond_choiceLeft, cond_conflict, cond_noconflict, cond_reward, cond_rewardParam, cond_rpe], ignore_index=True)
-
+    # List of var names including 'cond'
+    toconcat = [i for i in dir() if 'cond' in i]
+    tmp = {}
+    for i in toconcat:
+        tmp.update({i:locals()[i]})
+    formatted_events = pd.concat(tmp, ignore_index=True)
 
     formatted_events = formatted_events.sort_values(by='onset')
     formatted_events = formatted_events[['onset', 'duration', 'trial_type', 'modulation']].reset_index(drop=True)
