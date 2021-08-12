@@ -21,11 +21,11 @@ master_instance_type = t3.2xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
-post_install = s3://described-vs-experienced/code/analysis/03_level3/level3-setup-env.sh
+post_install = s3://described-vs-experienced/code/analysis/analysis-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
-master_root_volume_size = 128
-compute_root_volume_size = 128
+master_root_volume_size = 512
+compute_root_volume_size = 512
 
 [queue compute]
 compute_resource_settings = default
@@ -35,12 +35,12 @@ disable_hyperthreading = true
 [compute_resource default]
 instance_type = c5.9xlarge
 min_count = 0
-max_count = 13
+max_count = 25
 
 [ebs myebs]
 shared_dir = /shared
 volume_type = gp2
-volume_size = 128
+volume_size = 1024
 
 [vpc public]
 vpc_id = ${VPC_ID}
