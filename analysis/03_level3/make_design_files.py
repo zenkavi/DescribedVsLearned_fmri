@@ -4,13 +4,13 @@ import pandas as pd
 import os
 from argparse import ArgumentParser
 
-data_loc = os.environ['DATA_LOC']
-server_scripts = os.environ['SERVER_SCRIPTS']
+data_path = os.environ['DATA_PATH']
+learner_info_path = os.environ['LEARNER_INFO_PATH']
 
-def make_design_files(mnum, data_path, learner_info):
+def make_design_files(mnum, data_path, learner_info_path):
 
-    mnum_path = "%s/derivatives/nilearn/level_3/%s"%(data_loc, mnum)
-    l2_in_path = "%s/derivatives/nilearn/level_2/sub-*/contrasts"%(data_loc)
+    mnum_path = "%s/derivatives/nilearn/level_3/%s"%(data_path, mnum)
+    l2_in_path = "%s/derivatives/nilearn/level_2/sub-*/contrasts"%(data_path)
     level2_images = glob.glob('%s/sub-*_m1.nii.gz'%(l2_in_path))
 
     if not os.path.exists(mnum_path):
@@ -22,7 +22,7 @@ def make_design_files(mnum, data_path, learner_info):
     #model3: fast vs slow learners difference maps
     #Design and contrast matrices based on https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/GLM#Two-Group_Difference_.28Two-Sample_Unpaired_T-Test.29
     if mnum == "model2":
-        learner_info = pd.read_csv('%s/nilearn/level_3/learner_info.csv'%(server_scripts))
+        learner_info = pd.read_csv(learner_info_path)
         learner_info = learner_info.sort_values(by=["Sub_id"])
         learner_info = learner_info[learner_info.Sub_id.isin(subs)].reset_index(drop=True)
         design_matrix = learner_info[['fast_learner', 'slow_learner']]
@@ -43,7 +43,7 @@ def make_design_files(mnum, data_path, learner_info):
 
     #model3_g: fast vs slow learners group maps
     if mnum == "model2_g":
-        learner_info = pd.read_csv('%s/nilearn/level_3/learner_info.csv'%(server_scripts))
+        learner_info = pd.read_csv(learner_info_path)
         learner_info = learner_info.sort_values(by=["Sub_id"])
         learner_info = learner_info[learner_info.Sub_id.isin(subs)].reset_index(drop=True)
         design_matrix = learner_info[['fast_learner', 'slow_learner']]
