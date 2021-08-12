@@ -7,27 +7,29 @@ import pandas as pd
 import pickle
 import re
 
-def run_level2(subnum, contrasts, data_path, out_path):
+def run_level2(subnum, contrasts, data_path, out_path, regress_rt=1):
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
-    contrasts_path = os.path.join(out_path,"sub-%s/contrasts"%(subnum))
-    if not os.path.exists(contrasts_path):
-        os.makedirs(contrasts_path)
+    l2_contrasts_path = os.path.join(out_path,"sub-%s/contrasts"%(subnum))
+    if not os.path.exists(l2_contrasts_path):
+        os.makedirs(l2_contrasts_path)
 
     in_path = os.path.join(data_path, 'sub-%s/contrasts'%(subnum))
-    sub_l1_contrasts = os.listdir(in_path)
+    sub_l1_contrasts = glob.glob(os.path.join(in_path, '*reg-rt%s*')%(str(regress_rt)))
     sub_l1_contrasts.sort()
 
-    if contrasts is None:
-        contrasts = ['cross', 'crossRt', 'fractalProb', 'fractalProbParam', 'stim', 'stimRt', 'valDiff', 'choiceLeft', 'conflict', 'noconflict', 'reward', 'rewardParam', 'rpe', 'task_on']
+    if contrasts == None:
+        contrasts = np.unique([os.path.basename(i).split('_')[3] for i in sub_l1_contrasts])
 
     if isinstance(contrasts, str):
         contrasts = [contrasts]
 
     for c in contrasts:
-        second_level_input = [os.path.join(in_path,x) for x in sub_l1_contrasts if c+'.nii.gz' in x]
+        second_level_input = [os.path.join(in_path,x) for x in sub_l1_contrasts if c in x]
+
+        # 1's for all runs to get average for subject per contrast
         design_matrix = pd.DataFrame([1] * len(second_level_input), columns=['intercept'])
         model = SecondLevelModel(smoothing_fwhm=5.0)
 
@@ -51,7 +53,7 @@ def run_level2(subnum, contrasts, data_path, out_path):
             print("***********************************************")
             z_map = model.compute_contrast(output_type='z_score')
 
-            nib.save(z_map, '%s/sub-%s_%s.nii.gz'%(contrasts_path, subnum, c))
+            nib.save(z_map, '%s/sub-%s_%s.nii.gz'%(l2_contrasts_path, subnum, c))
             print("***********************************************")
             print("Done saving contrasts for sub-%s contrast %s"%(subnum, c))
             print("***********************************************")
@@ -62,7 +64,7 @@ def run_level2(subnum, contrasts, data_path, out_path):
             print("Skipping level 2 for sub-%s contrast %s"%(subnum, c))
             print("Saving level 1 for level 2 for sub-%s contrast %s"%(subnum, c))
             z_map = nib.load(second_level_input[0])
-            nib.save(z_map, '%s/sub-%s_%s.nii.gz'%(contrasts_path, subnum, c))
+            nib.save(z_map, '%s/sub-%s_%s.nii.gz'%(l2_contrasts_path, subnum, c))
             print("***********************************************")
         else:
             print("***********************************************")

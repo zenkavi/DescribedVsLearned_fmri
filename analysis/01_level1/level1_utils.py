@@ -22,9 +22,9 @@ def make_contrasts(design_matrix):
     contrasts = dictfilt(contrasts, wanted_keys)
 
     # Add on any additional contrasts
-    contrasts.update({'task_on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
-                     'conflict_gt_noconflict': (contrasts['conflict'] - contrasts['noconflict']),
-                     'noconflict_gt_conflict': (contrasts['noconflict'] - contrasts['conflict']),
+    contrasts.update({'task-on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
+                     'conflict-gt-noconflict': (contrasts['conflict'] - contrasts['noconflict']),
+                     'noconflict-gt-conflict': (contrasts['noconflict'] - contrasts['conflict']),
                      'stim': (contrasts['conflict'] + contrasts['noconflict'])})
 
     return contrasts
@@ -223,6 +223,12 @@ def run_level1(subnum, data_path, behavior_path, out_path, regress_rt=1, beta=Fa
             cur_events = pd.read_csv(run_events, sep = '\t')
             design_matrix = make_level1_design_matrix(subnum, runnum, data_path, behavior_path, regress_rt=regress_rt, hrf_model = hrf_model, drift_model=drift_model)
 
+            #Save design matrix
+            print("***********************************************")
+            print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
+            print("***********************************************")
+            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_reg-rt%s_level1_design_matrix.csv' %(subnum, subnum, runnum, str(regress_rt))), index=False)
+
             #define GLM parmeters
             mask_img = nib.load(os.path.join(data_path,'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(subnum, subnum, runnum)))
             fmri_glm = FirstLevelModel(t_r=cur_img_tr,
@@ -246,12 +252,6 @@ def run_level1(subnum, data_path, behavior_path, out_path, regress_rt=1, beta=Fa
             f = open(fn, 'wb')
             pickle.dump(fmri_glm, f)
             f.close()
-
-            #Save design matrix
-            print("***********************************************")
-            print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
-            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_reg-rt%s_level1_design_matrix.csv' %(subnum, subnum, runnum, str(regress_rt))), index=False)
 
             print("***********************************************")
             print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
