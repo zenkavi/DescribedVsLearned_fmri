@@ -19,6 +19,8 @@ args = parser.parse_args()
 mnum = args.mnum
 if mnum == "model1":
     one = True
+else:
+    one = False
 
 reg = args.reg
 

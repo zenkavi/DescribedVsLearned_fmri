@@ -89,9 +89,9 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
 
     if mnum in ["model2", "model2_g"]:
         randomise_results = randomise(in_file=in_file_name,
-                              mask= "%s/group_mask_%s_%s.nii.gz"%(out_path, mnum, reg),
-                              design_mat = "%s_design.mat"%(mnum),
-                              tcon="%s_design.con"%(mnum),
+                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mnum, reg),
+                              design_mat = "/code/%s_design.mat"%(mnum),
+                              tcon="/code/%s_design.con"%(mnum),
                               tfce=tfce,
                               c_thresh = c_thresh,
                               vox_p_values=True,
