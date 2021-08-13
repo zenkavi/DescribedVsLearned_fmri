@@ -163,6 +163,10 @@ def get_events(subnum, runnum, data_path, behavior_path, regress_rt=1):
     cond_reward = events.query('trial_type == "reward"')[['onset', 'duration', 'trial_type']].reset_index(drop=True)
     cond_reward['modulation'] = 1
 
+    cond_rewardParam = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+    cond_rewardParam['trial_type'] = 'rewardParam'
+    cond_rewardParam['modulation'] = run_behavior['reward'].sub(run_behavior['reward'].mean()).reset_index(drop=True)
+
     cond_rpe = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
     cond_rpe['trial_type'] = 'rpe'
     cond_rpe['modulation'] = run_behavior['rpe'].sub(run_behavior['rpe'].mean()).reset_index(drop=True)
