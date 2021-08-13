@@ -27,7 +27,6 @@ def make_contrasts(design_matrix):
     # Add on any additional contrasts
     contrasts.update({'task-on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
                      'conflict-gt-noconflict': (contrasts['conflict'] - contrasts['noconflict']),
-                     'noconflict-gt-conflict': (contrasts['noconflict'] - contrasts['conflict']),
                      'stim': (contrasts['conflict'] + contrasts['noconflict'])})
 
     return contrasts
