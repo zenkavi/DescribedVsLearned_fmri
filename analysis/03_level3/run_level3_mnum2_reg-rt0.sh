@@ -1,5 +1,5 @@
 set -e
-for modelnum in model1
+for modelnum in model2
 do
   for sign in pos neg
   do
