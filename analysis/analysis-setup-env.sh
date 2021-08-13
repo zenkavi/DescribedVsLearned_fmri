@@ -37,7 +37,6 @@ then
   chmod +x $CODE_PATH/02_level2/level2.py
   chmod +x $CODE_PATH/02_level2/run_level2.sh
   chmod +x $CODE_PATH/03_level3/level3.py
-  chmod +x $CODE_PATH/03_level3/run_level3.sh
 
   echo "alias squeue='squeue -o \"%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R\"'">> /home/ec2-user/.bash_profile
 fi
