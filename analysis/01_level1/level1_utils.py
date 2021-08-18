@@ -304,7 +304,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=1, b
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
-    contrasts_path = os.path.join(out_path, "%s_reg-rt%s/sub-%s/contrasts"%(mnum, str(regress_rt), subnum))
+    contrasts_path = os.path.join(out_path, "sub-%s/contrasts"%(subnum))
     if not os.path.exists(contrasts_path):
         os.makedirs(contrasts_path)
 
@@ -331,7 +331,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=1, b
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            design_matrix.to_csv(os.path.join(out_path, '%s_reg-rt%s/sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_design_matrix.csv' %(mnum, str(regress_rt), subnum, subnum, runnum, mnum, str(regress_rt))), index=False)
+            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_design_matrix.csv' %(subnum, subnum, runnum, mnum, str(regress_rt))), index=False)
 
             #define GLM parmeters
             mask_img = nib.load(os.path.join(data_path,'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(subnum, subnum, runnum)))
@@ -352,7 +352,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=1, b
             print("***********************************************")
             print("Saving GLM for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            fn = os.path.join(out_path, '%s_reg-rt%s/sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_glm.pkl' %(mnum, str(regress_rt),subnum, subnum, runnum, mnum, str(regress_rt)))
+            fn = os.path.join(out_path, 'sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_glm.pkl' %(subnum, subnum, runnum, mnum, str(regress_rt)))
             f = open(fn, 'wb')
             pickle.dump(fmri_glm, f)
             f.close()
