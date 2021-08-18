@@ -7,7 +7,8 @@ import os
 #Usage: ./level3.py -m MNUM -r REG -s SIGN -tf TFCE
 
 parser = ArgumentParser()
-parser.add_argument("-m", "--mnum", help="model number")
+parser.add_argument("--mnum", help="model number")
+parser.add_argument("--mname", help="model name")
 parser.add_argument("-r", "--reg", help="regressor name")
 parser.add_argument("-tf", "--tfce", help="tfce", default=1)
 parser.add_argument("-c", "--c_thresh", help="cluster_threshold", default=3)
@@ -17,7 +18,8 @@ parser.add_argument("-s", "--sign", help="calculate p values for positive or neg
 args = parser.parse_args()
 
 mnum = args.mnum
-if mnum == "model1":
+mname = args.mname
+if mname == "overall_mean":
     one = True
 else:
     one = False
@@ -39,4 +41,4 @@ data_path = os.environ['DATA_PATH']
 out_path = os.environ['OUT_PATH']
 bm_path = os.environ['BM_PATH']
 
-run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth, one)
+run_level3(mnum, mname, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth, one)

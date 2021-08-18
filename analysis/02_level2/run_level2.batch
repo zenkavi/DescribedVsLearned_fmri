@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -J level2-{SUBNUM}-reg_rt-{REG_RT}
+#SBATCH -J level2-{SUBNUM}-{MODELNUM}-reg_rt-{REG_RT}
 #SBATCH -c 8
 
 # Outputs ----------------------------------
@@ -8,14 +8,14 @@
 #SBATCH -e /shared/.err/level2-{SUBNUM}-reg_rt-{REG_RT}.err
 # ------------------------------------------
 
-export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
-export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2
+export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt{REG_RT}
+export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}
 export CODE_PATH=/shared/code/analysis/02_level2
 
-aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
+aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt{REG_RT}/sub-{SUBNUM} $DATA_PATH/sub-{SUBNUM}
 
 docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out \
 -v $DATA_PATH:/data -v $OUT_PATH:/out -v $CODE_PATH:/code \
-zenkavi/fsl:6.0.3 ./code/level2.py -s {SUBNUM} --reg_rt {REG_RT}
+zenkavi/fsl:6.0.3 ./code/level2.py -s {SUBNUM} --mnum {MODELNUM} --reg_rt {REG_RT}
 
-aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/sub-{SUBNUM}
+aws s3 sync $OUT_PATH/sub-{SUBNUM} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}/sub-{SUBNUM}

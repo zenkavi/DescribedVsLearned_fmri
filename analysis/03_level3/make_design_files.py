@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import os
 
-def make_design_files(mnum, learner_info_path):
+def make_design_files(mname, learner_info_path):
 
-    #model3: fast vs slow learners difference maps
+    #group_diff: fast vs slow learners difference maps
     #Design and contrast matrices based on https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/GLM#Two-Group_Difference_.28Two-Sample_Unpaired_T-Test.29
-    if mnum == "model2":
+    if mname == "group_diff":
         learner_info = pd.read_csv(learner_info_path)
         learner_info = learner_info.sort_values(by=["subnum"])
 
@@ -25,8 +25,8 @@ def make_design_files(mnum, learner_info_path):
         """
         contrast_matrix = np.array([[1,-1],[-1,1]])
 
-    #model3_g: fast vs slow learners group maps
-    if mnum == "model2_g":
+    #group_means: fast vs slow learners group maps
+    if mname == "group_means":
         learner_info = pd.read_csv(learner_info_path)
         learner_info = learner_info.sort_values(by=["subnum"])
 
@@ -46,11 +46,11 @@ def make_design_files(mnum, learner_info_path):
         contrast_matrix = np.array([[1,0],[0,1]])
 
     print("***********************************************")
-    print("Saving design matrix for %s"%(mnum))
+    print("Saving design matrix for %s"%(mname))
     print("***********************************************")
-    np.savetxt('%s_design.mat'%(mnum),design_matrix.values,fmt='%1.0f',header=deshdr,comments='')
+    np.savetxt('%s_design.mat'%(mname),design_matrix.values,fmt='%1.0f',header=deshdr,comments='')
 
     print("***********************************************")
-    print("Saving contrast matrix for %s"%(mnum))
+    print("Saving contrast matrix for %s"%(mname))
     print("***********************************************")
-    np.savetxt('%s_design.con'%(mnum),contrast_matrix,fmt='%1.0f',header=conhdr,comments='')
+    np.savetxt('%s_design.con'%(mname),contrast_matrix,fmt='%1.0f',header=conhdr,comments='')

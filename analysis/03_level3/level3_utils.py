@@ -13,7 +13,7 @@ import re
 from save_randomise_output import save_randomise_output
 randomise = mem.cache(fsl.Randomise)
 
-def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth, one):
+def run_level3(mnum, mname, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth, one):
 
     l2_in_path = "%s/sub-*/contrasts"%(data_path)
 
@@ -24,9 +24,9 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
     level2_images = glob.glob('%s/sub-*_%s.nii.gz'%(l2_in_path, reg))
     level2_images.sort()
 
-    if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(reg_path,mnum,reg)) == False:
+    if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, reg)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(reg_path,mname,reg)) == False:
         print("***********************************************")
-        print("Concatenating level 2 images for %s regressor %s"%(mnum, reg))
+        print("Concatenating level 2 images for %s regressor %s"%(mname, reg))
         print("***********************************************")
         smooth_l2s = []
         for l in level2_images:
@@ -35,9 +35,9 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
         all_l2_images = concat_imgs(smooth_l2s, auto_resample=True)
 
         print("***********************************************")
-        print("Saving level 2 images for %s regressor %s"%(mnum, reg))
+        print("Saving level 2 images for %s regressor %s"%(mname, reg))
         print("***********************************************")
-        nib.save(all_l2_images, '%s/all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg))
+        nib.save(all_l2_images, '%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, reg))
 
         print("***********************************************")
         print("Making group_mask")
@@ -46,14 +46,14 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
         mean_mask = mean_img(brainmasks)
         group_mask = math_img("a>=0.95", a=mean_mask)
         group_mask = resample_to_img(group_mask, all_l2_images, interpolation='nearest')
-        group_mask.to_filename("%s/group_mask_%s_%s.nii.gz"%(reg_path,mnum,reg))
+        group_mask.to_filename("%s/group_mask_%s_%s.nii.gz"%(reg_path,mname,reg))
         print("***********************************************")
-        print("Group mask saved for: %s %s"%(mnum, reg))
+        print("Group mask saved for: %s %s"%(mname, reg))
         print("***********************************************")
 
-    if os.path.exists('%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg)) == False:
+    if os.path.exists('%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mname, reg)) == False:
         print("***********************************************")
-        print("Concatenating level 2 images for %s regressor %s"%(mnum, reg))
+        print("Concatenating level 2 images for %s regressor %s"%(mname, reg))
         print("***********************************************")
         smooth_l2s = []
         for l in level2_images:
@@ -62,24 +62,24 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
         all_l2_images = concat_imgs(smooth_l2s, auto_resample=True)
         binaryMaths = mem.cache(fsl.BinaryMaths)
         print("***********************************************")
-        print("Saving negative level 2 images for %s regressor %s"%(mnum, reg))
+        print("Saving negative level 2 images for %s regressor %s"%(mname, reg))
         print("***********************************************")
-        binaryMaths(in_file='%s/all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg),
+        binaryMaths(in_file='%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, reg),
                     operation = "mul",
                     operand_value = -1,
-                    out_file = '%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mnum, reg))
+                    out_file = '%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mname, reg))
 
     if sign == "pos":
-        in_file_name = "%s/all_l2_%s_%s.nii.gz"%(reg_path, mnum, reg)
+        in_file_name = "%s/all_l2_%s_%s.nii.gz"%(reg_path, mname, reg)
     if sign == "neg":
-        in_file_name = "%s/neg_all_l2_%s_%s.nii.gz"%(reg_path, mnum, reg)
+        in_file_name = "%s/neg_all_l2_%s_%s.nii.gz"%(reg_path, mname, reg)
 
     print("***********************************************")
     print("Beginning randomise")
     print("***********************************************")
-    if mnum == "model1":
+    if mname == "overall_mean":
         randomise_results = randomise(in_file=in_file_name,
-                                  mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mnum, reg),
+                                  mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, reg),
                                   one_sample_group_mean=one,
                                   tfce=tfce,
                                   c_thresh = c_thresh,
@@ -87,11 +87,11 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
                                   num_perm=num_perm,
                                   var_smooth = var_smooth)
 
-    if mnum in ["model2", "model2_g"]:
+    if mname in ["group_diff", "group_means"]:
         randomise_results = randomise(in_file=in_file_name,
-                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mnum, reg),
-                              design_mat = "/code/%s_design.mat"%(mnum),
-                              tcon="/code/%s_design.con"%(mnum),
+                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, reg),
+                              design_mat = "/code/%s_design.mat"%(mname),
+                              tcon="/code/%s_design.con"%(mname),
                               tfce=tfce,
                               c_thresh = c_thresh,
                               vox_p_values=True,
@@ -99,6 +99,6 @@ def run_level3(mnum, reg, sign, tfce, data_path, out_path, bm_path, c_thresh, nu
                               var_smooth = var_smooth)
 
     if sign == "neg":
-        save_randomise_output(randomise_results, reg_path, mnum+'_neg', reg, tfce)
+        save_randomise_output(randomise_results, reg_path, mname+'_neg', reg, tfce)
     else:
-        save_randomise_output(randomise_results, reg_path, mnum, reg, tfce)
+        save_randomise_output(randomise_results, reg_path, mname, reg, tfce)
