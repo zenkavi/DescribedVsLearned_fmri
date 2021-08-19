@@ -4,7 +4,7 @@ export L1_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1/
 export L3_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/
 export CODE_PATH=/shared/code/analysis/03_level3
 
-for modelnum in model1
+for modelnum in 1
 do
   for reg_rt in 0 1
   do
