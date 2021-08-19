@@ -69,6 +69,9 @@ def get_model_regs(mnum):
     if mnum == 'model1':
         regs = ['cross_ev', 'fractalProb_ev', 'stim_ev', 'choice_st', 'reward_ev']
 
+    if mnum == 'model1a':
+        regs = ['cross_ev', 'fractalProb_ev', 'stim_ev', 'choiceShift_st', 'reward_ev']
+
     if mnum == 'model2':
         regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choice_st', 'reward_ev']
 
@@ -254,6 +257,12 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
             cond_choice_st['duration'] = 0
             cond_choice_st['trial_type'] = 'choice_st'
             cond_choice_st['modulation'] = 1
+
+        if reg == 'choiceShift_st':
+            cond_choiceShift_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
+            cond_choiceShift_st['duration'] = 0
+            cond_choiceShift_st['trial_type'] = 'choiceShift_st'
+            cond_choiceShift_st['modulation'] = 1
 
         if reg == 'reward_ev':
             cond_reward_ev = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
