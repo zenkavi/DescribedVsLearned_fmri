@@ -38,7 +38,7 @@ def run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=1):
         model = SecondLevelModel(smoothing_fwhm=5.0)
 
         # Drop the suffix and add reg-rt info for saving file names
-        c = c.split('.')[0]+'_reg-rt%s'%str(regress_rt)
+        c = c.split('.')[0]+'_%s_reg-rt%s'%(mnum,str(regress_rt))
 
         if len(second_level_input)>1:
             print("***********************************************")

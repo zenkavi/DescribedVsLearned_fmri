@@ -8,8 +8,8 @@
 #SBATCH -e /shared/.err/level3-{MODELNUM}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.err
 # ------------------------------------------
 
-export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}
-export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}/{MODELNAME}
+export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}
+export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}_reg-rt{REG_RT}/{MODELNAME}
 export CODE_PATH=/shared/code/analysis/03_level3
 export BM_PATH=/shared/bids_nifti_wface/derivatives/fmriprep
 
