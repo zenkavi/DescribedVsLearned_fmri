@@ -20,4 +20,4 @@ docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out -e BM_PATH=/bm \
 -v $DATA_PATH:/data -v $OUT_PATH:/out -v $BM_PATH:/bm -v $CODE_PATH:/code \
 zenkavi/fsl:6.0.3 ./code/level3.py --mnum {MODELNUM} --mname {MODELNAME} -r {REGNAME} --reg_rt {REG_RT} -s {SIGN} -tf {TFCE}
 
-aws s3 sync $OUT_PATH/{REGNAME}_{MODELNUM}_reg-rt{REG_RT} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}/{MODELNAME}/{REGNAME}_{MODELNUM}_reg-rt{REG_RT}
+aws s3 sync $OUT_PATH/{REGNAME}_{MODELNUM}_reg-rt{REG_RT} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}_reg-rt{REG_RT}/{MODELNAME}/{REGNAME}_{MODELNUM}_reg-rt{REG_RT}
