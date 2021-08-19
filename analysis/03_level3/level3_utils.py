@@ -24,7 +24,7 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
     level2_images = glob.glob('%s/sub-*_%s_%s_reg-rt%s.nii.gz'%(l2_in_path, reg, mnum, str(regress_rt)))
     level2_images.sort()
 
-    suffix = reg + '_' + mnum + '_reg-rt' str(regress_rt)
+    suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)
 
     if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, suffix)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, suffix)) == False:
         print("***********************************************")
