@@ -7,7 +7,7 @@ do
     do
       for tfce in 1
       do
-        for regname in cross_rt stim_rt
+        for regname in stim_rt
         do
           for reg_rt in 1
           do
