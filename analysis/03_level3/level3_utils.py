@@ -91,7 +91,7 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
 
     if mname in ["group_diff", "group_means"]:
         randomise_results = randomise(in_file=in_file_name,
-                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, reg),
+                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, suffix),
                               design_mat = "/code/%s_design.mat"%(mname),
                               tcon="/code/%s_design.con"%(mname),
                               tfce=tfce,

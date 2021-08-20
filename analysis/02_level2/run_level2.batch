@@ -4,8 +4,8 @@
 #SBATCH -c 8
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/.out/level2-{SUBNUM}-reg_rt-{REG_RT}.out
-#SBATCH -e /shared/.err/level2-{SUBNUM}-reg_rt-{REG_RT}.err
+#SBATCH -o /shared/.out/level2-{SUBNUM}-{MODELNUM}-reg_rt-{REG_RT}.out
+#SBATCH -e /shared/.err/level2-{SUBNUM}-{MODELNUM}-reg_rt-{REG_RT}.err
 # ------------------------------------------
 
 export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt{REG_RT}

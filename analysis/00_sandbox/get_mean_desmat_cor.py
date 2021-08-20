@@ -38,4 +38,9 @@ def get_mean_desmat_cor(mnum, reg_rt, l1_path):
 
 mean_cor_df = get_mean_desmat_cor(mnum, reg_rt, l1_path)
 
-mean_cor_df.to_csv(os.path.join(l3_path, 'model%s_reg-rt%s/model%s_reg-rt%s_mean_desmat_cor.csv'%(mnum, reg_rt, mnum, reg_rt)))
+out_path = os.path.join(l3_path, 'model%s_reg-rt%s'%(mnum, reg_rt))
+
+if not os.path.exists(out_path):
+    os.makedirs(out_path)
+
+mean_cor_df.to_csv(os.path.join(out_path, 'model%s_reg-rt%s_mean_desmat_cor.csv'%(mnum, reg_rt)))
