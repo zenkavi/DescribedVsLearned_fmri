@@ -67,25 +67,22 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
 
 def get_model_regs(mnum):
     if mnum == 'model1':
-        regs = ['cross_ev', 'fractalProb_ev', 'stim_ev', 'choice_st', 'reward_ev']
-
-    if mnum == 'model1a':
-        regs = ['cross_ev', 'fractalProb_ev', 'stim_ev', 'choiceShift_st', 'reward_ev']
+        regs = ['fractalProb_ev', 'stim_ev', 'choiceShift_st', 'reward_ev']
 
     if mnum == 'model2':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'reward_ev']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'reward_ev']
 
     if mnum == 'model3':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'valDiff_par', 'reward_ev']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'valDiff_par', 'reward_ev']
 
     if mnum == 'model4':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valChosen_par', 'valUnchosen_par', 'reward_ev']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valChosen_par', 'valUnchosen_par', 'reward_ev']
 
     if mnum == 'model5':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev']
 
     if mnum == 'model6':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
 
     return regs
 
@@ -111,13 +108,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
 
     # Get mean durations if parametric rt regressors will be included
     if regress_rt:
-        mean_cross_dur = float(np.mean(events.query('trial_type == "cross"')[['duration']]))
         mean_rt = float(np.mean(events.query('trial_type == "stimulus"')[['duration']]))
-
-        cond_cross_rt = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
-        cond_cross_rt['duration'] = mean_cross_dur
-        cond_cross_rt['trial_type'] = "cross_rt"
-        cond_cross_rt['modulation'] = events.query('trial_type == "cross"')[['duration']].reset_index(drop=True) - mean_cross_dur
 
         cond_stim_rt = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
         cond_stim_rt['duration'] = mean_rt
@@ -125,15 +116,6 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
         cond_stim_rt['modulation'] = events.query('trial_type == "stimulus"')[['duration']].reset_index(drop=True) - mean_rt
 
     for reg in regs:
-        if reg == "cross_ev":
-            if regress_rt:
-                cond_cross_ev = events.query('trial_type == "cross"')[['onset']].reset_index(drop=True)
-                cond_cross_ev['duration'] = mean_cross_dur
-            else:
-                cond_cross_ev = events.query('trial_type == "cross"')[['onset', 'duration']].reset_index(drop=True)
-            cond_cross_ev['trial_type'] = "cross_ev"
-            cond_cross_ev['modulation'] = 1
-
         if reg == "fractalProb_ev":
             cond_fractalProb_ev = events.query('trial_type == "fractalProb"')[['onset', 'duration']].reset_index(drop=True)
             cond_fractalProb_ev['trial_type'] = 'fractalProb_ev'
