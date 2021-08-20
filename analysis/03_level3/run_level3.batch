@@ -4,8 +4,8 @@
 #SBATCH -c 8
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/.out/level3-{MODELNUM}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.out
-#SBATCH -e /shared/.err/level3-{MODELNUM}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.err
+#SBATCH -o /shared/.out/level3-{MODELNUM}_reg-rt{REG_RT}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.out
+#SBATCH -e /shared/.err/level3-{MODELNUM}_reg-rt{REG_RT}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.err
 # ------------------------------------------
 
 export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}
