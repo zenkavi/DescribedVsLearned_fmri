@@ -73,19 +73,19 @@ def get_model_regs(mnum):
         regs = ['cross_ev', 'fractalProb_ev', 'stim_ev', 'choiceShift_st', 'reward_ev']
 
     if mnum == 'model2':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choice_st', 'reward_ev']
+        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'reward_ev']
 
     if mnum == 'model3':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choice_st', 'valDiff_par', 'reward_ev']
+        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'valDiff_par', 'reward_ev']
 
     if mnum == 'model4':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choice_st','valChosen_par', 'valUnchosen_par', 'reward_ev']
+        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valChosen_par', 'valUnchosen_par', 'reward_ev']
 
     if mnum == 'model5':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choice_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev']
+        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev']
 
     if mnum == 'model6':
-        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choice_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
+        regs = ['cross_ev', 'fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
 
     return regs
 
