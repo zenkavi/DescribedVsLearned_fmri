@@ -69,6 +69,9 @@ def get_model_regs(mnum):
     if mnum == 'model1':
         regs = ['fractalProb_ev', 'stim_ev', 'choiceShift_st', 'reward_ev']
 
+    if mnum == 'model1a':
+        regs = ['fractalProb_ev', 'stim_ev', 'choiceShiftLeft_st', 'choiceShiftRight_st', 'reward_ev']
+
     if mnum == 'model2':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'reward_ev']
 
@@ -83,6 +86,15 @@ def get_model_regs(mnum):
 
     if mnum == 'model6':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
+
+    if mnum == 'model7':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par']
+
+    if mnum == 'model8':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'rpe_par']
+
+    if mnum == 'model9':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpe_par']
 
     return regs
 
@@ -245,6 +257,18 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
             cond_choiceShift_st['duration'] = 0
             cond_choiceShift_st['trial_type'] = 'choiceShift_st'
             cond_choiceShift_st['modulation'] = 1
+
+        if reg == 'choiceShiftLeft_st':
+            cond_choiceShiftLeft_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
+            cond_choiceShiftLeft_st['duration'] = 0
+            cond_choiceShiftLeft_st['trial_type'] = 'choiceShiftLeft_st'
+            cond_choiceShiftLeft_st['modulation'] = np.where(run_behavior['choiceLeft'], 1, 0)
+
+        if reg == 'choiceShiftRight_st':
+            cond_choiceShiftRight_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
+            cond_choiceShiftRight_st['duration'] = 0
+            cond_choiceShiftRight_st['trial_type'] = 'choiceShiftRight_st'
+            cond_choiceShiftRight_st['modulation'] = np.where(run_behavior['choiceLeft'], 0, 1)
 
         if reg == 'reward_ev':
             cond_reward_ev = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
