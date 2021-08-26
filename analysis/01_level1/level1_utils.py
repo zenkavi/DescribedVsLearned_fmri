@@ -120,7 +120,8 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
 
     # Get mean durations if parametric rt regressors will be included
     if regress_rt:
-        mean_rt = float(np.mean(events.query('trial_type == "stimulus"')[['duration']]))
+        # mean_rt = float(np.mean(events.query('trial_type == "stimulus"')[['duration']]))
+        mean_rt = 1.29 # mean rt for all trials across all subjects
 
         cond_stim_rt = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
         cond_stim_rt['duration'] = mean_rt
