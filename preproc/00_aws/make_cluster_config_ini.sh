@@ -5,7 +5,7 @@ export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 
 cat > tmp.ini << EOF
-[[aws]
+[aws]
 aws_region_name = ${REGION}
 
 [global]
