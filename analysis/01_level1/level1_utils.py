@@ -84,8 +84,14 @@ def get_model_regs(mnum):
     if mnum == 'model5':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev']
 
+    if mnum == 'model5a':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev']
+
     if mnum == 'model6':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
+
+    if mnum == 'model6a':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLotteryWeighted_par', 'valUnchosenLotteryWeighted_par','valChosenFractalWeighted_par', 'valUnchosenFractalWeighted_par', 'reward_ev']
 
     if mnum == 'model7':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par']
@@ -202,6 +208,42 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
             cond_valUnchosenFractal_par['trial_type'] = 'valUnchosenFractal_par'
             cond_valUnchosenFractal_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['leftQValue'], run_behavior['rightQValue'])
 
+        if reg == "valChosenLotteryWeighted_par":
+            if regress_rt:
+                cond_valChosenLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valChosenLotteryWeighted_par['duration'] = mean_rt
+            else:
+                cond_valChosenLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valChosenLotteryWeighted_par['trial_type'] = 'valChosenLotteryWeighted_par'
+            cond_valChosenLotteryWeighted_par['modulation'] = np.where(run_behavior['choiceLeft'], (1-run_behavior['wpFrac'])*run_behavior['leftLotteryEV'], (1-run_behavior['wpFrac'])*run_behavior['rightLotteryEV'])
+
+        if reg == "valUnchosenLotteryWeighted_par":
+            if regress_rt:
+                cond_valUnchosenLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valUnchosenLotteryWeighted_par['duration'] = mean_rt
+            else:
+                cond_valUnchosenLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valUnchosenLotteryWeighted_par['trial_type'] = 'valUnchosenLotteryWeighted_par'
+            cond_valUnchosenLotteryWeighted_par['modulation'] = np.where(run_behavior['choiceLeft']==0, (1-run_behavior['wpFrac'])*run_behavior['leftLotteryEV'], (1-run_behavior['wpFrac'])*run_behavior['rightLotteryEV'])
+
+        if reg == "valChosenFractalWeighted_par":
+            if regress_rt:
+                cond_valChosenFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valChosenFractalWeighted_par['duration'] = mean_rt
+            else:
+                cond_valChosenFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valChosenFractalWeighted_par['trial_type'] = 'valChosenFractalWeighted_par'
+            cond_valChosenFractalWeighted_par['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['wpFrac']*run_behavior['leftQValue'], run_behavior['wpFrac']*run_behavior['rightQValue'])
+
+        if reg == "valUnchosenFractalWeighted_par":
+            if regress_rt:
+                cond_valUnchosenFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valUnchosenFractalWeighted_par['duration'] = mean_rt
+            else:
+                cond_valUnchosenFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valUnchosenFractalWeighted_par['trial_type'] = 'valUnchosenFractalWeighted_par'
+            cond_valUnchosenFractalWeighted_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['wpFrac']*run_behavior['leftQValue'], run_behavior['wpFrac']*run_behavior['rightQValue'])
+
         if reg == 'valDiff_par':
             if regress_rt:
                 cond_valDiff_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
@@ -228,6 +270,24 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
                 cond_valDiffFractal_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractal_par['trial_type'] = 'valDiffFractal_par'
             cond_valDiffFractal_par['modulation'] = run_behavior['leftQVAdv'].reset_index(drop=True)
+
+        if reg == "valDiffLotteryWeighted_par":
+            if regress_rt:
+                cond_valDiffLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffLotteryWeighted_par['duration'] = mean_rt
+            else:
+                cond_valDiffLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffLotteryWeighted_par['trial_type'] = 'valDiffLotteryWeighted_par'
+            cond_valDiffLotteryWeighted_par['modulation'] = np.array(run_behavior['leftEVAdv']*(1-run_behavior['wpFrac']))
+
+        if reg == "valDiffFractalWeighted_par":
+            if regress_rt:
+                cond_valDiffFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffFractalWeighted_par['duration'] = mean_rt
+            else:
+                cond_valDiffFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffFractalWeighted_par['trial_type'] = 'valDiffFractal_par'
+            cond_valDiffFractalWeighted_par['modulation'] = np.array(run_behavior['leftQVAdv']*run_behavior['wpFrac'])
 
         if reg == 'conflict_ev':
             if regress_rt:
@@ -285,6 +345,10 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
             cond_rpe_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rpe_par['trial_type'] = 'rpe_par'
             cond_rpe_par['modulation'] = run_behavior['rpe'].reset_index(drop=True)
+
+        if reg == rpeLeftFractal_par:
+
+        if reg == rpeRightFractal_par:
 
     # List of var names including 'cond'
     toconcat = [i for i in dir() if 'cond' in i]
