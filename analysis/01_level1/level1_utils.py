@@ -102,6 +102,12 @@ def get_model_regs(mnum):
     if mnum == 'model9':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpe_par']
 
+    if mnum == 'model10':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
+
+    if mnum == 'model10a':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
+
     return regs
 
 def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
@@ -117,7 +123,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
     run_behavior = behavior.query('subnum == %d & session == %d'%(int(subnum), int(runnum)))
 
     # Demean columns that might be used for parametric regressors
-    demean_cols = ['probFractalDraw', 'leftBundleVal', 'rightBundleVal', 'leftLotteryEV', 'rightLotteryEV', 'leftQValue', 'rightQValue', 'reward', 'rpe', 'leftQVAdv', 'leftEVAdv', 'leftbundleValAdv']
+    demean_cols = ['probFractalDraw', 'leftBundleVal', 'rightBundleVal', 'leftLotteryEV', 'rightLotteryEV', 'leftQValue', 'rightQValue', 'reward', 'rpe', 'leftQVAdv', 'leftEVAdv', 'leftbundleValAdv', 'leftFractalRpe', 'rightFractalRpe']
     for cur_col in demean_cols:
         run_behavior.loc[:,cur_col].sub(run_behavior[cur_col].mean())
 
@@ -286,7 +292,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
                 cond_valDiffFractalWeighted_par['duration'] = mean_rt
             else:
                 cond_valDiffFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
-            cond_valDiffFractalWeighted_par['trial_type'] = 'valDiffFractal_par'
+            cond_valDiffFractalWeighted_par['trial_type'] = 'valDiffFractalWeighted_par'
             cond_valDiffFractalWeighted_par['modulation'] = np.array(run_behavior['leftQVAdv']*run_behavior['wpFrac'])
 
         if reg == 'conflict_ev':
@@ -346,9 +352,15 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
             cond_rpe_par['trial_type'] = 'rpe_par'
             cond_rpe_par['modulation'] = run_behavior['rpe'].reset_index(drop=True)
 
-        if reg == rpeLeftFractal_par:
+        if reg == "rpeLeftFractal_par":
+            cond_rpeLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeLeftFractal_par['trial_type'] = 'rpeLeftFractal_par'
+            cond_rpeLeftFractal_par['modulation'] = run_behavior['leftFractalRpe'].reset_index(drop=True)
 
-        if reg == rpeRightFractal_par:
+        if reg == "rpeRightFractal_par":
+            cond_rpeRightFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeRightFractal_par['trial_type'] = 'rpeRightFractal_par'
+            cond_rpeRightFractal_par['modulation'] = run_behavior['rightFractalRpe'].reset_index(drop=True)
 
     # List of var names including 'cond'
     toconcat = [i for i in dir() if 'cond' in i]
