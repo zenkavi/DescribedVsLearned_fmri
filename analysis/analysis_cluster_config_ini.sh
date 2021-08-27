@@ -5,7 +5,7 @@ export SUBNET_ID=`aws ec2 describe-subnets | jq -j '.Subnets[0].SubnetId'`
 export VPC_ID=`aws ec2 describe-vpcs | jq -j '.Vpcs[0].VpcId'`
 
 cat > tmp.ini << EOF
-[[aws]
+[aws]
 aws_region_name = ${REGION}
 
 [global]
@@ -26,6 +26,7 @@ additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
 master_root_volume_size = 512
 compute_root_volume_size = 512
+scaling_settings = custom
 
 [queue compute]
 compute_resource_settings = default
@@ -36,6 +37,9 @@ disable_hyperthreading = true
 instance_type = c5.9xlarge
 min_count = 0
 max_count = 25
+
+[scaling custom]
+scaledown_idletime = 20
 
 [ebs myebs]
 shared_dir = /shared
