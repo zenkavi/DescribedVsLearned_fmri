@@ -1,7 +1,7 @@
 set -e
 for modelnum in model1
 do
-  for modelname in overall_mean group_diff group_means
+  for modelname in overall-mean group-diff group-means
   do
     for sign in pos neg
     do

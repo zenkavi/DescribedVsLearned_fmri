@@ -26,7 +26,7 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
 
     suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)
 
-    if os.path.exists('%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, suffix)) == False or os.path.exists("%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, suffix)) == False:
+    if os.path.exists('%s/all-l2_%s_%s.nii.gz'%(reg_path, mname, suffix)) == False or os.path.exists("%s/group-mask_%s_%s.nii.gz"%(reg_path, mname, suffix)) == False:
         print("***********************************************")
         print("Concatenating level 2 images for %s regressor %s"%(mname, suffix))
         print("***********************************************")
@@ -39,21 +39,21 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
         print("***********************************************")
         print("Saving level 2 images for %s regressor %s"%(mname, reg))
         print("***********************************************")
-        nib.save(all_l2_images, '%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, suffix))
+        nib.save(all_l2_images, '%s/all-l2_%s_%s.nii.gz'%(reg_path, mname, suffix))
 
         print("***********************************************")
-        print("Making group_mask")
+        print("Making group-mask")
         print("***********************************************")
         brainmasks = glob.glob("%s/sub-*/func/*brain_mask.nii*"%(bm_path))
         mean_mask = mean_img(brainmasks)
         group_mask = math_img("a>=0.95", a=mean_mask)
         group_mask = resample_to_img(group_mask, all_l2_images, interpolation='nearest')
-        group_mask.to_filename("%s/group_mask_%s_%s.nii.gz"%(reg_path,mname,suffix))
+        group_mask.to_filename("%s/group-mask_%s_%s.nii.gz"%(reg_path,mname,suffix))
         print("***********************************************")
         print("Group mask saved for: %s %s"%(mname, reg))
         print("***********************************************")
 
-    if os.path.exists('%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mname, suffix)) == False:
+    if os.path.exists('%s/neg_all-l2_%s_%s.nii.gz'%(reg_path, mname, suffix)) == False:
         print("***********************************************")
         print("Concatenating level 2 images for %s regressor %s"%(mname, suffix))
         print("***********************************************")
@@ -66,22 +66,22 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
         print("***********************************************")
         print("Saving negative level 2 images for %s regressor %s"%(mname, reg))
         print("***********************************************")
-        binaryMaths(in_file='%s/all_l2_%s_%s.nii.gz'%(reg_path, mname, suffix),
+        binaryMaths(in_file='%s/all-l2_%s_%s.nii.gz'%(reg_path, mname, suffix),
                     operation = "mul",
                     operand_value = -1,
-                    out_file = '%s/neg_all_l2_%s_%s.nii.gz'%(reg_path, mname, suffix))
+                    out_file = '%s/neg_all-l2_%s_%s.nii.gz'%(reg_path, mname, suffix))
 
     if sign == "pos":
-        in_file_name = "%s/all_l2_%s_%s.nii.gz"%(reg_path, mname, suffix)
+        in_file_name = "%s/all-l2_%s_%s.nii.gz"%(reg_path, mname, suffix)
     if sign == "neg":
-        in_file_name = "%s/neg_all_l2_%s_%s.nii.gz"%(reg_path, mname, suffix)
+        in_file_name = "%s/neg_all-l2_%s_%s.nii.gz"%(reg_path, mname, suffix)
 
     print("***********************************************")
     print("Beginning randomise")
     print("***********************************************")
-    if mname == "overall_mean":
+    if mname == "overall-mean":
         randomise_results = randomise(in_file=in_file_name,
-                                  mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, suffix),
+                                  mask= "%s/group-mask_%s_%s.nii.gz"%(reg_path, mname, suffix),
                                   one_sample_group_mean=True,
                                   tfce=tfce,
                                   c_thresh = c_thresh,
@@ -89,9 +89,9 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
                                   num_perm=num_perm,
                                   var_smooth = var_smooth)
 
-    if mname in ["group_diff", "group_means"]:
+    if mname in ["group-diff", "group-means"]:
         randomise_results = randomise(in_file=in_file_name,
-                              mask= "%s/group_mask_%s_%s.nii.gz"%(reg_path, mname, suffix),
+                              mask= "%s/group-mask_%s_%s.nii.gz"%(reg_path, mname, suffix),
                               design_mat = "/code/%s_design.mat"%(mname),
                               tcon="/code/%s_design.con"%(mname),
                               tfce=tfce,
@@ -100,7 +100,4 @@ def run_level3(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
                               num_perm=num_perm,
                               var_smooth = var_smooth)
 
-    if sign == "neg":
-        save_randomise_output(randomise_results, reg_path, mname+'_neg', suffix, tfce)
-    else:
-        save_randomise_output(randomise_results, reg_path, mname, suffix, tfce)
+    save_randomise_output(randomise_results, reg_path, mname, suffix, tfce, sign)
