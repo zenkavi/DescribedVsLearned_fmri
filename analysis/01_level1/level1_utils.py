@@ -31,25 +31,6 @@ def make_contrasts(design_matrix):
 
     return contrasts
 
-def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
-
-    fn = os.path.join(data_path, 'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_desc-confounds_timeseries.tsv'%(subnum, subnum, runnum))
-
-    confounds = pd.read_csv(fn,  sep='\t')
-
-    confound_cols = [x for x in confounds.columns if 'trans' in x]+[x for x in confounds.columns if 'rot' in x]+['std_dvars', 'framewise_displacement']
-
-    formatted_confounds = confounds[confound_cols]
-
-    formatted_confounds = formatted_confounds.fillna(0)
-
-    formatted_confounds['scrub'] = np.where(formatted_confounds.framewise_displacement>scrub_thresh,1,0)
-
-    formatted_confounds = formatted_confounds.assign(
-        scrub = lambda dataframe: dataframe['framewise_displacement'].map(lambda framewise_displacement: 1 if framewise_displacement > scrub_thresh else 0))
-
-    return formatted_confounds
-
 def get_from_sidecar(subnum, runnum, keyname, data_path):
 
     fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_bold.json'%(subnum, subnum, runnum))
@@ -109,6 +90,25 @@ def get_model_regs(mnum):
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
 
     return regs
+
+def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
+
+    fn = os.path.join(data_path, 'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_desc-confounds_timeseries.tsv'%(subnum, subnum, runnum))
+
+    confounds = pd.read_csv(fn,  sep='\t')
+
+    confound_cols = [x for x in confounds.columns if 'trans' in x]+[x for x in confounds.columns if 'rot' in x]+['std_dvars', 'framewise_displacement']
+
+    formatted_confounds = confounds[confound_cols]
+
+    formatted_confounds = formatted_confounds.fillna(0)
+
+    formatted_confounds['scrub'] = np.where(formatted_confounds.framewise_displacement>scrub_thresh,1,0)
+
+    formatted_confounds = formatted_confounds.assign(
+        scrub = lambda dataframe: dataframe['framewise_displacement'].map(lambda framewise_displacement: 1 if framewise_displacement > scrub_thresh else 0))
+
+    return formatted_confounds
 
 def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
 

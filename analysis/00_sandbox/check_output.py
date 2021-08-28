@@ -4,7 +4,6 @@
 from argparse import ArgumentParser
 import glob
 import os
-import pandas as pd
 import sys
 
 parser = ArgumentParser()
@@ -26,7 +25,7 @@ l1_code_path = args.l1_code_path
 out_path = args.out_path
 
 sys.path.append(l1_code_path)
-from level1_utils import get_model_regs
+from utils import get_model_regs
 
 if reg is None:
     regs = [reg]
