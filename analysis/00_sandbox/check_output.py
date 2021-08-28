@@ -1,5 +1,3 @@
-#! /opt/miniconda-4.10.3/bin/python
-
 # Usage: check_output.py --mnum 8 --reg_rt 0 --level 3
 from argparse import ArgumentParser
 import glob
@@ -11,7 +9,7 @@ parser.add_argument("--mnum")
 parser.add_argument("--reg", default=None)
 parser.add_argument("--reg_rt")
 parser.add_argument("--level")
-parser.add_argument("--mname", default=None)
+parser.add_argument("--mname", default='overall-mean')
 parser.add_argument("--l1_code_path", default='/shared/code/analysis/01_level1')
 parser.add_argument("--out_path", default='/shared/bids_nifti_wface/derivatives/nilearn/glm')
 
@@ -21,13 +19,14 @@ reg = args.reg
 reg_rt = args.reg_rt
 suffix = '%s_reg-rt%s'%(mnum, reg_rt)
 level = int(args.level)
+mname = args.mname
 l1_code_path = args.l1_code_path
 out_path = args.out_path
 
 sys.path.append(l1_code_path)
 from utils import get_model_regs
 
-if reg is None:
+if reg is not None:
     regs = [reg]
 else:
     regs = get_model_regs(mnum)
@@ -101,4 +100,4 @@ if level == 3:
             else:
                 counter = counter+1
         if counter == len(mname_files[mname]):
-            print("All level 3 files in place for %s_%s"%(suffix, mname))
+            print("All level 3 files in place for %s_%s_%s"%(mname, suffix, reg))
