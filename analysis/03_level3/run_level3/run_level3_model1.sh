@@ -1,13 +1,13 @@
 set -e
 for modelnum in model1
 do
-  for modelname in overall-mean group-diff group-means
+  for modelname in overall-mean
   do
     for sign in pos neg
     do
       for tfce in 1
       do
-        for regname in cross_ev fractalProb_ev stim_ev choice_st reward_ev
+        for regname in fractalProb_ev stim_ev choiceShift_st reward_ev
         do
           for reg_rt in 0 1
           do
