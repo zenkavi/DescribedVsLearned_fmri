@@ -1,5 +1,5 @@
 set -e
-for modelnum in model1
+for modelnum in model3
 do
   for modelname in overall-mean
   do
