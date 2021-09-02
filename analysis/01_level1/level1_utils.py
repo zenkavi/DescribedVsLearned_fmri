@@ -89,6 +89,9 @@ def get_model_regs(mnum):
     if mnum == 'model10a':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
 
+    if mnum == 'model11':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryLowPFrac_par', 'valDiffLotteryMedPFrac_par', 'valDiffLotteryHighPFrac_par', 'valDiffFractalLowPFrac_par', 'valDiffFractalMedPFrac_par', 'valDiffFractalHighPFrac_par','reward_ev']
+
     return regs
 
 def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
@@ -294,6 +297,60 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
                 cond_valDiffFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractalWeighted_par['trial_type'] = 'valDiffFractalWeighted_par'
             cond_valDiffFractalWeighted_par['modulation'] = np.array(run_behavior['leftQVAdv']*run_behavior['wpFrac'])
+
+        if reg ==  "valDiffLotteryLowPFrac_par":
+            if regress_rt:
+                cond_valDiffLotteryLowPFrac_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffLotteryLowPFrac_par['duration'] = mean_rt
+            else:
+                cond_valDiffLotteryLowPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffLotteryLowPFrac_par['trial_type'] = 'valDiffLotteryLowPFrac_par'
+            cond_valDiffLotteryLowPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']<0.4, 1,0) * run_behavior['leftEVAdv'])
+
+        if reg ==  "valDiffLotteryMedPFrac_par":
+            if regress_rt:
+                cond_valDiffLotteryMedPFrac_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffLotteryMedPFrac_par['duration'] = mean_rt
+            else:
+                cond_valDiffLotteryMedPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffLotteryMedPFrac_par['trial_type'] = 'valDiffLotteryMedPFrac_par'
+            cond_valDiffLotteryMedPFrac_par['modulation'] = np.array(np.where( (run_behavior['probFractalDraw']>0.4) & (run_behavior['probFractalDraw']<0.7), 1,0) * run_behavior['leftEVAdv'])
+
+        if reg ==  "valDiffLotteryHighPFrac_par":
+            if regress_rt:
+                cond_valDiffLotteryHighPFrac_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffLotteryHighPFrac_par['duration'] = mean_rt
+            else:
+                cond_valDiffLotteryHighPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffLotteryHighPFrac_par['trial_type'] = 'valDiffLotteryHighPFrac_par'
+            cond_valDiffLotteryHighPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']>0.6, 1,0) * run_behavior['leftEVAdv'])
+
+        if reg ==  "valDiffFractalLowPFrac_par":
+            if regress_rt:
+                cond_valDiffFractalLowPFrac_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffFractalLowPFrac_par['duration'] = mean_rt
+            else:
+                cond_valDiffFractalLowPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffFractalLowPFrac_par['trial_type'] = 'valDiffFractalLowPFrac_par'
+            cond_valDiffFractalLowPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']<0.4, 1,0) * run_behavior['leftQVAdv'])
+
+        if reg ==  "valDiffFractalMedPFrac_par":
+            if regress_rt:
+                cond_valDiffFractalMedPFrac_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffFractalMedPFrac_par['duration'] = mean_rt
+            else:
+                cond_valDiffFractalMedPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffFractalMedPFrac_par['trial_type'] = 'valDiffFractalMedPFrac_par'
+            cond_valDiffFractalMedPFrac_par['modulation'] = np.array(np.where( (run_behavior['probFractalDraw']>0.4) & (run_behavior['probFractalDraw']<0.7), 1,0) * run_behavior['leftQVAdv'])
+
+        if reg ==  "valDiffFractalHighPFrac_par":
+            if regress_rt:
+                cond_valDiffFractalHighPFrac_par = events.query('trial_type == "stimulus"')[['onset']].reset_index(drop=True)
+                cond_valDiffFractalHighPFrac_par['duration'] = mean_rt
+            else:
+                cond_valDiffFractalHighPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valDiffFractalHighPFrac_par['trial_type'] = 'valDiffFractalHighPFrac_par'
+            cond_valDiffFractalHighPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']>0.6, 1,0) * run_behavior['leftQVAdv'])
 
         if reg == 'conflict_ev':
             if regress_rt:
