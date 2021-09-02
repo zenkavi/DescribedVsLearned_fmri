@@ -59,4 +59,7 @@ def get_model_regs(mnum):
     if mnum == 'model10a':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
 
+    if mnum == 'model11':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryLowPFrac_par', 'valDiffLotteryMedPFrac_par', 'valDiffLotteryHighPFrac_par', 'valDiffFractalLowPFrac_par', 'valDiffFractalMedPFrac_par', 'valDiffFractalHighPFrac_par','reward_ev']
+
     return regs
