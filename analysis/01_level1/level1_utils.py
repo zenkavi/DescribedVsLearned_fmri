@@ -68,6 +68,9 @@ def get_model_regs(mnum):
     if mnum == 'model5a':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev']
 
+    if mnum == 'model5b':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryLowPFrac_par', 'valDiffLotteryMedPFrac_par', 'valDiffLotteryHighPFrac_par', 'valDiffFractalLowPFrac_par', 'valDiffFractalMedPFrac_par', 'valDiffFractalHighPFrac_par','reward_ev']
+
     if mnum == 'model6':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
 
@@ -78,19 +81,10 @@ def get_model_regs(mnum):
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par']
 
     if mnum == 'model8':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'rpe_par']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
 
-    if mnum == 'model9':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpe_par']
-
-    if mnum == 'model10':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
-
-    if mnum == 'model10a':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpe_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
-
-    if mnum == 'model11':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryLowPFrac_par', 'valDiffLotteryMedPFrac_par', 'valDiffLotteryHighPFrac_par', 'valDiffFractalLowPFrac_par', 'valDiffFractalMedPFrac_par', 'valDiffFractalHighPFrac_par','reward_ev']
+    if mnum == 'model8a':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
 
     return regs
 
@@ -403,11 +397,6 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
             cond_reward_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_reward_par['trial_type'] = 'reward_par'
             cond_reward_par['modulation'] = run_behavior['reward'].reset_index(drop=True)
-
-        if reg == 'rpe_par':
-            cond_rpe_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
-            cond_rpe_par['trial_type'] = 'rpe_par'
-            cond_rpe_par['modulation'] = run_behavior['rpe'].reset_index(drop=True)
 
         if reg == "rpeLeftFractal_par":
             cond_rpeLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)

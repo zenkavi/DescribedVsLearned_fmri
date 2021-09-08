@@ -1,5 +1,5 @@
 set -e
-for modelnum in model9
+for modelnum in model8a
 do
   for modelname in overall-mean
   do
@@ -7,7 +7,7 @@ do
     do
       for tfce in 1
       do
-        for regname in fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLottery_par valDiffFractal_par reward_ev reward_par rpe_par
+        for regname in fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLotteryWeighted_par valDiffFractalWeighted_par reward_ev reward_par rpeLeftFractal_par rpeRightFractal_par
         do
           for reg_rt in 0
           do
