@@ -1,19 +1,19 @@
 #!/bin/bash
 
-#SBATCH -J posthoc-contrast-{CONTRAST}-{MODELNUM}
+#SBATCH -J posthoc-contrast-{MODELNUM}_reg-rt{REG_RT}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}
 #SBATCH -c 8
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/.out/posthoc-contrast-{CONTRAST}-{MODELNUM}.out
-#SBATCH -e /shared/.err/posthoc-contrast-{CONTRAST}-{MODELNUM}.err
+#SBATCH -o /shared/.out/posthoc-contrast-{MODELNUM}_reg-rt{REG_RT}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.out
+#SBATCH -e /shared/.err/posthoc-contrast-{MODELNUM}_reg-rt{REG_RT}-{MODELNAME}-{SIGN}-{REGNAME}-tfce-{TFCE}.err
 # ------------------------------------------
 
 export CODE_PATH=/shared/code/analysis/04_extraContrasts
-export L1_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1
+export L1_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt{REG_RT}
 export L1_CODE_PATH=/shared/code/analysis/01_level1
-export L2_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2
+export L2_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}
 export L2_CODE_PATH=/shared/code/analysis/02_level2
-export L3_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}
+export L3_OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level3/{MODELNUM}_reg-rt{REG_RT}/{MODELNAME}
 export L3_CODE_PATH=/shared/code/analysis/03_level3
 export BM_PATH=/shared/bids_nifti_wface/derivatives/fmriprep
 
@@ -23,6 +23,6 @@ aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/
 
 docker run --rm -e CODE_PATH=/code -e L1_OUT_PATH=/l1_out_path -e L1_CODE_PATH=/l1_code_path -e L2_OUT_PATH=/l2_out_path -e L2_CODE_PATH=/l2_code_path -e L3_OUT_PATH=/l3_out_path -e L3_CODE_PATH=/l3_code_path -e BM_PATH=/bm \
 -v $CODE_PATH:/code -v $L1_OUT_PATH:/l1_out_path -v $L1_CODE_PATH:/l1_code_path -v $L2_OUT_PATH:/l2_out_path -v $L2_CODE_PATH:/l2_code_path -v $L3_OUT_PATH:/l3_out_path -v $L3_CODE_PATH:/l3_code_path -v $BM_PATH:/bm \
-zenkavi/fsl:6.0.3 ./code/posthoc_contrasts.py -c {CONTRAST} -m {MODELNUM}  -s {SIGN} -tf {TFCE}
+zenkavi/fsl:6.0.3 ./code/posthoc_contrasts.py --reg {REGNAME} --mnum {MODELNUM} --mnum {MODELNAME} -s {SIGN} -tf {TFCE} --reg_rt {REG_RT}
 
 aws s3 sync /shared/bids_nifti_wface/derivatives/nilearn/glm s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/

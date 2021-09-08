@@ -7,7 +7,7 @@ import pandas as pd
 import sys
 import re
 
-def run_posthoc_contrast(contrast_id, regress_rt, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, sign, tfce, c_thresh, num_perm, var_smooth, one):
+def run_posthoc_contrast(reg, regress_rt, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, mname, sign, tfce, c_thresh, num_perm, var_smooth):
 
     #################################
     # Level 1
@@ -27,7 +27,7 @@ def run_posthoc_contrast(contrast_id, regress_rt, l1_out_path, l1_code_path, l2_
         subnum = re.findall('\d+', os.path.basename(cur_glm))[0]
         runnum = re.findall('\d+', os.path.basename(cur_glm))[1]
 
-        if (os.path.exists('%s/sub-%s/contrasts/sub-%s_run-%s_reg-rt%s_%s.nii.gz'%(l1_out_path, subnum, subnum, runnum, str(regress_rt),contrast_id)) == False):
+        if not os.path.exists('%s/contrasts/sub-%s_run-%s_%s_reg-rt%s_%s.nii.gz'%(l1_out_path, subnum, runnum, mnum, str(regress_rt), reg)):
             # Load level 1 glm
             f = open(cur_glm, 'rb')
             fmri_glm = pickle.load(f)
@@ -40,18 +40,19 @@ def run_posthoc_contrast(contrast_id, regress_rt, l1_out_path, l1_code_path, l2_
 
             # Make contrasts based on the level 1 design matrix
             contrasts = make_contrasts(design_matrix)
+            # Add on any additional contrasts
+            # contrasts.update({'task-on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
+            #                  'conflict-gt-noconflict': (contrasts['conflict'] - contrasts['noconflict']),
+            #                  'valChosen-gt-valUnchosen': (contrasts['valChosen'] - contrasts['valUnchosen']),
+            #                  'stim': (contrasts['conflict'] + contrasts['noconflict'])})
 
             # Extract contrast of interest
-            contrast_val = contrasts[contrast_id]
+            contrast_val = contrasts[reg]
 
             # Computer contrast map for subjects and run
             z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
 
-            nib.save(z_map, '%s/sub-%s/contrasts/sub-%s_run-%s_reg-rt%s_%s.nii.gz'%(l1_out_path, subnum, subnum, runnum, str(regress_rt), contrast_id))
-            print("***********************************************")
-            print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
-
+            nib.save(z_map, '%s/sub-%s/contrasts/sub-%s_run-%s_%s_reg-rt%s_%s.nii.gz'%(l1_out_path, subnum, subnum, runnum, mnum, str(regress_rt), reg))
 
     #################################
     # Level 2
@@ -65,8 +66,8 @@ def run_posthoc_contrast(contrast_id, regress_rt, l1_out_path, l1_code_path, l2_
     subnums.sort()
 
     for cur_sub in subnums:
-        if(os.path.exists('%s/%s/contrasts/sub-%s_%s_reg-rt%s.nii.gz'%(l2_out_path, cur_sub, cur_sub, contrast_id, str(regress_rt))) == False):
-            run_level2(cur_sub, contrast_id, l1_out_path, l2_out_path, regress_rt)
+        if not os.path.exists('%s/sub-%s/contrasts/sub-%s_%s_reg-rt%s_%s.nii.gz'%(l2_out_path, cur_sub, cur_sub, mnum, str(regress_rt), reg)):
+            run_level2(cur_sub, mnum, reg, l1_out_path, l2_out_path, regress_rt)
 
     #################################
     # Level 3
@@ -74,5 +75,4 @@ def run_posthoc_contrast(contrast_id, regress_rt, l1_out_path, l1_code_path, l2_
 
     sys.path.append(l3_code_path)
     from level3_utils import run_level3
-    contrast_id = contrast_id + '_reg-rt%s'%(str(regress_rt))
-    run_level3(mnum, contrast_id, sign, tfce, l2_out_path, l3_out_path, bm_path, c_thresh, num_perm, var_smooth, one)
+    run_level3(mnum, mname, reg, regress_rt, sign, tfce, l2_out_path, l3_out_path, bm_path, c_thresh, num_perm, var_smooth)

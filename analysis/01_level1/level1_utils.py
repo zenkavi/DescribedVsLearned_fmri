@@ -23,12 +23,6 @@ def make_contrasts(design_matrix):
 
     contrasts = dictfilt(contrasts, beh_regs)
 
-    # Add on any additional contrasts
-    # contrasts.update({'task-on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
-    #                  'conflict-gt-noconflict': (contrasts['conflict'] - contrasts['noconflict']),
-    #                  'valChosen-gt-valUnchosen': (contrasts['valChosen'] - contrasts['valUnchosen']),
-    #                  'stim': (contrasts['conflict'] + contrasts['noconflict'])})
-
     return contrasts
 
 def get_from_sidecar(subnum, runnum, keyname, data_path):
@@ -107,7 +101,7 @@ def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
 
     return formatted_confounds
 
-def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
+def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
 
     # Read in fmri events
     fn = os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-%s_events.tsv' %(subnum, subnum, runnum))
@@ -419,7 +413,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1):
     formatted_events = formatted_events[['onset', 'duration', 'trial_type', 'modulation']].reset_index(drop=True)
     return formatted_events
 
-def make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, regress_rt=1, hrf_model = 'spm', drift_model='cosine'):
+def make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0, hrf_model = 'spm', drift_model='cosine'):
 
     tr = get_from_sidecar(subnum, runnum, 'RepetitionTime', data_path)
     n_scans = get_from_sidecar(subnum, runnum, 'dcmmeta_shape', data_path)[3]
@@ -437,7 +431,7 @@ def make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, re
 
     return design_matrix
 
-def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=1, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
+def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
