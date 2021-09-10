@@ -29,10 +29,4 @@
     fractalProb_ev fractalProb_par stim_ev choiceShift_st valChosenLotteryWeighted_par valUnchosenLotteryWeighted_par valChosenFractalWeighted_par valUnchosenFractalWeighted_par reward_ev
 
 **model7**
-    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLottery_par valDiffFractal_par reward_ev reward_par
-
-**model8**
-    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLottery_par valDiffFractal_par reward_ev reward_par rpeLeftFractal_par rpeRightFractal_par
-
-**model8a**
-    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLotteryWeighted_par valDiffFractalWeighted_par reward_ev reward_par rpeLeftFractal_par rpeRightFractal_par
+    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLottery_par valDiffFractal_par reward_ev reward_par rewardLeftFractal_par rewardRightFractal_par rpeLeftFractal_par rpeRightFractal_par ppe_par
