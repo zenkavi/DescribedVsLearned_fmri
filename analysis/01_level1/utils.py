@@ -48,12 +48,6 @@ def get_model_regs(mnum):
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLotteryWeighted_par', 'valUnchosenLotteryWeighted_par','valChosenFractalWeighted_par', 'valUnchosenFractalWeighted_par', 'reward_ev']
 
     if mnum == 'model7':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par']
-
-    if mnum == 'model8':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
-
-    if mnum == 'model8a':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev', 'reward_par', 'rpeLeftFractal_par', 'rpeRightFractal_par']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rewardLeftFractal_par', 'rewardRightFractal_par','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
 
     return regs
