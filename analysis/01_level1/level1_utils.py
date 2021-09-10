@@ -115,8 +115,8 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
 
     # Demean columns that might be used for parametric regressors
     demean_cols = ['probFractalDraw', 'leftBundleVal', 'rightBundleVal', 'leftLotteryEV', 'rightLotteryEV', 'leftQValue', 'rightQValue', 'reward', 'rpe', 'leftQVAdv', 'leftEVAdv', 'leftbundleValAdv', 'leftFractalRpe', 'rightFractalRpe']
-    for cur_col in demean_cols:
-        run_behavior.loc[:,cur_col].sub(run_behavior[cur_col].mean())
+    demean_df = run_behavior[demean_cols]
+    demean_df = demean_df - demean_df.mean()
 
     # Get regressors for the model
     regs = get_model_regs(mnum)
@@ -140,7 +140,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
         if reg == "fractalProb_par":
             cond_fractalProb_par = events.query('trial_type == "fractalProb"')[['onset', 'duration']].reset_index(drop=True)
             cond_fractalProb_par['trial_type'] = 'fractalProb_par'
-            cond_fractalProb_par['modulation'] = run_behavior['probFractalDraw'].reset_index(drop=True)
+            cond_fractalProb_par['modulation'] = demean_df['probFractalDraw'].reset_index(drop=True)
 
         if reg == "stim_ev":
             if regress_rt:
@@ -158,7 +158,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valChosen_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valChosen_par['trial_type'] = 'valChosen_par'
-            cond_valChosen_par['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['leftBundleVal'], run_behavior['rightBundleVal'])
+            cond_valChosen_par['modulation'] = np.where(run_behavior['choiceLeft'], demean_df['leftBundleVal'], demean_df['rightBundleVal'])
 
         if reg == 'valUnchosen_par':
             if regress_rt:
@@ -167,7 +167,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valUnchosen_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valUnchosen_par['trial_type'] = 'valUnchosen_par'
-            cond_valUnchosen_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['leftBundleVal'], run_behavior['rightBundleVal'])
+            cond_valUnchosen_par['modulation'] = np.where(run_behavior['choiceLeft']==0, demean_df['leftBundleVal'], demean_df['rightBundleVal'])
 
         if reg == 'valChosenLottery_par':
             if regress_rt:
@@ -176,7 +176,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valChosenLottery_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valChosenLottery_par['trial_type'] = 'valChosenLottery_par'
-            cond_valChosenLottery_par['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['leftLotteryEV'], run_behavior['rightLotteryEV'])
+            cond_valChosenLottery_par['modulation'] = np.where(run_behavior['choiceLeft'], demean_df['leftLotteryEV'], demean_df['rightLotteryEV'])
 
         if reg == 'valUnchosenLottery_par':
             if regress_rt:
@@ -185,7 +185,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valUnchosenLottery_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valUnchosenLottery_par['trial_type'] = 'valUnchosenLottery_par'
-            cond_valUnchosenLottery_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['leftLotteryEV'], run_behavior['rightLotteryEV'])
+            cond_valUnchosenLottery_par['modulation'] = np.where(run_behavior['choiceLeft']==0, demean_df['leftLotteryEV'], demean_df['rightLotteryEV'])
 
         if reg == 'valChosenFractal_par':
             if regress_rt:
@@ -194,7 +194,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valChosenFractal_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valChosenFractal_par['trial_type'] = 'valChosenFractal_par'
-            cond_valChosenFractal_par['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['leftQValue'], run_behavior['rightQValue'])
+            cond_valChosenFractal_par['modulation'] = np.where(run_behavior['choiceLeft'], demean_df['leftQValue'], demean_df['rightQValue'])
 
         if reg == 'valUnchosenFractal_par':
             if regress_rt:
@@ -203,7 +203,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valUnchosenFractal_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valUnchosenFractal_par['trial_type'] = 'valUnchosenFractal_par'
-            cond_valUnchosenFractal_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['leftQValue'], run_behavior['rightQValue'])
+            cond_valUnchosenFractal_par['modulation'] = np.where(run_behavior['choiceLeft']==0, demean_df['leftQValue'], demean_df['rightQValue'])
 
         if reg == "valChosenLotteryWeighted_par":
             if regress_rt:
@@ -212,7 +212,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valChosenLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valChosenLotteryWeighted_par['trial_type'] = 'valChosenLotteryWeighted_par'
-            cond_valChosenLotteryWeighted_par['modulation'] = np.where(run_behavior['choiceLeft'], (1-run_behavior['wpFrac'])*run_behavior['leftLotteryEV'], (1-run_behavior['wpFrac'])*run_behavior['rightLotteryEV'])
+            cond_valChosenLotteryWeighted_par['modulation'] = np.where(run_behavior['choiceLeft'], (1-run_behavior['wpFrac'])*demean_df['leftLotteryEV'], (1-run_behavior['wpFrac'])*demean_df['rightLotteryEV'])
 
         if reg == "valUnchosenLotteryWeighted_par":
             if regress_rt:
@@ -221,7 +221,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valUnchosenLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valUnchosenLotteryWeighted_par['trial_type'] = 'valUnchosenLotteryWeighted_par'
-            cond_valUnchosenLotteryWeighted_par['modulation'] = np.where(run_behavior['choiceLeft']==0, (1-run_behavior['wpFrac'])*run_behavior['leftLotteryEV'], (1-run_behavior['wpFrac'])*run_behavior['rightLotteryEV'])
+            cond_valUnchosenLotteryWeighted_par['modulation'] = np.where(run_behavior['choiceLeft']==0, (1-run_behavior['wpFrac'])*demean_df['leftLotteryEV'], (1-run_behavior['wpFrac'])*demean_df['rightLotteryEV'])
 
         if reg == "valChosenFractalWeighted_par":
             if regress_rt:
@@ -230,7 +230,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valChosenFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valChosenFractalWeighted_par['trial_type'] = 'valChosenFractalWeighted_par'
-            cond_valChosenFractalWeighted_par['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['wpFrac']*run_behavior['leftQValue'], run_behavior['wpFrac']*run_behavior['rightQValue'])
+            cond_valChosenFractalWeighted_par['modulation'] = np.where(run_behavior['choiceLeft'], run_behavior['wpFrac']*demean_df['leftQValue'], run_behavior['wpFrac']*demean_df['rightQValue'])
 
         if reg == "valUnchosenFractalWeighted_par":
             if regress_rt:
@@ -239,7 +239,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valUnchosenFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valUnchosenFractalWeighted_par['trial_type'] = 'valUnchosenFractalWeighted_par'
-            cond_valUnchosenFractalWeighted_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['wpFrac']*run_behavior['leftQValue'], run_behavior['wpFrac']*run_behavior['rightQValue'])
+            cond_valUnchosenFractalWeighted_par['modulation'] = np.where(run_behavior['choiceLeft']==0, run_behavior['wpFrac']*demean_df['leftQValue'], run_behavior['wpFrac']*demean_df['rightQValue'])
 
         if reg == 'valDiff_par':
             if regress_rt:
@@ -248,7 +248,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiff_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiff_par['trial_type'] = 'valDiff_par'
-            cond_valDiff_par['modulation'] = run_behavior['leftbundleValAdv'].reset_index(drop=True)
+            cond_valDiff_par['modulation'] = demean_df['leftbundleValAdv'].reset_index(drop=True)
 
         if reg == 'valDiffLottery_par':
             if regress_rt:
@@ -257,7 +257,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffLottery_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffLottery_par['trial_type'] = 'valDiffLottery_par'
-            cond_valDiffLottery_par['modulation'] = run_behavior['leftEVAdv'].reset_index(drop=True)
+            cond_valDiffLottery_par['modulation'] = demean_df['leftEVAdv'].reset_index(drop=True)
 
         if reg == 'valDiffFractal_par':
             if regress_rt:
@@ -266,7 +266,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffFractal_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractal_par['trial_type'] = 'valDiffFractal_par'
-            cond_valDiffFractal_par['modulation'] = run_behavior['leftQVAdv'].reset_index(drop=True)
+            cond_valDiffFractal_par['modulation'] = demean_df['leftQVAdv'].reset_index(drop=True)
 
         if reg == "valDiffLotteryWeighted_par":
             if regress_rt:
@@ -275,7 +275,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffLotteryWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffLotteryWeighted_par['trial_type'] = 'valDiffLotteryWeighted_par'
-            cond_valDiffLotteryWeighted_par['modulation'] = np.array(run_behavior['leftEVAdv']*(1-run_behavior['wpFrac']))
+            cond_valDiffLotteryWeighted_par['modulation'] = np.array(demean_df['leftEVAdv']*(1-run_behavior['wpFrac']))
 
         if reg == "valDiffFractalWeighted_par":
             if regress_rt:
@@ -284,7 +284,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffFractalWeighted_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractalWeighted_par['trial_type'] = 'valDiffFractalWeighted_par'
-            cond_valDiffFractalWeighted_par['modulation'] = np.array(run_behavior['leftQVAdv']*run_behavior['wpFrac'])
+            cond_valDiffFractalWeighted_par['modulation'] = np.array(demean_df['leftQVAdv']*run_behavior['wpFrac'])
 
         if reg ==  "valDiffLotteryLowPFrac_par":
             if regress_rt:
@@ -293,7 +293,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffLotteryLowPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffLotteryLowPFrac_par['trial_type'] = 'valDiffLotteryLowPFrac_par'
-            cond_valDiffLotteryLowPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']<0.4, 1,0) * run_behavior['leftEVAdv'])
+            cond_valDiffLotteryLowPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']<0.4, 1,0) * demean_df['leftEVAdv'])
 
         if reg ==  "valDiffLotteryMedPFrac_par":
             if regress_rt:
@@ -302,7 +302,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffLotteryMedPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffLotteryMedPFrac_par['trial_type'] = 'valDiffLotteryMedPFrac_par'
-            cond_valDiffLotteryMedPFrac_par['modulation'] = np.array(np.where( (run_behavior['probFractalDraw']>0.4) & (run_behavior['probFractalDraw']<0.7), 1,0) * run_behavior['leftEVAdv'])
+            cond_valDiffLotteryMedPFrac_par['modulation'] = np.array(np.where( (run_behavior['probFractalDraw']>0.4) & (run_behavior['probFractalDraw']<0.7), 1,0) * demean_df['leftEVAdv'])
 
         if reg ==  "valDiffLotteryHighPFrac_par":
             if regress_rt:
@@ -311,7 +311,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffLotteryHighPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffLotteryHighPFrac_par['trial_type'] = 'valDiffLotteryHighPFrac_par'
-            cond_valDiffLotteryHighPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']>0.6, 1,0) * run_behavior['leftEVAdv'])
+            cond_valDiffLotteryHighPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']>0.6, 1,0) * demean_df['leftEVAdv'])
 
         if reg ==  "valDiffFractalLowPFrac_par":
             if regress_rt:
@@ -320,7 +320,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffFractalLowPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractalLowPFrac_par['trial_type'] = 'valDiffFractalLowPFrac_par'
-            cond_valDiffFractalLowPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']<0.4, 1,0) * run_behavior['leftQVAdv'])
+            cond_valDiffFractalLowPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']<0.4, 1,0) * demean_df['leftQVAdv'])
 
         if reg ==  "valDiffFractalMedPFrac_par":
             if regress_rt:
@@ -329,7 +329,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffFractalMedPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractalMedPFrac_par['trial_type'] = 'valDiffFractalMedPFrac_par'
-            cond_valDiffFractalMedPFrac_par['modulation'] = np.array(np.where( (run_behavior['probFractalDraw']>0.4) & (run_behavior['probFractalDraw']<0.7), 1,0) * run_behavior['leftQVAdv'])
+            cond_valDiffFractalMedPFrac_par['modulation'] = np.array(np.where( (run_behavior['probFractalDraw']>0.4) & (run_behavior['probFractalDraw']<0.7), 1,0) * demean_df['leftQVAdv'])
 
         if reg ==  "valDiffFractalHighPFrac_par":
             if regress_rt:
@@ -338,7 +338,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             else:
                 cond_valDiffFractalHighPFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valDiffFractalHighPFrac_par['trial_type'] = 'valDiffFractalHighPFrac_par'
-            cond_valDiffFractalHighPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']>0.6, 1,0) * run_behavior['leftQVAdv'])
+            cond_valDiffFractalHighPFrac_par['modulation'] = np.array(np.where(run_behavior['probFractalDraw']>0.6, 1,0) * demean_df['leftQVAdv'])
 
         if reg == 'conflict_ev':
             if regress_rt:
@@ -390,17 +390,17 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
         if reg == 'reward_par':
             cond_reward_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_reward_par['trial_type'] = 'reward_par'
-            cond_reward_par['modulation'] = run_behavior['reward'].reset_index(drop=True)
+            cond_reward_par['modulation'] = demean_df['reward'].reset_index(drop=True)
 
         if reg == "rpeLeftFractal_par":
             cond_rpeLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rpeLeftFractal_par['trial_type'] = 'rpeLeftFractal_par'
-            cond_rpeLeftFractal_par['modulation'] = run_behavior['leftFractalRpe'].reset_index(drop=True)
+            cond_rpeLeftFractal_par['modulation'] = demean_df['leftFractalRpe'].reset_index(drop=True)
 
         if reg == "rpeRightFractal_par":
             cond_rpeRightFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rpeRightFractal_par['trial_type'] = 'rpeRightFractal_par'
-            cond_rpeRightFractal_par['modulation'] = run_behavior['rightFractalRpe'].reset_index(drop=True)
+            cond_rpeRightFractal_par['modulation'] = demean_df['rightFractalRpe'].reset_index(drop=True)
 
     # List of var names including 'cond'
     toconcat = [i for i in dir() if 'cond' in i]
