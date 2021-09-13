@@ -9,3 +9,4 @@
 ./run_level3/run_level3_model6.sh
 ./run_level3/run_level3_model6a.sh
 ./run_level3/run_level3_model7.sh
+./run_level3/run_level3_model7a.sh

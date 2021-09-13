@@ -74,6 +74,9 @@ def get_model_regs(mnum):
     if mnum == 'model7':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rewardLeftFractal_par', 'rewardRightFractal_par','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
 
+    if mnum == 'model7a':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiff_par', 'rewardBin_ev', 'noRewardBin_ev', 'rewardLeftFractal_par', 'rewardRightFractal_par','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
+
     return regs
 
 def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
@@ -385,6 +388,16 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_reward_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_reward_par['trial_type'] = 'reward_par'
             cond_reward_par['modulation'] = demean_df['reward'].reset_index(drop=True)
+
+        if reg == 'rewardBin_ev':
+            cond_rewardBin_ev = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rewardBin_ev['trial_type'] = 'rewardBin_ev'
+            cond_rewardBin_ev['modulation'] = np.where(run_behavior['reward']>0, 1, 0)
+
+        if reg == 'noRewardBin_ev':
+            cond_noRewardBin_ev = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_noRewardBin_ev['trial_type'] = 'noRewardBin_ev'
+            cond_noRewardBin_ev['modulation'] = np.where(run_behavior['reward']==0, 1, 0)
 
         if reg == 'ppe_par':
             cond_ppe_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
