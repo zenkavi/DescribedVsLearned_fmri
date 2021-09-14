@@ -41,10 +41,7 @@ def run_posthoc_contrast(reg, regress_rt, l1_out_path, l1_code_path, l2_out_path
             # Make contrasts based on the level 1 design matrix
             contrasts = make_contrasts(design_matrix)
             # Add on any additional contrasts
-            # contrasts.update({'task-on': (contrasts['fractalProb'] + contrasts['conflict'] + contrasts['noconflict'] + contrasts['reward']),
-            #                  'conflict-gt-noconflict': (contrasts['conflict'] - contrasts['noconflict']),
-            #                  'valChosen-gt-valUnchosen': (contrasts['valChosen'] - contrasts['valUnchosen']),
-            #                  'stim': (contrasts['conflict'] + contrasts['noconflict'])})
+            contrasts.update({'rewardBin_ev-vs-noRewardBin_ev': (contrasts['rewardBin_ev'] - contrasts['noRewardBin_ev'])})
 
             # Extract contrast of interest
             contrast_val = contrasts[reg]

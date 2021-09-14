@@ -7,7 +7,7 @@ do
     do
       for tfce in 1
       do
-        for regname in conflict-vs-noconflict
+        for regname in rewardBin_ev-vs-noRewardBin_ev
         do
           for reg_rt in 0
           do
