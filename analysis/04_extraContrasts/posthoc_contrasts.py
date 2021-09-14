@@ -44,4 +44,4 @@ l3_out_path = os.environ['L3_OUT_PATH']
 l3_code_path = os.environ['L3_CODE_PATH']
 bm_path = os.environ['BM_PATH']
 
-run_posthoc_contrast(reg, regress_rt=reg_rt, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, mname, sign, tfce, c_thresh, num_perm, var_smooth
+run_posthoc_contrast(reg, regress_rt=reg_rt, l1_out_path, l1_code_path, l2_out_path, l2_code_path, l3_out_path, l3_code_path, bm_path, mnum, mname, sign, tfce, c_thresh, num_perm, var_smooth)

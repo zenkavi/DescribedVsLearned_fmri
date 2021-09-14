@@ -24,12 +24,12 @@ l1_code_path = args.l1_code_path
 out_path = args.out_path
 
 sys.path.append(l1_code_path)
-from utils import get_model_regs
+from utils import get_model_regs_with_contrasts
 
 if reg is not None:
     regs = [reg]
 else:
-    regs = get_model_regs(mnum)
+    regs = get_model_regs_with_contrasts(mnum)
     if int(reg_rt):
         regs.append('stim_rt')
 

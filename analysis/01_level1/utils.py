@@ -16,6 +16,15 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
 
     return out
 
+# For level 2, check_output (and posthoc contrasts?)
+def get_model_regs_with_contrasts(mnum):
+    regs = get_model_regs(mnum)
+
+    if mnum == 'model7a' or mmum = 'model7b':
+        regs.append('rewardBin_ev-vs-noRewardBin_ev')
+
+    return regs
+
 def get_model_regs(mnum):
     if mnum == 'model1':
         regs = ['fractalProb_ev', 'stim_ev', 'choiceShift_st', 'reward_ev']

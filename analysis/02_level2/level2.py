@@ -17,5 +17,6 @@ contrasts = args.contrasts
 reg_rt = args.reg_rt
 data_path = os.environ['DATA_PATH']
 out_path = os.environ['OUT_PATH']
+l1_code_path = os.path.join(os.environ['CODE_PATH'], '01_level1')
 
-run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=reg_rt)
+run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=reg_rt, l1_code_path=l1_code_path)

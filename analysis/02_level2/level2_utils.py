@@ -6,8 +6,9 @@ import os
 import pandas as pd
 import pickle
 import re
+import sys
 
-def run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=0):
+def run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=0, l1_code_path):
 
     # mnum argument is not actually used bc paths include it in job submission but keeping it here for consistency
     if not os.path.exists(out_path):
@@ -22,8 +23,10 @@ def run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=0):
     sub_l1_contrasts.sort()
 
     if contrasts == None:
-        contrasts = np.unique(['_'.join(os.path.basename(i).split('_')[-2:]) for i in sub_l1_contrasts])
-        contrasts = [i.split('.')[0] for i in contrasts]
+        sys.path.append(l1_code_path)
+        from utils import get_model_regs_with_contrasts
+        contrasts = get_model_regs_with_contrasts(mnum)
+        contrasts.sort()
 
     if isinstance(contrasts, str):
         contrasts = [contrasts]
