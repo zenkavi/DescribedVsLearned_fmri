@@ -22,6 +22,7 @@ def make_contrasts(design_matrix):
     beh_regs = [x for x in beh_regs if all(y not in x for y in to_filter)]
 
     contrasts = dictfilt(contrasts, beh_regs)
+    contrasts.update({'rewardBin_ev-vs-noRewardBin_ev': (contrasts['rewardBin_ev'] - contrasts['noRewardBin_ev'])})
 
     return contrasts
 
@@ -76,6 +77,9 @@ def get_model_regs(mnum):
 
     if mnum == 'model7a':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiff_par', 'rewardBin_ev', 'noRewardBin_ev', 'rewardLeftFractal_par', 'rewardRightFractal_par','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
+
+    if mnum == 'model7b':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiff_par', 'rewardBin_ev', 'noRewardBin_ev', 'rewardLeftFractal_ev', 'rewardRightFractal_ev','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
 
     return regs
 
@@ -413,6 +417,16 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_rewardRightFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rewardRightFractal_par['trial_type'] = 'rewardRightFractal_par'
             cond_rewardRightFractal_par['modulation'] = demean_df['rightFractalReward'].reset_index(drop=True)
+
+        if reg == 'rewardLeftFractal_ev':
+            cond_rewardLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rewardLeftFractal_par['trial_type'] = 'rewardLeftFractal_ev'
+            cond_rewardLeftFractal_par['modulation'] = run_behavior['leftFractalReward'].reset_index(drop=True)
+
+        if reg == 'rewardRightFractal_ev':
+            cond_rewardRightFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rewardRightFractal_par['trial_type'] = 'rewardRightFractal_ev'
+            cond_rewardRightFractal_par['modulation'] = run_behavior['rightFractalReward'].reset_index(drop=True)
 
         if reg == "rpeLeftFractal_par":
             cond_rpeLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)

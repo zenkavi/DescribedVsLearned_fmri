@@ -32,4 +32,7 @@
     fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiffLottery_par valDiffFractal_par reward_ev reward_par rewardLeftFractal_par rewardRightFractal_par rpeLeftFractal_par rpeRightFractal_par ppe_par
 
 **model7a**
-    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiff_par rewardBin_ev noRewardBin_ev rewardLeftFractal_par rewardRightFractal_par rpeLeftFractal_par rpeRightFractal_par ppe_par 
+    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiff_par rewardBin_ev noRewardBin_ev rewardLeftFractal_par rewardRightFractal_par rpeLeftFractal_par rpeRightFractal_par ppe_par
+
+**model7b**
+    fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiff_par rewardBin_ev noRewardBin_ev rewardLeftFractal_ev rewardRightFractal_ev rpeLeftFractal_par rpeRightFractal_par ppe_par
