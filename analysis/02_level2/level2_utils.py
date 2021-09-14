@@ -8,7 +8,7 @@ import pickle
 import re
 import sys
 
-def run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=0, l1_code_path):
+def run_level2(subnum, mnum, contrasts, data_path, out_path, l1_code_path, regress_rt=0):
 
     # mnum argument is not actually used bc paths include it in job submission but keeping it here for consistency
     if not os.path.exists(out_path):

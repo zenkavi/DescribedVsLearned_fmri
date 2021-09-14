@@ -20,7 +20,7 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
 def get_model_regs_with_contrasts(mnum):
     regs = get_model_regs(mnum)
 
-    if mnum == 'model7a' or mmum = 'model7b':
+    if mnum == 'model7a' or mnum == 'model7b':
         regs.append('rewardBin_ev-vs-noRewardBin_ev')
 
     return regs

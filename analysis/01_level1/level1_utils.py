@@ -10,7 +10,7 @@ import re
 import pickle
 from utils import get_from_sidecar, get_model_regs
 
-def make_contrasts(design_matrix):
+def make_contrasts(design_matrix, mnum):
     # first generate canonical contrasts (i.e. regressors vs. baseline)
     contrast_matrix = np.eye(design_matrix.shape[1])
     contrasts = dict([(column, contrast_matrix[i])
@@ -23,6 +23,9 @@ def make_contrasts(design_matrix):
     beh_regs = [x for x in beh_regs if all(y not in x for y in to_filter)]
 
     contrasts = dictfilt(contrasts, beh_regs)
+
+    if mnum == 'model7a' or mnum == 'model7b':
+        contrasts.update({'rewardBin_ev-vs-noRewardBin_ev': (contrasts['rewardBin_ev'] - contrasts['noRewardBin_ev'])})
 
     return contrasts
 
@@ -471,7 +474,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, b
             print("***********************************************")
             print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            contrasts = make_contrasts(design_matrix)
+            contrasts = make_contrasts(design_matrix, mnum)
             for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
                 z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
                 nib.save(z_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))

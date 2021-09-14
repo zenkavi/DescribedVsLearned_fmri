@@ -39,11 +39,11 @@ def run_posthoc_contrast(reg, regress_rt, l1_out_path, l1_code_path, l2_out_path
               design_matrix=design_matrix.drop(columns=['Unnamed: 0'])
 
             # Make contrasts based on the level 1 design matrix
-            contrasts = make_contrasts(design_matrix)
+            contrasts = make_contrasts(design_matrix, mnum)
 
             # Add on any additional contrasts
-            if mnum == 'model7a' or mnum == 'model7b':
-                contrasts.update({'rewardBin_ev-vs-noRewardBin_ev': (contrasts['rewardBin_ev'] - contrasts['noRewardBin_ev'])})
+            # if mnum == 'model7a' or mnum == 'model7b':
+            #     contrasts.update({'rewardBin_ev-vs-noRewardBin_ev': (contrasts['rewardBin_ev'] - contrasts['noRewardBin_ev'])})
 
             # Extract contrast of interest
             contrast_val = contrasts[reg]

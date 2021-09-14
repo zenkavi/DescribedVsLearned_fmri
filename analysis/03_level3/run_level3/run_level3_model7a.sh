@@ -7,7 +7,7 @@ do
     do
       for tfce in 1
       do
-        for regname in fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiff_par rewardBin_ev noRewardBin_ev rewardLeftFractal_par rewardRightFractal_par rpeLeftFractal_par rpeRightFractal_par ppe_par
+        for regname in fractalProb_ev fractalProb_par stim_ev choiceShift_st valDiff_par rewardBin_ev noRewardBin_ev rewardLeftFractal_par rewardRightFractal_par rpeLeftFractal_par rpeRightFractal_par ppe_par rewardBin_ev-vs-noRewardBin_ev
         do
           for reg_rt in 0
           do
