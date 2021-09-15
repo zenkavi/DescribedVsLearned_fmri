@@ -231,6 +231,15 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_reward_par['trial_type'] = 'reward_par'
             cond_reward_par['modulation'] = demean_df['reward'].reset_index(drop=True)
 
+        if reg == 'rewarded_par':
+            rewardEvents = events.query('trial_type == "reward"').reset_index(drop=True)
+            rewardedTrials = run_behavior.reset_index(drop=True).query("reward > 0").index
+            rewardedEvents = rewardEvents.iloc[rewardedTrials,:]
+            cond_rewarded_par = rewardedEvents[['onset', 'duration']].reset_index(drop=True)
+            cond_rewarded_par['trial_type'] = 'rewarded_par'
+            rewards = np.array(run_behavior.query("reward > 0")['reward'])
+            cond_rewarded_par['modulation'] = rewards - rewards.mean()
+
         if reg == "rpeLeftFractal_par":
             cond_rpeLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rpeLeftFractal_par['trial_type'] = 'rpeLeftFractal_par'
