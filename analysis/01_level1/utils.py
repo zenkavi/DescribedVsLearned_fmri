@@ -20,9 +20,6 @@ def get_from_sidecar(subnum, runnum, keyname, data_path):
 def get_model_regs_with_contrasts(mnum):
     regs = get_model_regs(mnum)
 
-    if mnum == 'model7a' or mnum == 'model7b':
-        regs.append('rewardBin_ev-vs-noRewardBin_ev')
-
     return regs
 
 def get_model_regs(mnum):
@@ -36,33 +33,6 @@ def get_model_regs(mnum):
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'reward_ev']
 
     if mnum == 'model3':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev','choiceShift_st', 'valDiff_par', 'reward_ev']
-
-    if mnum == 'model4':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valChosen_par', 'valUnchosen_par', 'reward_ev']
-
-    if mnum == 'model5':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev']
-
-    if mnum == 'model5a':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryWeighted_par', 'valDiffFractalWeighted_par', 'reward_ev']
-
-    if mnum == 'model5b':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLotteryLowPFrac_par', 'valDiffLotteryMedPFrac_par', 'valDiffLotteryHighPFrac_par', 'valDiffFractalLowPFrac_par', 'valDiffFractalMedPFrac_par', 'valDiffFractalHighPFrac_par','reward_ev']
-
-    if mnum == 'model6':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLottery_par', 'valUnchosenLottery_par','valChosenFractal_par', 'valUnchosenFractal_par', 'reward_ev']
-
-    if mnum == 'model6a':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valChosenLotteryWeighted_par', 'valUnchosenLotteryWeighted_par','valChosenFractalWeighted_par', 'valUnchosenFractalWeighted_par', 'reward_ev']
-
-    if mnum == 'model7':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiffLottery_par', 'valDiffFractal_par', 'reward_ev', 'reward_par', 'rewardLeftFractal_par', 'rewardRightFractal_par','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
-
-    if mnum == 'model7a':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiff_par', 'rewardBin_ev', 'noRewardBin_ev', 'rewardLeftFractal_par', 'rewardRightFractal_par','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
-
-    if mnum == 'model7b':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st','valDiff_par', 'rewardBin_ev', 'noRewardBin_ev', 'rewardLeftFractal_ev', 'rewardRightFractal_ev','rpeLeftFractal_par', 'rpeRightFractal_par', 'ppe_par']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosen_par', 'reward_ev', 'reward_par', 'rpeLeftRightSum_par']
 
     return regs
