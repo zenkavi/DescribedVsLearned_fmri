@@ -203,6 +203,13 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_valChosenMinusUnchosen_par['trial_type'] = 'valChosenMinusUnchosen_par'
             cond_valChosenMinusUnchosen_par['modulation'] = demean_df['valChosenMinusUnchosen'].reset_index(drop=True)
 
+        if reg == 'valChosenMinusUnchosenLate_par':
+            cond_valChosenMinusUnchosenLate_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valChosenMinusUnchosenLate_par['onset'] = cond_valChosenMinusUnchosenLate_par['onset'] + cond_valChosenMinusUnchosenLate_par['duration'] - 1
+            cond_valChosenMinusUnchosenLate_par['duration'] = 1
+            cond_valChosenMinusUnchosenLate_par['trial_type'] = 'valChosenMinusUnchosenLate_par'
+            cond_valChosenMinusUnchosenLate_par['modulation'] = demean_df['valChosenMinusUnchosenLate'].reset_index(drop=True)
+
         if reg == 'choiceShift_st':
             cond_choiceShift_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
             cond_choiceShift_st['duration'] = 0
@@ -254,6 +261,19 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_rpeLeftRightSum_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rpeLeftRightSum_par['trial_type'] = 'rpeLeftRightSum_par'
             cond_rpeLeftRightSum_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
+
+        if reg == 'rpeLeftRightSumEarly_par':
+            cond_rpeLeftRightSumEarly_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeLeftRightSumEarly_par['duration'] = 1
+            cond_rpeLeftRightSumEarly_par['trial_type'] = 'rpeLeftRightSumEarly_par'
+            cond_rpeLeftRightSumEarly_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
+
+        if reg == 'rpeLeftRightSumLate_par':
+            cond_rpeLeftRightSumLate_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeLeftRightSumLate_par['onset'] = cond_rpeLeftRightSumLate_par['onset'] + cond_rpeLeftRightSumLate_par['duration'] - 1
+            cond_rpeLeftRightSumLate_par['duration'] = 1
+            cond_rpeLeftRightSumLate_par['trial_type'] = 'rpeLeftRightSumLate_par'
+            cond_rpeLeftRightSumLate_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
 
     # List of var names including 'cond'
     toconcat = [i for i in dir() if 'cond' in i]
