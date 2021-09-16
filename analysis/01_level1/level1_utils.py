@@ -208,7 +208,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_valChosenMinusUnchosenLate_par['onset'] = cond_valChosenMinusUnchosenLate_par['onset'] + cond_valChosenMinusUnchosenLate_par['duration'] - 1
             cond_valChosenMinusUnchosenLate_par['duration'] = 1
             cond_valChosenMinusUnchosenLate_par['trial_type'] = 'valChosenMinusUnchosenLate_par'
-            cond_valChosenMinusUnchosenLate_par['modulation'] = demean_df['valChosenMinusUnchosenLate'].reset_index(drop=True)
+            cond_valChosenMinusUnchosenLate_par['modulation'] = demean_df['valChosenMinusUnchosen'].reset_index(drop=True)
 
         if reg == 'choiceShift_st':
             cond_choiceShift_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
