@@ -44,4 +44,7 @@ def get_model_regs(mnum):
     if mnum == 'model6':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosenLate_par', 'reward_ev', 'rewarded_par', 'rpeLeftRightSumLate_par']
 
+    if mnum == 'model7':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosen_par', 'reward_ev', 'rpeLeftRightSum_par']
+
     return regs
