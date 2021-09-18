@@ -238,6 +238,11 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_reward_par['trial_type'] = 'reward_par'
             cond_reward_par['modulation'] = demean_df['reward'].reset_index(drop=True)
 
+        if reg == 'rewardNotDemeaned_par':
+            cond_rewardNotDemeaned_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rewardNotDemeaned_par['trial_type'] = 'rewardNotDemeaned_par'
+            cond_rewardNotDemeaned_par['modulation'] = run_behavior['reward'].reset_index(drop=True)
+
         if reg == 'rewarded_par':
             rewardEvents = events.query('trial_type == "reward"').reset_index(drop=True)
             rewardedTrials = run_behavior.reset_index(drop=True).query("reward > 0").index
