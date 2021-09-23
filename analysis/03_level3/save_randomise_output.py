@@ -11,7 +11,7 @@ def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
             if tfce:
                 shutil.move(cur_file, "%s/rand_tfce_tstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg) )
             else:
-                shutil.move(cur_file, "%s/rand_cluster_tstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg) )
+                shutil.move(cur_file, "%s/rand_clustere_tstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg) )
             print("***********************************************")
             print("Saved tstat_file for: %s %s"%(mname, reg))
             print("***********************************************")
@@ -22,7 +22,7 @@ def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
             if tfce:
                 shutil.move(cur_file,"%s/rand_tfce_fstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg) )
             else:
-                shutil.move(cur_file,"%s/rand_cluster_fstat%s_%s_%s_%s.nii.gzz"%(reg_path, str(i+1), sign, mname, reg) )
+                shutil.move(cur_file,"%s/rand_clustere_fstat%s_%s_%s_%s.nii.gzz"%(reg_path, str(i+1), sign, mname, reg) )
             print("***********************************************")
             print("Saved fstat_file for: %s %s"%(mname, reg))
             print("***********************************************")
@@ -33,7 +33,7 @@ def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
             if tfce:
                 shutil.move(cur_file, "%s/rand_tfce_t_p%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             else:
-                shutil.move(cur_file, "%s/rand_cluster_t_p%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
+                shutil.move(cur_file, "%s/rand_clustere_t_p%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             print("***********************************************")
             print("Saved t_p_file for: %s %s"%(mname, reg))
             print("***********************************************")
@@ -44,7 +44,7 @@ def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
             if tfce:
                 shutil.move(cur_file,"%s/rand_tfce_f_p%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             else:
-                shutil.move(cur_file,"%s/rand_tfce_f_p%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
+                shutil.move(cur_file,"%s/rand_clustere_f_p%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             print("***********************************************")
             print("Saved f_p_file for: %s %s"%(mname, reg))
             print("***********************************************")
@@ -55,7 +55,7 @@ def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
             if tfce:
                 shutil.move(cur_file,"%s/rand_tfce_corrp_tstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             else:
-                shutil.move(cur_file,"%s/rand_cluster_corrp_tstat%s_%s_%s_%s.nii.gzz"%(reg_path, str(i+1), sign, mname, reg))
+                shutil.move(cur_file,"%s/rand_clustere_corrp_tstat%s_%s_%s_%s.nii.gzz"%(reg_path, str(i+1), sign, mname, reg))
             print("***********************************************")
             print("Saved t_corrected_p_file for: %s %s"%(mname, reg))
             print("***********************************************")
@@ -66,7 +66,7 @@ def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
             if tfce:
                 shutil.move(cur_file,"%s/rand_tfce_corrp_fstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             else:
-                shutil.move(cur_file,"%s/rand_cluster_corrp_fstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
+                shutil.move(cur_file,"%s/rand_clustere_corrp_fstat%s_%s_%s_%s.nii.gz"%(reg_path, str(i+1), sign, mname, reg))
             print("***********************************************")
             print("Saved f_corrected_p_file for: %s %s"%(mname, reg))
             print("***********************************************")
