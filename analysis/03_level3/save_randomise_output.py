@@ -1,6 +1,8 @@
 import shutil
 
 # This is pretty inefficient. If you figure out a better way to iterate through 'nipype.interfaces.fsl.model.RandomiseOutputSpec' it would be better
+# Hit enter for `randomise_results.outputs.` to get available methods that would be useful for this.
+# E.g. looping through the keys and values of the dictionary returned by randomise_results.outputs.trait_get() might work
 
 def save_randomise_output(randomise_results, reg_path, mname, reg, tfce, sign):
     # save_randomise_output(randomise_results, reg_path, mname, suffix, tfce, sign)
