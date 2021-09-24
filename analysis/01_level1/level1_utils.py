@@ -375,7 +375,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, b
                 z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
                 nib.save(z_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
                 if beta:
-                    b_map = fmri_glm.compute_contrast(contrast_val, output_type='effect_size')
+                    b_map = fmri_glm.compute_contrast(contrast_val, output_type='stat')
                     nib.save(b_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_betas.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
             print("***********************************************")
             print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
