@@ -8,16 +8,34 @@ mem = Memory(base_dir='.')
 import numpy as np
 import os
 import pandas as pd
-from save_randomise_output import save_randomise_output
+import shutil
 
 def run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, package='fsl', c_thresh=3, num_perm=1000, var_smooth=5):
     if package == 'fsl':
         fsl_randomise_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=c_thresh, num_perm=num_perm, var_smooth=var_smooth)
-    else:
-        nilearn_level2(...)
+    # else:
+    #     nilearn_level2(...)
 
-def nilearn_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=3, num_perm=1000, var_smooth=5):
+# def nilearn_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=3, num_perm=1000, var_smooth=5):
+#     input_path = "%s/sub-*"%(data_path)
+#
+#     reg_path = "%s/%s_%s_reg-rt%s"%(out_path, reg, mnum, str(regress_rt))
+#     if not os.path.exists(reg_path):
+#         os.makedirs(reg_path)
+#
+#     level1_models = glob.glob('%s/sub-*_%s_%s_reg-rt%s'%(input_path, reg, mnum, str(regress_rt)))
+#     level1_models.sort()
 
+def flatten(t):
+    return [item for sublist in t for item in sublist]
+
+def save_randomise_output(randomise_results, reg_path, mname, suffix, tfce, sign):
+    rand_files_list = [i for i in randomise_results.outputs.trait_get().values() if len(i)>0]
+    rand_files_list = flatten(rand_files_list)
+
+    for fn in rand_files_list:
+        cur_file = suffix + '_' + sign + '_' + mname + '_' + os.path.basename(fn)
+        shutil.move(fn, "%s/%s"%(reg_path, cur_file))
 
 def fsl_randomise_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=3, num_perm=1000, var_smooth=5):
     randomise = mem.cache(fsl.Randomise)
@@ -28,7 +46,7 @@ def fsl_randomise_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, ou
     if not os.path.exists(reg_path):
         os.makedirs(reg_path)
 
-    level1_images = glob.glob('%s/sub-*_%s_%s_reg-rt%s_effect_size.nii.gz'%(input_path, reg, mnum, str(regress_rt)))
+    level1_images = glob.glob('%s/sub-*_%s_reg-rt%s_%s_effect_size.nii.gz'%(input_path, mnum, str(regress_rt), reg))
     level1_images.sort()
 
     suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)

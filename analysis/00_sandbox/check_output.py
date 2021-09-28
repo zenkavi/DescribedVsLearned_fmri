@@ -67,10 +67,13 @@ if level == 2:
 
         counter = 0
         for fn in mname_files[mname]:
-            check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'.nii.gz')
+            if fn == 'all-l2_' or fn == 'neg_all-l2_':
+                check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'_effect_size.nii.gz')
+            else:
+                check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'.nii.gz')
             if not os.path.exists(check_path):
                 print("File does not exist: %s"%(check_path))
             else:
                 counter = counter+1
         if counter == len(mname_files[mname]):
-            print("All level 3 files in place for %s_%s_%s"%(mname, suffix, reg))
+            print("All level %s files in place for %s_%s_%s"%(str(counter), mname, suffix, reg))
