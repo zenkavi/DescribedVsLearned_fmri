@@ -16,6 +16,7 @@ parser.add_argument("-c", "--c_thresh", help="cluster_threshold", default=3)
 parser.add_argument("-np", "--num_perm", help="number of permutations", default=1000)
 parser.add_argument("-vs", "--var_smooth", help="variance smoothing", default=5)
 parser.add_argument("-s", "--sign", help="calculate p values for positive or negative t's")
+parser.add_argument("--package", help="fsl or nilearn for permuation testing")
 args = parser.parse_args()
 
 mnum = args.mnum
@@ -34,9 +35,10 @@ c_thresh = int(args.c_thresh)
 num_perm = int(args.num_perm)
 var_smooth = int(args.var_smooth)
 sign = args.sign
+package = args.package
 
 data_path = os.environ['DATA_PATH']
 out_path = os.environ['OUT_PATH']
 bm_path = os.environ['BM_PATH']
 
-run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth)
+run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, package = package, c_thresh=c_thresh, num_perm=num_perm, var_smooth=var_smooth)
