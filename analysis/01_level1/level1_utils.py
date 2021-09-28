@@ -310,7 +310,7 @@ def make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, re
     return design_matrix
 
 # Fixed effects analysis for all runs of subjects based on tutorial on https://nilearn.github.io/auto_examples/04_glm_first_level/plot_fiac_analysis.html#sphx-glr-auto-examples-04-glm-first-level-plot-fiac-analysis-py
-def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
+def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, save_contrast = False, output_type='effect_size', noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
@@ -353,7 +353,8 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, b
                                hrf_model=hrf_model,
                                drift_model=drift_model,
                                smoothing_fwhm=smoothing_fwhm,
-                               mask_img=mask_img)
+                               mask_img=mask_img,
+                               subject_label=subnum)
 
         #fit glm to run image using run events
         print("***********************************************")
@@ -362,24 +363,23 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, b
         fmri_glm = fmri_glm.fit(fmri_img, design_matrices = design_matrix)
 
         print("***********************************************")
-        print("Saving GLM for sub-%s run-%s"%(subnum))
+        print("Saving GLM for sub-%s"%(subnum))
         print("***********************************************")
         fn = os.path.join(out_path, 'sub-%s/sub-%s_%s_reg-rt%s_level1_glm.pkl' %(subnum, subnum, mnum, str(regress_rt)))
         f = open(fn, 'wb')
         pickle.dump(fmri_glm, f)
         f.close()
 
-        # Do I need this step for level 2's?
-        print("***********************************************")
-        print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
-        print("***********************************************")
-        contrasts = make_contrasts(design_matrix, mnum)
-        for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
-            z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
-            nib.save(z_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_zscore.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
-            if beta:
-                b_map = fmri_glm.compute_contrast(contrast_val, output_type='effect_size')
-                nib.save(b_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_betas.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
-        print("***********************************************")
-        print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
-        print("***********************************************")
+        # You don't need this step for group level analyses. You can load FirstLevelModel objects for SecondLevelModel.fit() inputs
+        # But if you want to use images instead of FirstLevelModel objects as the input then `output_type` should be `effect_size` so you save the parameter maps and not other statistics
+        if save_contrast:
+            print("***********************************************")
+            print("Running contrasts for sub-%s"%(subnum))
+            print("***********************************************")
+            contrasts = make_contrasts(design_matrix[], mnum)
+            for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
+                contrast_map = fmri_glm.compute_contrast(contrast_val, output_type= output_type)
+                nib.save(contrast_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_%s.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id, output_type))
+            print("***********************************************")
+            print("Done saving contrasts for sub-%s"%(subnum))
+            print("***********************************************")
