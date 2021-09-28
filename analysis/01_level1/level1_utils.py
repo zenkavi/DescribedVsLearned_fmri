@@ -376,7 +376,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, s
             print("***********************************************")
             print("Running contrasts for sub-%s"%(subnum))
             print("***********************************************")
-            contrasts = make_contrasts(design_matrix[], mnum)
+            contrasts = make_contrasts(design_matrix[0], mnum) #using the first design matrix since contrasts are the same for all runs
             for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
                 contrast_map = fmri_glm.compute_contrast(contrast_val, output_type= output_type)
                 nib.save(contrast_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_%s.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id, output_type))
