@@ -33,56 +33,29 @@ else:
     if int(reg_rt):
         regs.append('stim_rt')
 
-if not level == 3:
-    subnums = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '22', '23', '24', '25', '27']
+subnums = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '22', '23', '24', '25', '27']
 
 if level == 1:
 
-    runnums = ['1', '2', '3', '4', '5']
-
     for subnum in subnums:
         contrasts_path = os.path.join(out_path,'level1/%s/sub-%s/contrasts'%(suffix, subnum))
-        counter = 0
-        for runnum in runnums:
-
-            check_path = os.path.join(out_path,'level1/%s/sub-%s/sub-%s_run-%s_%s_level1_design_matrix.csv'%(suffix, subnum, subnum, runnum, suffix))
-            if not os.path.exists(check_path):
-                print("File does not exist: %s"%(check_path))
-
-            check_path = os.path.join(out_path,'level1/%s/sub-%s/sub-%s_run-%s_%s_level1_glm.pkl'%(suffix, subnum, subnum, runnum, suffix))
-            if not os.path.exists(check_path):
-                print("File does not exist: %s"%(check_path))
-
-            for reg in regs:
-                check_path = os.path.join(contrasts_path, 'sub-%s_run-%s_%s_%s.nii.gz'%(subnum, runnum, suffix, reg))
-                if not os.path.exists(check_path):
-                    print("File does not exist: %s"%(check_path))
-                else:
-                    counter = counter+1
-        if counter == len(runnums) * len(regs):
-            print("All level 1 contrast images in place for sub-%s"%(subnum))
-
-if level == 2:
-
-    for subnum in subnums:
-        contrasts_path = os.path.join(out_path,'level2/%s/sub-%s/contrasts'%(suffix, subnum))
 
         counter = 0
 
         for reg in regs:
-            check_path = os.path.join(out_path,'level2/%s/sub-%s/sub-%s_%s_%s_level2_glm.pkl'%(suffix, subnum, subnum, reg, suffix))
+            check_path = os.path.join(out_path,'level1/%s/sub-%s/sub-%s_%s_level1_glm.pkl'%(suffix, subnum, subnum, suffix))
             if not os.path.exists(check_path):
                 print("File does not exist: %s"%(check_path))
 
-            check_path = os.path.join(contrasts_path, 'sub-%s_%s_%s.nii.gz'%(subnum, reg, suffix))
+            check_path = os.path.join(contrasts_path, 'sub-%s_%s_%s_effect_size.nii.gz'%(subnum, suffix, reg))
             if not os.path.exists(check_path):
                 print("File does not exist: %s"%(check_path))
             else:
                 counter = counter+1
         if counter == len(regs):
-            print("All level 2 contrast images in place for sub-%s"%(subnum))
+            print("All level 1 contrast images in place for sub-%s"%(subnum))
 
-if level == 3:
+if level == 2:
     mname_files = {'overall-mean': ['all-l2_', 'group-mask_', 'neg_all-l2_', 'rand_tfce_corrp_tstat1_neg_', 'rand_tfce_corrp_tstat1_pos_', 'rand_tfce_tstat1_neg_', 'rand_tfce_tstat1_pos_'],
                    'group-diff': [],
                    'group-mean': []}

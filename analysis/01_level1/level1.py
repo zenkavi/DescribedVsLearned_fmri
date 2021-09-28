@@ -16,7 +16,7 @@ args = parser.parse_args()
 subnum = args.subnum
 mnum = args.mnum
 reg_rt = int(args.reg_rt)
-save_contrast = arg.save_contrast
+save_contrast = args.save_contrast
 if save_contrast == "True":
     save_contrast = True
 output_type = args.output_type

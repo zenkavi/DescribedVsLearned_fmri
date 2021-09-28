@@ -324,6 +324,7 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, s
 
     #fmri_img: path to preproc_bold's that the model will be fit on
     fmri_img = glob.glob(os.path.join(data_path,"derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-*_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"%(subnum, subnum)))
+    fmri_img.sort()
 
     if len(fmri_img) == 0:
         print("***********************************************")
@@ -339,6 +340,9 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, s
         for run_events in sub_events:
             runnum = re.findall('\d+', os.path.basename(run_events))[1] #index 0 is subnum, index 1 for runnum
             run_design_matrix = make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, regress_rt=regress_rt, hrf_model = hrf_model, drift_model=drift_model)
+            #This subject has 817 instead of 892 scans in their last run. This leads to a lower cosine drift order and causes problems when calculating contrasts combined with other runs because the design matrix ends up with one less column compared to other runs'.
+            if subnum == '02' and runnum == '5':
+                run_design_matrix['drift_17'] = 0
             design_matrix.append(run_design_matrix)
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
