@@ -309,6 +309,7 @@ def make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, re
 
     return design_matrix
 
+# Fixed effects analysis for all runs of subjects based on tutorial on https://nilearn.github.io/auto_examples/04_glm_first_level/plot_fiac_analysis.html#sphx-glr-auto-examples-04-glm-first-level-plot-fiac-analysis-py
 def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, beta=False, noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
     if not os.path.exists(out_path):
@@ -321,67 +322,64 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, b
     sub_events = glob.glob(os.path.join(data_path, 'sub-%s/func/sub-%s_task-bundles_run-*_events.tsv'%(subnum, subnum)))
     sub_events.sort()
 
-    for run_events in sub_events:
+    #fmri_img: path to preproc_bold's that the model will be fit on
+    fmri_img = glob.glob(os.path.join(data_path,"derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-*_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"%(subnum, subnum)))
 
-        runnum = re.findall('\d+', os.path.basename(run_events))[1]
+    if len(fmri_img) == 0:
+        print("***********************************************")
+        print("No pre-processed BOLD found for sub-%s "%(subnum))
+        print("***********************************************")
+    else:
+        if len(fmri_img) != 5:
+            print("***********************************************")
+            print("Found fewer than 5 runs for sub-%s "%(subnum))
+            print("***********************************************")
 
-        #fmri_img: path to preproc_bold that the model will be fit on
-        fmri_img = os.path.join(data_path,"derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"%(subnum, subnum, runnum))
-
-        if os.path.isfile(fmri_img):
-
-            #read in preproc_bold for that run
-            cur_img_tr = get_from_sidecar(subnum, runnum, 'RepetitionTime', data_path)
-
-            #read in events.tsv for that run
-            cur_events = pd.read_csv(run_events, sep = '\t')
-            design_matrix = make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, regress_rt=regress_rt, hrf_model = hrf_model, drift_model=drift_model)
-
-            #Save design matrix
+        design_matrix = []
+        for run_events in sub_events:
+            runnum = re.findall('\d+', os.path.basename(run_events))[1] #index 0 is subnum, index 1 for runnum
+            run_design_matrix = make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, regress_rt=regress_rt, hrf_model = hrf_model, drift_model=drift_model)
+            design_matrix.append(run_design_matrix)
             print("***********************************************")
             print("Saving design matrix for sub-%s run-%s"%(subnum, runnum))
             print("***********************************************")
-            design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_design_matrix.csv' %(subnum, subnum, runnum, mnum, str(regress_rt))), index=False)
+            run_design_matrix.to_csv(os.path.join(out_path, 'sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_design_matrix.csv' %(subnum, subnum, runnum, mnum, str(regress_rt))), index=False)
 
-            #define GLM parmeters
-            mask_img = nib.load(os.path.join(data_path,'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-%s_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(subnum, subnum, runnum)))
-            fmri_glm = FirstLevelModel(t_r=cur_img_tr,
-                                   noise_model=noise_model,
-                                   standardize=False,
-                                   hrf_model=hrf_model,
-                                   drift_model=drift_model,
-                                   smoothing_fwhm=smoothing_fwhm,
-                                   mask_img=mask_img)
+        #define GLM parmeters
+        img_tr = get_from_sidecar(subnum, '1', 'RepetitionTime', data_path) #get tr info from runnum = "1" since it's the same for all runs
+        mask_img = nib.load(os.path.join(data_path,'derivatives/fmriprep/sub-%s/func/sub-%s_task-bundles_run-1_space-MNI152NLin2009cAsym_res-2_desc-brain_mask.nii.gz'%(subnum, subnum))) #mask image from first run since it should be the same for all runs
+        fmri_glm = FirstLevelModel(t_r=img_tr,
+                               noise_model=noise_model,
+                               hrf_model=hrf_model,
+                               drift_model=drift_model,
+                               smoothing_fwhm=smoothing_fwhm,
+                               mask_img=mask_img)
 
-            #fit glm to run image using run events
-            print("***********************************************")
-            print("Running GLM for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
-            fmri_glm = fmri_glm.fit(fmri_img, design_matrices = design_matrix)
+        #fit glm to run image using run events
+        print("***********************************************")
+        print("Running fixed effects GLM for all runs of sub-%s"%(subnum))
+        print("***********************************************")
+        fmri_glm = fmri_glm.fit(fmri_img, design_matrices = design_matrix)
 
-            print("***********************************************")
-            print("Saving GLM for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
-            fn = os.path.join(out_path, 'sub-%s/sub-%s_run-%s_%s_reg-rt%s_level1_glm.pkl' %(subnum, subnum, runnum, mnum, str(regress_rt)))
-            f = open(fn, 'wb')
-            pickle.dump(fmri_glm, f)
-            f.close()
+        print("***********************************************")
+        print("Saving GLM for sub-%s run-%s"%(subnum))
+        print("***********************************************")
+        fn = os.path.join(out_path, 'sub-%s/sub-%s_%s_reg-rt%s_level1_glm.pkl' %(subnum, subnum, mnum, str(regress_rt)))
+        f = open(fn, 'wb')
+        pickle.dump(fmri_glm, f)
+        f.close()
 
-            print("***********************************************")
-            print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
-            contrasts = make_contrasts(design_matrix, mnum)
-            for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
-                z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
-                nib.save(z_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
-                if beta:
-                    b_map = fmri_glm.compute_contrast(contrast_val, output_type='effect_size')
-                    nib.save(b_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_betas.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
-            print("***********************************************")
-            print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
-
-        else:
-            print("***********************************************")
-            print("No pre-processed BOLD found for sub-%s run-%s"%(subnum, runnum))
-            print("***********************************************")
+        # Do I need this step for level 2's?
+        print("***********************************************")
+        print("Running contrasts for sub-%s run-%s"%(subnum, runnum))
+        print("***********************************************")
+        contrasts = make_contrasts(design_matrix, mnum)
+        for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
+            z_map = fmri_glm.compute_contrast(contrast_val, output_type='z_score')
+            nib.save(z_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_zscore.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
+            if beta:
+                b_map = fmri_glm.compute_contrast(contrast_val, output_type='effect_size')
+                nib.save(b_map, '%s/sub-%s_run-%s_%s_reg-rt%s_%s_betas.nii.gz'%(contrasts_path, subnum, runnum, mnum, str(regress_rt), contrast_id))
+        print("***********************************************")
+        print("Done saving contrasts for sub-%s run-%s"%(subnum, runnum))
+        print("***********************************************")

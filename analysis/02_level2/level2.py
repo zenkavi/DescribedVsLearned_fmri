@@ -3,20 +3,40 @@
 from argparse import ArgumentParser
 from level2_utils import run_level2
 import os
-#Usage: python level2.py -s SUBNUM -c CONTRAST --reg_rt REG_RT
+
+#Usage: ./level3.py -m MNUM -r REG -s SIGN -tf TFCE
 
 parser = ArgumentParser()
-parser.add_argument("-s", "--subnum", help="subject number")
-parser.add_argument("-c", "--contrasts", default=None)
 parser.add_argument("--mnum", help="model number")
-parser.add_argument("--reg_rt", help="regress rt", default=1)
+parser.add_argument("--mname", help="model name")
+parser.add_argument("-r", "--reg", help="regressor name")
+parser.add_argument("--reg_rt", help="regress rt")
+parser.add_argument("-tf", "--tfce", help="tfce", default=1)
+parser.add_argument("-c", "--c_thresh", help="cluster_threshold", default=3)
+parser.add_argument("-np", "--num_perm", help="number of permutations", default=1000)
+parser.add_argument("-vs", "--var_smooth", help="variance smoothing", default=5)
+parser.add_argument("-s", "--sign", help="calculate p values for positive or negative t's")
 args = parser.parse_args()
-subnum = args.subnum
-mnum = args.mnum #not actually used; keeping for consistency with level1
-contrasts = args.contrasts
-reg_rt = args.reg_rt
+
+mnum = args.mnum
+mname = args.mname
+
+reg = args.reg
+regress_rt = int(args.reg_rt)
+
+tfce = int(args.tfce)
+if tfce == 1:
+    tfce = True
+else:
+    tfce = False
+
+c_thresh = int(args.c_thresh)
+num_perm = int(args.num_perm)
+var_smooth = int(args.var_smooth)
+sign = args.sign
+
 data_path = os.environ['DATA_PATH']
 out_path = os.environ['OUT_PATH']
-l1_code_path = os.path.join(os.environ['CODE_PATH'], '01_level1')
+bm_path = os.environ['BM_PATH']
 
-run_level2(subnum, mnum, contrasts, data_path, out_path, regress_rt=reg_rt, l1_code_path=l1_code_path)
+run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh, num_perm, var_smooth)
