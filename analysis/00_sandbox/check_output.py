@@ -56,21 +56,23 @@ if level == 1:
             print("All level 1 contrast images in place for sub-%s"%(subnum))
 
 if level == 2:
-    mname_files = {'overall-mean': ['all-l2_', 'group-mask_', 'neg_all-l2_', 'rand_tfce_corrp_tstat1_neg_', 'rand_tfce_corrp_tstat1_pos_', 'rand_tfce_tstat1_neg_', 'rand_tfce_tstat1_pos_'],
+    mname_files = {'overall-mean': ['all-l1_', 'group-mask_', 'neg_all-l1_', 'neg_overall-mean_randomise_tfce_corrp_tstat1', 'neg_overall-mean_randomise_tstat1', 'pos_overall-mean_randomise_tfce_corrp_tstat1', 'pos_overall-mean_randomise_tstat1'],
                    'group-diff': [],
                    'group-mean': []}
 
-    mname_path = os.path.join(out_path,'level3/%s/%s'%(suffix, mname))
+    mname_path = os.path.join(out_path,'level2/%s/%s'%(suffix, mname))
 
     for reg in regs:
         reg_path = os.path.join(mname_path, '%s_%s'%(reg, suffix))
 
         counter = 0
         for fn in mname_files[mname]:
-            if fn == 'all-l2_' or fn == 'neg_all-l2_':
+            if fn == 'all-l1_' or fn == 'neg_all-l1_':
                 check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'_effect_size.nii.gz')
-            else:
+            elif fn == 'group-mask_':
                 check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'.nii.gz')
+            else:
+                check_path = os.path.join(reg_path, reg + '_' + suffix + '_' + fn +'.nii.gz')
             if not os.path.exists(check_path):
                 print("File does not exist: %s"%(check_path))
             else:
