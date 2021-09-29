@@ -15,9 +15,11 @@ def run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm
     if package == 'fsl':
         fsl_randomise_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=c_thresh, num_perm=num_perm, var_smooth=var_smooth)
     else:
-        nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps=True, num_perm=1000, var_smooth=5)
+        nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps=from_cmaps, num_perm=num_perm, var_smooth=var_smooth)
 
 def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps=True, num_perm=1000, var_smooth=5):
+
+    from nilearn.glm.second_level import SecondLevelModel
 
     reg_path = "%s/%s_%s_reg-rt%s"%(out_path, reg, mnum, str(regress_rt))
     if not os.path.exists(reg_path):
@@ -55,6 +57,8 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
                              smoothing_fwhm=var_smooth, n_jobs=1, verbose=1)
 
         nib.save(neg_log_pvals_permuted_ols_unmasked, '%s/%s_nilearn_neg_log_pvals_permuted_ols_unmasked.nii.gz'%(reg_path, suffix))
+
+        print("Saved neg_log_pvals_permuted_ols_unmasked for %s"%(suffix))
 
     # Tutorial for running level 2 from FirstLevelObjects
     # https://nilearn.github.io/auto_examples/07_advanced/plot_bids_analysis.html#sphx-glr-auto-examples-07-advanced-plot-bids-analysis-py
