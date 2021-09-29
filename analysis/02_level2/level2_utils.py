@@ -10,21 +10,50 @@ import os
 import pandas as pd
 import shutil
 
-def run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, package='fsl', c_thresh=3, num_perm=1000, var_smooth=5):
+def run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, package='fsl', from_cmaps = True, c_thresh=3, num_perm=1000, var_smooth=5):
     if package == 'fsl':
         fsl_randomise_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=c_thresh, num_perm=num_perm, var_smooth=var_smooth)
     # else:
     #     nilearn_level2(...)
 
-# def nilearn_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=3, num_perm=1000, var_smooth=5):
-#     input_path = "%s/sub-*"%(data_path)
-#
-#     reg_path = "%s/%s_%s_reg-rt%s"%(out_path, reg, mnum, str(regress_rt))
-#     if not os.path.exists(reg_path):
-#         os.makedirs(reg_path)
-#
-#     level1_models = glob.glob('%s/sub-*_%s_%s_reg-rt%s'%(input_path, reg, mnum, str(regress_rt)))
-#     level1_models.sort()
+def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps=True, num_perm=1000, var_smooth=5):
+
+    reg_path = "%s/%s_%s_reg-rt%s"%(out_path, reg, mnum, str(regress_rt))
+    if not os.path.exists(reg_path):
+        os.makedirs(reg_path)
+
+    # Tutorial for running level 2 from parameter estimate maps
+    # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_one_sample_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-one-sample-test-py
+    if from_cmaps:
+        input_path = "%s/sub-*/contrasts"%(data_path)
+
+        level1_images = glob.glob('%s/sub-*_%s_reg-rt%s_%s_effect_size.nii.gz'%(input_path, mnum, str(regress_rt), reg))
+        level1_images.sort()
+
+        second_level_input = level1_images
+        design_matrix = pd.DataFrame([1] * len(second_level_input), columns=['intercept'])
+
+        second_level_model = SecondLevelModel(smoothing_fwhm=var_smooth)
+        second_level_model = second_level_model.fit(second_level_input, design_matrix=design_matrix)
+
+        # Additional Tutorial for permutation testing
+        # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_association_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-association-test-py
+        from nilearn.glm.second_level import non_parametric_inference
+        # The neg-log p-values obtained with nonparametric testing are capped at 3 if the number of permutations is 1e3.
+        neg_log_pvals_permuted_ols_unmasked = non_parametric_inference(second_level_input,
+                             design_matrix=design_matrix,
+                             model_intercept=True, n_perm=num_perm,
+                             two_sided_test=False,
+                             smoothing_fwhm=var_smooth, n_jobs=1)
+
+        suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)
+        nib.save(neg_log_pvals_permuted_ols_unmasked, '%s/%s_nilearn_neg_log_pvals_permuted_ols_unmasked.nii.gz'%(reg_path, suffix))
+
+    # Tutorial for running level 2 from FirstLevelObjects
+    # https://nilearn.github.io/auto_examples/07_advanced/plot_bids_analysis.html#sphx-glr-auto-examples-07-advanced-plot-bids-analysis-py
+    else:
+
+
 
 def flatten(t):
     return [item for sublist in t for item in sublist]
