@@ -8,19 +8,22 @@ mem = Memory(base_dir='.')
 import numpy as np
 import os
 import pandas as pd
+import pickle
 import shutil
 
 def run_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, package='fsl', from_cmaps = True, c_thresh=3, num_perm=1000, var_smooth=5):
     if package == 'fsl':
         fsl_randomise_level2(mnum, mname, reg, regress_rt, sign, tfce, data_path, out_path, bm_path, c_thresh=c_thresh, num_perm=num_perm, var_smooth=var_smooth)
-    # else:
-    #     nilearn_level2(...)
+    else:
+        nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps=True, num_perm=1000, var_smooth=5)
 
 def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps=True, num_perm=1000, var_smooth=5):
 
     reg_path = "%s/%s_%s_reg-rt%s"%(out_path, reg, mnum, str(regress_rt))
     if not os.path.exists(reg_path):
         os.makedirs(reg_path)
+
+    suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)
 
     # Tutorial for running level 2 from parameter estimate maps
     # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_one_sample_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-one-sample-test-py
@@ -36,6 +39,11 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
         second_level_model = SecondLevelModel(smoothing_fwhm=var_smooth)
         second_level_model = second_level_model.fit(second_level_input, design_matrix=design_matrix)
 
+        z_map = second_level_model.compute_contrast(output_type='z_score')
+        nib.save(z_map, '%s/%s_nilearn_unthresh_zmap.nii.gz'%(reg_path, suffix))
+
+        print("Saved level2 unthresholded z-map for %s"%(suffix))
+
         # Additional Tutorial for permutation testing
         # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_association_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-association-test-py
         from nilearn.glm.second_level import non_parametric_inference
@@ -44,14 +52,36 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
                              design_matrix=design_matrix,
                              model_intercept=True, n_perm=num_perm,
                              two_sided_test=False,
-                             smoothing_fwhm=var_smooth, n_jobs=1)
+                             smoothing_fwhm=var_smooth, n_jobs=1, verbose=1)
 
-        suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)
         nib.save(neg_log_pvals_permuted_ols_unmasked, '%s/%s_nilearn_neg_log_pvals_permuted_ols_unmasked.nii.gz'%(reg_path, suffix))
 
     # Tutorial for running level 2 from FirstLevelObjects
     # https://nilearn.github.io/auto_examples/07_advanced/plot_bids_analysis.html#sphx-glr-auto-examples-07-advanced-plot-bids-analysis-py
     else:
+        input_path = "%s/sub-*"%(data_path)
+
+        level1_models = glob.glob('%s/sub-*_%s_reg-rt%s_level1_glm.pkl'%(input_path, mnum, str(regress_rt)))
+        level1_models.sort()
+
+        second_level_input = []
+        for fn in level1_models:
+            with open(fn, "rb") as input_file:
+                l1_model = pickle.load(input_file)
+                second_level_input.append(l1_model)
+
+        second_level_model = SecondLevelModel(smoothing_fwhm=var_smooth)
+        second_level_model = second_level_model.fit(second_level_input)
+
+        z_map = second_level_model.compute_contrast(first_level_contrast= reg, output_type='z_score')
+        nib.save(z_map, '%s/%s_nilearn_unthresh_zmap.nii.gz'%(reg_path, suffix))
+
+        print("""
+        Saved level2 unthresholded z-maps but no perumatation test was done for thresholding.
+        non_parametric_inference function does not accept FirstLevelModel objects as input.
+        It requires a list of level 1 contrast maps.
+        Save the effect_size maps from level 1 first!
+        """)
 
 
 
