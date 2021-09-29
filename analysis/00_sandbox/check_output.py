@@ -12,6 +12,7 @@ parser.add_argument("--level")
 parser.add_argument("--mname", default='overall-mean')
 parser.add_argument("--l1_code_path", default='/shared/code/analysis/01_level1')
 parser.add_argument("--out_path", default='/shared/bids_nifti_wface/derivatives/nilearn/glm')
+parser.add_argument("--l2_package", default = "fsl")
 
 args = parser.parse_args()
 mnum = args.mnum
@@ -22,6 +23,7 @@ level = int(args.level)
 mname = args.mname
 l1_code_path = args.l1_code_path
 out_path = args.out_path
+l2_package = args.l2_package
 
 sys.path.append(l1_code_path)
 from utils import get_model_regs_with_contrasts
@@ -56,26 +58,46 @@ if level == 1:
             print("All level 1 contrast images in place for sub-%s"%(subnum))
 
 if level == 2:
-    mname_files = {'overall-mean': ['all-l1_', 'group-mask_', 'neg_all-l1_', 'neg_overall-mean_randomise_tfce_corrp_tstat1', 'neg_overall-mean_randomise_tstat1', 'pos_overall-mean_randomise_tfce_corrp_tstat1', 'pos_overall-mean_randomise_tstat1'],
-                   'group-diff': [],
-                   'group-mean': []}
 
     mname_path = os.path.join(out_path,'level2/%s/%s'%(suffix, mname))
 
-    for reg in regs:
-        reg_path = os.path.join(mname_path, '%s_%s'%(reg, suffix))
+    if l2_package == "fsl":
+        mname_files = {'overall-mean': ['all-l1_', 'group-mask_', 'neg_all-l1_', 'neg_overall-mean_randomise_tfce_corrp_tstat1', 'neg_overall-mean_randomise_tstat1', 'pos_overall-mean_randomise_tfce_corrp_tstat1', 'pos_overall-mean_randomise_tstat1'],
+                       'group-diff': [],
+                       'group-mean': []}
 
-        counter = 0
-        for fn in mname_files[mname]:
-            if fn == 'all-l1_' or fn == 'neg_all-l1_':
-                check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'_effect_size.nii.gz')
-            elif fn == 'group-mask_':
-                check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'.nii.gz')
-            else:
-                check_path = os.path.join(reg_path, reg + '_' + suffix + '_' + fn +'.nii.gz')
-            if not os.path.exists(check_path):
-                print("File does not exist: %s"%(check_path))
-            else:
-                counter = counter+1
-        if counter == len(mname_files[mname]):
-            print("All level %s files in place for %s_%s_%s"%(str(counter), mname, suffix, reg))
+        for reg in regs:
+            reg_path = os.path.join(mname_path, '%s_%s'%(reg, suffix))
+
+            counter = 0
+            for fn in mname_files[mname]:
+                if fn == 'all-l1_' or fn == 'neg_all-l1_':
+                    check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'_effect_size.nii.gz')
+                elif fn == 'group-mask_':
+                    check_path = os.path.join(reg_path, fn+mname+'_'+reg+'_'+suffix+'.nii.gz')
+                else:
+                    check_path = os.path.join(reg_path, reg + '_' + suffix + '_' + fn +'.nii.gz')
+                if not os.path.exists(check_path):
+                    print("File does not exist: %s"%(check_path))
+                else:
+                    counter = counter+1
+            if counter == len(mname_files[mname]):
+                print("All level %s files in place for %s_%s_%s"%(str(counter), mname, suffix, reg))
+
+    else:
+        mname_files = {'overall-mean': ['_nilearn_unthresh_zmap.nii.gz', '_nilearn_neg_log_pvals_permuted_ols_unmasked.nii.gz'],
+                       'group-diff': [],
+                       'group-mean': []}
+
+        for reg in regs:
+            reg_path = os.path.join(mname_path, '%s_%s'%(reg, suffix))
+
+            counter = 0
+            for fn in mname_files[mname]:
+                check_path = os.path.join(reg_path, reg + '_' + suffix + '_' + fn)
+                if not os.path.exists(check_path):
+                    print("File does not exist: %s"%(check_path))
+                else:
+                    counter = counter+1
+            if counter == len(mname_files[mname]):
+                print("All nilearn level %s files in place for %s_%s_%s"%(str(counter), mname, suffix, reg))
