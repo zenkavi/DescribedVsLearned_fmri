@@ -33,11 +33,11 @@ def get_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', tst
         pos_pval_img = os.path.join(img_path, pos_pval_fn)
         neg_pval_img = os.path.join(img_path, neg_pval_fn)
         
-        pos_pval_data = pos_pval_img.get_fdata()
-        neg_pval_data = neg_pval_img.get_fdata()
-        
         pos_pval_img = nib.load(pos_pval_img)
         neg_pval_img = nib.load(neg_pval_img)
+        
+        pos_pval_data = pos_pval_img.get_fdata()
+        neg_pval_data = neg_pval_img.get_fdata()
         
         filt_tval_data = np.where(pos_pval_data > threshold, tval_data, np.where(neg_pval_data > threshold, tval_data, 0))
         filt_tval_img = nib.Nifti1Image(filt_tval_data.astype(np.float64), tval_img.affine)

@@ -35,19 +35,16 @@ def get_model_regs(mnum):
     if mnum == 'model3':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosen_par', 'reward_ev', 'reward_par', 'rpeLeftRightSum_par']
 
-    if mnum == 'model5':
+    if mnum == 'model4':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosenLate_par', 'reward_ev', 'reward_par', 'rpeLeftRightSumEarly_par']
 
-    if mnum == 'model6':
+    if mnum == 'model5':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosenLate_par', 'reward_ev', 'reward_par', 'rpeLeftRightSumLate_par']
 
-    if mnum == 'model7':
+    if mnum == 'model6':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosen_par', 'reward_ev', 'rpeLeftRightSum_par']
 
-    if mnum == 'model8':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosen_par', 'reward_ev', 'rewardNotDemeaned_par', 'rpeLeftRightSum_par']
-
-    if mnum == 'model9':
+    if mnum == 'model7':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'valChosenMinusUnchosen_par', 'reward_ev', 'reward_par', 'rpeLeftFractal_par']
 
     return regs
