@@ -6,9 +6,9 @@ import pandas as pd
 from nilearn.glm.first_level import make_first_level_design_matrix, spm_hrf
 
 def get_img_path(reg, reg_rt="0", mnum = "1", mname = "overall-mean"):
-    level3_path = '/Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/bids_nifti_wface/derivatives/nilearn/glm/level3/'
+    level2_path = '/Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/bids_nifti_wface/derivatives/nilearn/glm/level2/'
     model_path = 'model'+mnum+'_reg-rt'+reg_rt
-    img_path = os.path.join(level3_path, model_path, mname, reg+'_'+model_path)
+    img_path = os.path.join(level2_path, model_path, mname, reg+'_'+model_path)
     
     return img_path
 
@@ -16,25 +16,29 @@ def get_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', tst
     
     img_path = get_img_path(reg=reg, reg_rt=reg_rt, mnum=mnum, mname=mname)
     
-    pos_pval_fn = 'rand_tfce_corrp_tstat%s_pos_%s_%s_model%s_reg-rt%s.nii.gz'%(tstat, mname, reg, mnum, reg_rt)
-    neg_pval_fn = 'rand_tfce_corrp_tstat%s_neg_%s_%s_model%s_reg-rt%s.nii.gz'%(tstat, mname, reg, mnum, reg_rt)
-    tval_fn = 'rand_tfce_tstat%s_pos_%s_%s_model%s_reg-rt%s.nii.gz'%(tstat, mname, reg, mnum, reg_rt)
+    tval_fn = '%s_model%s_reg-rt%s_pos_%s_randomise_tstat%s.nii.gz'%(reg, mnum, reg_rt, mname, tstat)
     
-    pos_pval_img = os.path.join(img_path, pos_pval_fn)
-    neg_pval_img = os.path.join(img_path, neg_pval_fn)
     tval_img = os.path.join(img_path, tval_fn)
     
-    pos_pval_img = nib.load(pos_pval_img)
-    neg_pval_img = nib.load(neg_pval_img)
     tval_img = nib.load(tval_img)
     
     tval_data = tval_img.get_fdata()
-    pos_pval_data = pos_pval_img.get_fdata()
-    neg_pval_data = neg_pval_img.get_fdata()
     
     if nofilt:
         filt_tval_img = tval_img
     else:
+        pos_pval_fn = '%s_model%s_reg-rt%s_pos_%s_randomise_tfce_corrp_tstat%s.nii.gz'%(reg, mnum, reg_rt, mname, tstat)
+        neg_pval_fn = '%s_model%s_reg-rt%s_neg_%s_randomise_tfce_corrp_tstat%s.nii.gz'%(reg, mnum, reg_rt, mname, tstat)
+        
+        pos_pval_img = os.path.join(img_path, pos_pval_fn)
+        neg_pval_img = os.path.join(img_path, neg_pval_fn)
+        
+        pos_pval_data = pos_pval_img.get_fdata()
+        neg_pval_data = neg_pval_img.get_fdata()
+        
+        pos_pval_img = nib.load(pos_pval_img)
+        neg_pval_img = nib.load(neg_pval_img)
+        
         filt_tval_data = np.where(pos_pval_data > threshold, tval_data, np.where(neg_pval_data > threshold, tval_data, 0))
         filt_tval_img = nib.Nifti1Image(filt_tval_data.astype(np.float64), tval_img.affine)
     
