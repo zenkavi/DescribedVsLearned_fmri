@@ -94,7 +94,7 @@ if level == 2:
 
             counter = 0
             for fn in mname_files[mname]:
-                check_path = os.path.join(reg_path, reg + '_' + suffix + '_' + fn)
+                check_path = os.path.join(reg_path, reg + '_' + suffix + fn)
                 if not os.path.exists(check_path):
                     print("File does not exist: %s"%(check_path))
                 else:
