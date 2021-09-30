@@ -41,10 +41,10 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
         second_level_model = SecondLevelModel(smoothing_fwhm=var_smooth)
         second_level_model = second_level_model.fit(second_level_input, design_matrix=design_matrix)
 
-        z_map = second_level_model.compute_contrast(output_type='z_score')
-        nib.save(z_map, '%s/%s_nilearn_unthresh_zmap.nii.gz'%(reg_path, suffix))
+        t_map = second_level_model.compute_contrast(output_type='stat')
+        nib.save(t_map, '%s/%s_nilearn_unthresh_tmap.nii.gz'%(reg_path, suffix))
 
-        print("Saved level2 unthresholded z-map for %s"%(suffix))
+        print("Saved level2 unthresholded t-map for %s"%(suffix))
 
         # Additional Tutorial for permutation testing
         # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_association_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-association-test-py
@@ -77,8 +77,8 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
         second_level_model = SecondLevelModel(smoothing_fwhm=var_smooth)
         second_level_model = second_level_model.fit(second_level_input)
 
-        z_map = second_level_model.compute_contrast(first_level_contrast= reg, output_type='z_score')
-        nib.save(z_map, '%s/%s_nilearn_unthresh_zmap.nii.gz'%(reg_path, suffix))
+        t_map = second_level_model.compute_contrast(first_level_contrast= reg, output_type='stat')
+        nib.save(t_map, '%s/%s_nilearn_unthresh_tmap.nii.gz'%(reg_path, suffix))
 
         print("""
         Saved level2 unthresholded z-maps but no perumatation test was done for thresholding.
