@@ -24,6 +24,10 @@ def make_contrasts(design_matrix, mnum):
 
     contrasts = dictfilt(contrasts, beh_regs)
 
+    if mnum=='model8':
+        contrasts.update({'rewardedAttrFractalVsLottery':contrasts['rewardedAttrFractal_st'] - contrasts['rewardedAttrLottery_st'],
+        'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
+
     return contrasts
 
 def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
@@ -279,6 +283,36 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_rpeLeftRightSumLate_par['duration'] = 1
             cond_rpeLeftRightSumLate_par['trial_type'] = 'rpeLeftRightSumLate_par'
             cond_rpeLeftRightSumLate_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
+
+        if reg == 'rewardedAttrFractal_st':
+            cond_rewardedAttrFractal_st = events.query('trial_type == "reward"')[['onset']].reset_index(drop=True)
+            cond_rewardedAttrFractal_st['duration'] = 0
+            cond_rewardedAttrFractal_st['trial_type'] = 'rewardedAttrFractal_st'
+            cond_rewardedAttrFractal_st['modulation'] = run_behavior['fractalDraw']
+
+        if reg == 'rewardedAttrLottery_st':
+            cond_rewardedAttrLottery_st = events.query('trial_type == "reward"')[['onset']].reset_index(drop=True)
+            cond_rewardedAttrLottery_st['duration'] = 0
+            cond_rewardedAttrLottery_st['trial_type'] = 'rewardedAttrLottery_st'
+            cond_rewardedAttrLottery_st['modulation'] = 1-run_behavior['fractalDraw']
+
+        if reg == 'rewardedAttrSurprise_par':
+            cond_rewardedAttrSurprise_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rewardedAttrSurprise_par['trial_type'] = 'rewardedAttrSurprise_par'
+            cond_rewardedAttrSurprise_par['modulation'] = np.where(run_behavior['fractalDraw'], 1-run_behavior['wpFrac'], run_behavior['wpFrac'])
+            cond_rewardedAttrSurprise_par['modulation'] = cond_rewardedAttrSurprise_par['modulation']-cond_rewardedAttrSurprise_par['modulation'].mean()
+
+        if reg == 'rewarded_st':
+            cond_rewarded_st = events.query('trial_type == "reward"')[['onset']].reset_index(drop=True)
+            cond_rewarded_st['duration'] = 0
+            cond_rewarded_st['trial_type'] = 'rewarded_st'
+            cond_rewarded_st['modulation'] = np.where(run_behavior['reward']>0, 1, 0)
+
+        if reg == 'notRewarded_st':
+            cond_notRewarded_st = events.query('trial_type == "reward"')[['onset']].reset_index(drop=True)
+            cond_notRewarded_st['duration'] = 0
+            cond_notRewarded_st['trial_type'] = 'notRewarded_st'
+            cond_notRewarded_st['modulation'] = np.where(run_behavior['reward']==0, 1, 0)
 
     # List of var names including 'cond'
     toconcat = [i for i in dir() if 'cond' in i]
