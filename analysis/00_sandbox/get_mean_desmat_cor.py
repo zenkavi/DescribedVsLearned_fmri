@@ -9,13 +9,13 @@ parser = ArgumentParser()
 parser.add_argument("--mnum", help="model number")
 parser.add_argument("--reg_rt", help="regress rt")
 parser.add_argument("--l1_path")
-parser.add_argument("--l3_path")
+parser.add_argument("--l2_path")
 
 args = parser.parse_args()
 mnum = args.mnum
 reg_rt = args.reg_rt
 l1_path = args.l1_path
-l3_path = args.l3_path
+l2_path = args.l2_path
 
 def get_mean_desmat_cor(mnum, reg_rt, l1_path):
 
@@ -38,7 +38,7 @@ def get_mean_desmat_cor(mnum, reg_rt, l1_path):
 
 mean_cor_df = get_mean_desmat_cor(mnum, reg_rt, l1_path)
 
-out_path = os.path.join(l3_path, 'model%s_reg-rt%s'%(mnum, reg_rt))
+out_path = os.path.join(l2_path, 'model%s_reg-rt%s'%(mnum, reg_rt))
 
 if not os.path.exists(out_path):
     os.makedirs(out_path)
