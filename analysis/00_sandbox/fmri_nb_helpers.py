@@ -64,7 +64,10 @@ def plot_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', ts
         
         return view
     else:
-        print('Plotting tvalues filtered for corrected p values < %s'%str(round(1-threshold, 2)))
+        if nofilt:
+            print('Plotting uncorected tvalues')
+        else:
+            print('Plotting tvalues filtered for corrected p values < %s'%str(round(1-threshold, 2)))
         plot_stat_map(filt_tval_img, 
              draw_cross=draw_cross,
              title=title, cut_coords = cut_coords, display_mode = display_mode, threshold=plot_threshold)
