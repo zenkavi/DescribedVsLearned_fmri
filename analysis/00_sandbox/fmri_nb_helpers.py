@@ -109,13 +109,17 @@ def plot_filt_diff_tval_img(reg, mnum1, mnum2, reg_rt1="0", reg_rt2="0",reg2 = N
              title=title, cut_coords = cut_coords, display_mode = display_mode, threshold = disp_threshold)
 
         
-def get_mean_cor_df(reg_rt = "0", mnum = "1"):
+def get_mean_cor_df(reg_rt = "0", mnum = "1", regs = None):
     
-    level3_path = '/Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/bids_nifti_wface/derivatives/nilearn/glm/level3/'
+    level3_path = '/Users/zeynepenkavi/Downloads/GTavares_2017_arbitration/bids_nifti_wface/derivatives/nilearn/glm/level2/'
     model_path = 'model'+mnum+'_reg-rt'+reg_rt
     df_path = os.path.join(level3_path, model_path, model_path+'_mean_desmat_cor.csv')
     
     mean_cor_df = pd.read_csv(df_path)
+    
+    if regs is not None:
+        regs.insert(0,'Unnamed: 0')
+        mean_cor_df=mean_cor_df[mean_cor_df['Unnamed: 0'].isin(regs)][regs]
     
     return(mean_cor_df)
 
