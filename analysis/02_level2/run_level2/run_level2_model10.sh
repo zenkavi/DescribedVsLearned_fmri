@@ -1,5 +1,5 @@
 set -e
-for modelnum in model9
+for modelnum in model10
 do
   for modelname in overall-mean
   do
@@ -7,7 +7,7 @@ do
     do
       for tfce in 1
       do
-        for regname in fractalProb_ev fractalProb_par stim_ev choiceShift_st valBundleSumEarly_par valChosenMinusUnchosenLate_par reward_ev reward_par rpeLeftRightSumEarly_par rewardedAttrSurprise_par rewarded_st notRewarded_st rewardedVsNotRewarded
+        for regname in fractalProb_ev fractalProb_par stim_ev choiceShift_st valRelativeLeftBundle_par reward_ev reward_par rpeRelativeLeftFractal_par rewardedAttrSurprise_par rewarded_st notRewarded_st rewardedVsNotRewarded
         do
           for reg_rt in 0
           do
