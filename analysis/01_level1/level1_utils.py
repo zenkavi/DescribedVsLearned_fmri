@@ -65,7 +65,7 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
     run_behavior = behavior.query('subnum == %d & session == %d'%(int(subnum), int(runnum)))
 
     # Demean columns that might be used for parametric regressors
-    demean_cols = ['probFractalDraw', 'reward', 'leftFractalRpe', 'rightFractalRpe', 'rpeLeftRightSum','valChosen', 'valUnchosen', 'valChosenLottery', 'valUnchosenLottery', 'valChosenFractal', 'valUnchosenFractal', 'valBundleSum', 'valChosenMinusUnchosen']
+    demean_cols = ['probFractalDraw', 'reward', 'leftFractalRpe', 'leftBundleValAdv','rightFractalRpe', 'rpeLeftRightSum','valChosen', 'valUnchosen', 'valChosenLottery', 'valUnchosenLottery', 'valChosenFractal', 'valUnchosenFractal', 'valBundleSum', 'valChosenMinusUnchosen']
     demean_df = run_behavior[demean_cols]
     demean_df = demean_df - demean_df.mean()
 
@@ -223,6 +223,11 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_valChosenMinusUnchosenLate_par['trial_type'] = 'valChosenMinusUnchosenLate_par'
             cond_valChosenMinusUnchosenLate_par['modulation'] = demean_df['valChosenMinusUnchosen'].reset_index(drop=True)
 
+        if reg == 'valRelativeLeftBundle_par':
+            cond_valRelativeLeftBundle_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valRelativeLeftBundle_par['trial_type'] = 'valRelativeLeftBundle_par'
+            cond_valRelativeLeftBundle_par['modulation'] = demean_df['leftBundleValAdv'].reset_index(drop=True)
+
         if reg == 'choiceShift_st':
             cond_choiceShift_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
             cond_choiceShift_st['duration'] = 0
@@ -292,6 +297,12 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_rpeLeftRightSumLate_par['duration'] = 1
             cond_rpeLeftRightSumLate_par['trial_type'] = 'rpeLeftRightSumLate_par'
             cond_rpeLeftRightSumLate_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
+
+        if reg == 'rpeRelativeLeftFractal_par':
+            cond_rpeRelativeLeftFractal_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeRelativeLeftFractal_par['trial_type'] = 'rpeRelativeLeftFractal_par'
+            cond_rpeRelativeLeftFractal_par['modulation'] = run_behavior['leftFractalRpe'] - run_behavior['rightFractalRpe']
+            cond_rpeRelativeLeftFractal_par['modulation'] = cond_rpeRelativeLeftFractal_par['modulation'] - cond_rpeRelativeLeftFractal_par['modulation'].mean()
 
         if reg == 'rewardedAttrFractal_st':
             cond_rewardedAttrFractal_st = events.query('trial_type == "reward"')[['onset']].reset_index(drop=True)

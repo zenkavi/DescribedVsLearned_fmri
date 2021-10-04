@@ -25,6 +25,9 @@ def get_model_regs_with_contrasts(mnum):
         regs.append('rewardedAttrFractalVsLottery')
         regs.append('rewardedVsNotRewarded')
 
+    if mnum == 'model9':
+        regs.append('rewardedVsNotRewarded')
+
     return regs
 
 def get_model_regs(mnum):
@@ -57,5 +60,8 @@ def get_model_regs(mnum):
 
     if mnum == 'model9':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSumEarly_par', 'valChosenMinusUnchosenLate_par', 'reward_ev', 'reward_par', 'rpeLeftRightSumEarly_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
+
+    if mnum == 'model10':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valRelativeLeftBundle_par', 'reward_ev', 'reward_par', 'rpeRelativeLeftFractal_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
 
     return regs
