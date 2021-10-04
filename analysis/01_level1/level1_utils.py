@@ -28,6 +28,9 @@ def make_contrasts(design_matrix, mnum):
         contrasts.update({'rewardedAttrFractalVsLottery':contrasts['rewardedAttrFractal_st'] - contrasts['rewardedAttrLottery_st'],
         'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
 
+    if mnum=='model9':
+        contrasts.update({'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
+
     return contrasts
 
 def get_confounds(subnum, runnum, data_path, scrub_thresh = .5):
@@ -197,6 +200,12 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
                 cond_valBundleSum_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valBundleSum_par['trial_type'] = 'valBundleSum_par'
             cond_valBundleSum_par['modulation'] = demean_df['valBundleSum'].reset_index(drop=True)
+
+        if reg == 'valBundleSumEarly_par':
+            cond_valBundleSumEarly_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valBundleSumEarly_par['duration'] = 1
+            cond_valBundleSumEarly_par['trial_type'] = 'valBundleSumEarly_par'
+            cond_valBundleSumEarly_par['modulation'] = demean_df['valBundleSum'].reset_index(drop=True)
 
         if reg == 'valChosenMinusUnchosen_par':
             if regress_rt:
