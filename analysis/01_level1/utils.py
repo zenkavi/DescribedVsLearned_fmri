@@ -25,7 +25,7 @@ def get_model_regs_with_contrasts(mnum):
         regs.append('rewardedAttrFractalVsLottery')
         regs.append('rewardedVsNotRewarded')
 
-    if mnum == 'model9':
+    if mnum == 'model9' or mnum=='model10':
         regs.append('rewardedVsNotRewarded')
 
     return regs
