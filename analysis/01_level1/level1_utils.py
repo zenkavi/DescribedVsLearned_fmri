@@ -28,7 +28,7 @@ def make_contrasts(design_matrix, mnum):
         contrasts.update({'rewardedAttrFractalVsLottery':contrasts['rewardedAttrFractal_st'] - contrasts['rewardedAttrLottery_st'],
         'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
 
-    if mnum=='model9' or mnum=='model10':
+    if mnum in ['model9', 'model10', 'model11a', 'model11b', 'model12', 'model13']:
         contrasts.update({'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
 
     return contrasts
