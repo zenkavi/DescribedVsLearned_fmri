@@ -25,7 +25,7 @@ def get_model_regs_with_contrasts(mnum):
         regs.append('rewardedAttrFractalVsLottery')
         regs.append('rewardedVsNotRewarded')
 
-    if mnum == 'model9' or mnum=='model10':
+    if mnum in ['model9', 'model10', 'model11a', 'model11b', 'model12', 'model13']:
         regs.append('rewardedVsNotRewarded')
 
     return regs
@@ -63,5 +63,17 @@ def get_model_regs(mnum):
 
     if mnum == 'model10':
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valRelativeLeftBundle_par', 'reward_ev', 'reward_par', 'rpeRelativeLeftFractal_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
+
+    if mnum == 'model11a':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valRelativeLeftBundle_par', 'reward_ev', 'reward_par', 'rpeWeightedByRelevance_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
+
+    if mnum == 'model11b':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valRelativeLeftBundle_par', 'reward_ev', 'reward_par', 'rpeWeightedByPerceivedRelevance_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
+
+    if mnum == 'model12':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valRelativeLeftBundle_par', 'reward_ev', 'reward_par', 'rpeWhenFractalRewarded_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
+
+    if mnum == 'model13':
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valRelativeLeftBundle_par', 'reward_ev', 'reward_par', 'rpeChosenBundleFractal_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
 
     return regs

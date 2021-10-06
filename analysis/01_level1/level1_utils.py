@@ -304,6 +304,18 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_rpeRelativeLeftFractal_par['modulation'] = run_behavior['leftFractalRpe'] - run_behavior['rightFractalRpe']
             cond_rpeRelativeLeftFractal_par['modulation'] = cond_rpeRelativeLeftFractal_par['modulation'] - cond_rpeRelativeLeftFractal_par['modulation'].mean()
 
+        if reg == 'rpeWeightedByRelevance_par':
+            cond_rpeWeightedByRelevance_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeWeightedByRelevance_par['trial_type'] = 'rpeWeightedByRelevance_par'
+            cond_rpeWeightedByRelevance_par['modulation'] = run_behavior['probFractalDraw']*run_behavior['rpeLeftRightSum']
+            cond_rpeWeightedByRelevance_par['modulation'] = cond_rpeWeightedByRelevance_par['modulation'] - cond_rpeWeightedByRelevance_par['modulation'].mean()
+
+        if reg == 'rpeWeightedByPerceivedRelevance_par':
+            cond_rpeWeightedByPerceivedRelevance_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeWeightedByPerceivedRelevance_par['trial_type'] = 'rpeWeightedByPerceivedRelevance_par'
+            cond_rpeWeightedByPerceivedRelevance_par['modulation'] = run_behavior['wpFrac']*run_behavior['rpeLeftRightSum']
+            cond_rpeWeightedByPerceivedRelevance_par['modulation'] = cond_rpeWeightedByPerceivedRelevance_par['modulation'] - cond_rpeWeightedByPerceivedRelevance_par['modulation'].mean()
+
         if reg == 'rewardedAttrFractal_st':
             cond_rewardedAttrFractal_st = events.query('trial_type == "reward"')[['onset']].reset_index(drop=True)
             cond_rewardedAttrFractal_st['duration'] = 0
