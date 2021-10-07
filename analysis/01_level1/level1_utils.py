@@ -285,6 +285,12 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_rpeLeftRightSum_par['trial_type'] = 'rpeLeftRightSum_par'
             cond_rpeLeftRightSum_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
 
+        # Same as above but when this reg is specified a different events file is read in as specified in level1.py
+        if reg == 'rpeBestModelLeftRightSum_par':
+            cond_rpeBestModelLeftRightSum_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
+            cond_rpeBestModelLeftRightSum_par['trial_type'] = 'rpeBestModelLeftRightSum_par'
+            cond_rpeBestModelLeftRightSum_par['modulation'] = demean_df['rpeLeftRightSum'].reset_index(drop=True)
+
         if reg == 'rpeLeftRightSumEarly_par':
             cond_rpeLeftRightSumEarly_par = events.query('trial_type == "reward"')[['onset', 'duration']].reset_index(drop=True)
             cond_rpeLeftRightSumEarly_par['duration'] = 1

@@ -71,9 +71,6 @@ def get_model_regs(mnum):
         regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'reward_ev', 'reward_par', 'rpeWeightedByPerceivedRelevance_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
 
     if mnum == 'model12':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'reward_ev', 'reward_par', 'rpeWhenFractalRewarded_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
-
-    if mnum == 'model13':
-        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'reward_ev', 'reward_par', 'rpeChosenBundleFractal_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
+        regs = ['fractalProb_ev', 'fractalProb_par', 'stim_ev', 'choiceShift_st', 'valBundleSum_par', 'reward_ev', 'reward_par', 'rpeBestModelLeftRightSum_par', 'rewardedAttrSurprise_par', 'rewarded_st', 'notRewarded_st']
 
     return regs
