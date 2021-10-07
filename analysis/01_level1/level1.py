@@ -25,8 +25,7 @@ data_path = os.environ['DATA_PATH']
 behavior_path = os.environ['BEHAVIOR_PATH']
 out_path = os.environ['OUT_PATH']
 
-# Fix this later to relative path
 if mnum=='model12':
-    behavior_path='/shared/behavioral_data/all_trials_wBestRpe.csv'
+    behavior_path=os.path.join(os.path.dirname(behavior_path), 'all_trials_wBestRpe.csv')
 
 run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt = reg_rt, save_contrast = save_contrast, output_type=output_type)
