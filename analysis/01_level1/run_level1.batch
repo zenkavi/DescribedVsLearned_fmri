@@ -9,7 +9,7 @@
 # ------------------------------------------
 
 export DATA_PATH=/shared/bids_nifti_wface
-export BEHAVIOR_PATH=/shared/behavioral_data/all_trials.csv
+export BEHAVIOR_PATH=/shared/behavioral_data
 export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt{REG_RT}
 export CODE_PATH=/shared/code/analysis/01_level1
 
