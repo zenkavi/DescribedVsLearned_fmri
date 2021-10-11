@@ -44,7 +44,7 @@ def get_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', tst
     
     return filt_tval_img
 
-def plot_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', tstat="1", threshold=0.95, interactive=False, cut_coords = None, display_mode = 'ortho', draw_cross=False, title=None, nofilt=False, t_threshold=None):
+def plot_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', tstat="1", threshold=0.95, interactive=False, cut_coords = None, display_mode = 'ortho', draw_cross=False, title=None, nofilt=False, t_threshold=None, vmax=None):
     filt_tval_img = get_filt_tval_img(reg=reg, reg_rt = reg_rt, mnum = mnum, mname = mname, tstat=tstat, threshold=threshold, nofilt=nofilt)
     
     if title is None:
@@ -60,7 +60,7 @@ def plot_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', ts
     elif interactive:
         view = view_img(filt_tval_img, 
              draw_cross=draw_cross,
-             title=title, cut_coords = cut_coords, threshold=plot_threshold)
+             title=title, cut_coords = cut_coords, threshold=plot_threshold, vmax=vmax)
         
         return view
     else:
@@ -70,7 +70,7 @@ def plot_filt_tval_img(reg, reg_rt = "0", mnum = "1", mname = 'overall-mean', ts
             print('Plotting tvalues filtered for corrected p values < %s'%str(round(1-threshold, 2)))
         plot_stat_map(filt_tval_img, 
              draw_cross=draw_cross,
-             title=title, cut_coords = cut_coords, display_mode = display_mode, threshold=plot_threshold)
+             title=title, cut_coords = cut_coords, display_mode = display_mode, threshold=plot_threshold, vmax=vmax)
 
         
 def get_filt_diff_tval_img(reg,  mnum1, mnum2, reg_rt1="0", reg_rt2="0", reg2=None, mname="overall-mean", tstat="1", threshold=0.95):
