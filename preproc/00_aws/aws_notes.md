@@ -123,6 +123,8 @@ aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 AWS ParallelCluster
 ================================================================================
 
+**NOTE: THESE INSTRUCTIONS ARE FOR ParallelCluster VERSION 2.X. THEY NEED TO BE UPDATED FOR 3.X**
+
 Use custom bootstrap actions to set up master and compute nodes
 
 - Define env variables
