@@ -23,6 +23,10 @@ S3: Data storage
 aws s3 ls s3://described-vs-experienced/bids_nifti_wface/
 ```
 
+- Download data from S3. Note change in command because normally you're running `aws` as an alias but need to make sure that a volume to download is attached when syncing from S3
+```
+docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/cluster_scripts amazon/aws-cli s3 sync s3://described-vs-experienced/ddModels/cluster_scripts/optim_out /cluster_scripts/optim_out
+```
 
 EC2: Single instance for testing
 ================================================================================
