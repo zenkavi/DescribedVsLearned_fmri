@@ -101,14 +101,15 @@ RUN export PATH="/opt/miniconda-4.10.3/bin:$PATH" \
     && conda create -y -q --name neuro \
     && bash -c "source activate neuro \
     &&   pip install --no-cache-dir  \
-             "setuptools" \
-             "Cython" \
-             "nibabel" \
-             "nilearn" \
-             "nipype" \
-             "numpy" \
-             "pandas" \
-             "scipy"" \
+             "setuptools==65.3.0" \
+             "Cython==0.29.32" \
+             "nibabel==4.0.2" \
+             "nilearn==0.9.2" \
+             "nipype==1.8.4" \
+             "numpy==1.21.6" \
+             "pandas==1.3.5" \
+             "scikit-learn==1.0.2" \
+             "scipy==1.7.3"" \
     && rm -rf ~/.cache/pip/* \
     && sync \
     && sed -i '$isource activate neuro' $ND_ENTRYPOINT

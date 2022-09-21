@@ -14,18 +14,18 @@ update_check = false
 sanity_check = true
 
 [cluster default]
-key_name = test-cluster
+key_name = fmri-cluster
 vpc_settings = public
 base_os = alinux2
 master_instance_type = t3.2xlarge
 scheduler = slurm
 queue_settings = compute
 s3_read_write_resource = arn:aws:s3:::described-vs-experienced*
-post_install = s3://described-vs-experienced/code/analysis/analysis-setup-env.sh
+post_install = s3://described-vs-experienced/analysis/fmri-cluster-setup-env.sh
 additional_iam_policies = arn:aws:iam::aws:policy/AmazonS3FullAccess
 ebs_settings = myebs
-master_root_volume_size = 512
-compute_root_volume_size = 512
+master_root_volume_size = 256
+compute_root_volume_size = 256
 scaling_settings = custom
 
 [queue compute]
@@ -34,7 +34,7 @@ placement_group = DYNAMIC
 disable_hyperthreading = true
 
 [compute_resource default]
-instance_type = c5.9xlarge
+instance_type = c5.4xlarge
 min_count = 0
 max_count = 25
 
@@ -44,7 +44,7 @@ scaledown_idletime = 20
 [ebs myebs]
 shared_dir = /shared
 volume_type = gp2
-volume_size = 1024
+volume_size = 256
 
 [vpc public]
 vpc_id = ${VPC_ID}

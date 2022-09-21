@@ -381,7 +381,8 @@ def make_level1_design_matrix(subnum, runnum, mnum, data_path, behavior_path, re
 
     return design_matrix
 
-# Fixed effects analysis for all runs of subjects based on tutorial on https://nilearn.github.io/auto_examples/04_glm_first_level/plot_fiac_analysis.html#sphx-glr-auto-examples-04-glm-first-level-plot-fiac-analysis-py
+# Fixed effects analysis for all runs of subjects based on tutorial on:
+# https://nilearn.github.io/stable/auto_examples/04_glm_first_level/plot_fiac_analysis.html#sphx-glr-auto-examples-04-glm-first-level-plot-fiac-analysis-py
 def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, save_contrast = True, output_type='effect_size', noise_model='ar1', hrf_model='spm', drift_model='cosine',smoothing_fwhm=5):
 
     if not os.path.exists(out_path):
@@ -430,7 +431,8 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, s
                                drift_model=drift_model,
                                smoothing_fwhm=smoothing_fwhm,
                                mask_img=mask_img,
-                               subject_label=subnum)
+                               subject_label=subnum,
+                               minimize_memory=True)
 
         #fit glm to run image using run events
         print("***********************************************")

@@ -7,8 +7,8 @@ import os
 parser = ArgumentParser()
 parser.add_argument("-s", "--subnum", help="subject number")
 parser.add_argument("--mnum", help="model number")
-parser.add_argument("--reg_rt", help="regress rt", default=1)
-parser.add_argument("--save_contrast")
+parser.add_argument("--reg_rt", help="regress rt", default=0)
+parser.add_argument("--save_contrast", default="True")
 parser.add_argument("--output_type", default='effect_size')
 
 args = parser.parse_args()
