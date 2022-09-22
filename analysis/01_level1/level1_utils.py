@@ -28,7 +28,7 @@ def make_contrasts(design_matrix, mnum):
         contrasts.update({'rewardedAttrFractalVsLottery':contrasts['rewardedAttrFractal_st'] - contrasts['rewardedAttrLottery_st'],
         'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
 
-    if mnum in ['model9', 'model10', 'model11a', 'model11b', 'model12', 'model13']:
+    if mnum in ['model9', 'model10', 'model11a', 'model11b', 'model12']:
         contrasts.update({'rewardedVsNotRewarded': contrasts['rewarded_st'] - contrasts['notRewarded_st']})
 
     return contrasts
@@ -65,7 +65,8 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
     run_behavior = behavior.query('subnum == %d & session == %d'%(int(subnum), int(runnum)))
 
     # Demean columns that might be used for parametric regressors
-    demean_cols = ['probFractalDraw', 'reward', 'leftFractalRpe', 'leftBundleValAdv','rightFractalRpe', 'rpeLeftRightSum','valChosen', 'valUnchosen', 'valChosenLottery', 'valUnchosenLottery', 'valChosenFractal', 'valUnchosenFractal', 'valBundleSum', 'valChosenMinusUnchosen']
+    demean_cols = ['probFractalDraw', 'reward', 'leftFractalRpe', 'leftBundleValAdv','rightFractalRpe', 'rpeLeftRightSum','valChosen', 'valUnchosen', 'valChosenLottery', 'valUnchosenLottery', 'valChosenFractal', 'valUnchosenFractal', 'valBundleSum', 'valChosenMinusUnchosen', 'valSumTvpFrac', 'valSumTvwpFrac', 'valSumQvpFrac', 'valSumQvwpFrac']
+    demean_cols = [i for i in demean_cols if i in run_behavior.columns]
     demean_df = run_behavior[demean_cols]
     demean_df = demean_df - demean_df.mean()
 
@@ -227,6 +228,26 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_valRelativeLeftBundle_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
             cond_valRelativeLeftBundle_par['trial_type'] = 'valRelativeLeftBundle_par'
             cond_valRelativeLeftBundle_par['modulation'] = demean_df['leftBundleValAdv'].reset_index(drop=True)
+
+        if reg == 'valSumTvpFrac_par':
+            cond_valSumTvpFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valSumTvpFrac_par['trial_type'] = 'valSumTvpFrac_par'
+            cond_valSumTvpFrac_par['modulation'] = demean_df['valSumTvpFrac'].reset_index(drop=True)
+
+        if reg == 'valSumTvwpFrac_par':
+            cond_valSumTvwpFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valSumTvwpFrac_par['trial_type'] = 'valSumTvwpFrac_par'
+            cond_valSumTvwpFrac_par['modulation'] = demean_df['valSumTvwpFrac'].reset_index(drop=True)
+
+        if reg == 'valSumQvpFrac_par':
+            cond_valSumQvpFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valSumQvpFrac_par['trial_type'] = 'valSumQvpFrac_par'
+            cond_valSumQvpFrac_par['modulation'] = demean_df['valSumQvpFrac'].reset_index(drop=True)
+
+        if reg == 'valSumQvwpFrac_par':
+            cond_valSumQvwpFrac_par = events.query('trial_type == "stimulus"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valSumQvwpFrac_par['trial_type'] = 'valSumQvwpFrac_par'
+            cond_valSumQvwpFrac_par['modulation'] = demean_df['valSumQvwpFrac'].reset_index(drop=True)
 
         if reg == 'choiceShift_st':
             cond_choiceShift_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
@@ -458,6 +479,8 @@ def run_level1(subnum, mnum, data_path, behavior_path, out_path, regress_rt=0, s
             for index, (contrast_id, contrast_val) in enumerate(contrasts.items()):
                 contrast_map = fmri_glm.compute_contrast(contrast_val, output_type= output_type)
                 nib.save(contrast_map, '%s/sub-%s_%s_reg-rt%s_%s_%s.nii.gz'%(contrasts_path, subnum, mnum, str(regress_rt), contrast_id, output_type))
+                contrast_map = fmri_glm.compute_contrast(contrast_val, output_type= 'stat') #also save tmaps
+                nib.save(contrast_map, '%s/sub-%s_%s_reg-rt%s_%s_%s.nii.gz'%(contrasts_path, subnum, mnum, str(regress_rt), contrast_id, 'tmap'))
             print("***********************************************")
             print("Done saving contrasts for sub-%s"%(subnum))
             print("***********************************************")

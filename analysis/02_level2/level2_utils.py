@@ -28,7 +28,7 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
     suffix = reg + '_' + mnum + '_reg-rt' + str(regress_rt)
 
     # Tutorial for running level 2 from parameter estimate maps
-    # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_one_sample_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-one-sample-test-py
+    # https://nilearn.github.io/stable/auto_examples/05_glm_second_level/plot_second_level_one_sample_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-one-sample-test-py
     if from_cmaps:
         input_path = "%s/sub-*/contrasts"%(data_path)
 
@@ -47,21 +47,21 @@ def nilearn_level2(mnum, mname, reg, regress_rt, data_path, out_path, from_cmaps
         print("Saved level2 unthresholded t-map for %s"%(suffix))
 
         # Additional Tutorial for permutation testing
-        # https://nilearn.github.io/auto_examples/05_glm_second_level/plot_second_level_association_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-association-test-py
+        # https://nilearn.github.io/stable/auto_examples/05_glm_second_level/plot_second_level_association_test.html#sphx-glr-auto-examples-05-glm-second-level-plot-second-level-association-test-py
         from nilearn.glm.second_level import non_parametric_inference
         # The neg-log p-values obtained with nonparametric testing are capped at 3 if the number of permutations is 1e3.
         neg_log_pvals_permuted_ols_unmasked = non_parametric_inference(second_level_input,
                              design_matrix=design_matrix,
                              model_intercept=True, n_perm=num_perm,
                              two_sided_test=False,
-                             smoothing_fwhm=var_smooth, n_jobs=1, verbose=1)
+                             smoothing_fwhm=var_smooth, n_jobs=7, verbose=1)
 
         nib.save(neg_log_pvals_permuted_ols_unmasked, '%s/%s_nilearn_neg_log_pvals_permuted_ols_unmasked.nii.gz'%(reg_path, suffix))
 
         print("Saved neg_log_pvals_permuted_ols_unmasked for %s"%(suffix))
 
     # Tutorial for running level 2 from FirstLevelObjects
-    # https://nilearn.github.io/auto_examples/07_advanced/plot_bids_analysis.html#sphx-glr-auto-examples-07-advanced-plot-bids-analysis-py
+    # https://nilearn.github.io/stable/auto_examples/07_advanced/plot_bids_analysis.html#sphx-glr-auto-examples-07-advanced-plot-bids-analysis-py
     else:
         input_path = "%s/sub-*"%(data_path)
 
