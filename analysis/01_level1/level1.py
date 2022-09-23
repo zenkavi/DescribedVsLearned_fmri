@@ -27,7 +27,7 @@ out_path = os.environ['OUT_PATH']
 
 if mnum=='model12':
     behavior_path=os.path.join(behavior_path, 'all_trials_wBestRpe.csv')
-elif 'model13' in mnum:
+elif 'model13' or 'model14' in mnum:
     behavior_path=os.path.join(behavior_path, 'all_trials_valSumComp.csv')
 else:
     behavior_path=os.path.join(behavior_path, 'all_trials.csv')

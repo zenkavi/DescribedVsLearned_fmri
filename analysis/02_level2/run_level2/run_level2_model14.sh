@@ -1,9 +1,9 @@
 set -e
-for modelnum in model13b
+for modelnum in model14
 do
   for sign in pos neg
   do
-    for regname in valSumTvwpFrac_par
+    for regname in valSumEarlyIntQv_par
     do
       for package in nilearn
       do

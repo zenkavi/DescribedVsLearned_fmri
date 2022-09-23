@@ -1,5 +1,5 @@
 set -e
-for modelnum in model13a
+for modelnum in model13d
 do
   for sign in pos neg
   do

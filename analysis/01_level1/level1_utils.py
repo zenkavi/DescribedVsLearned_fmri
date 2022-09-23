@@ -249,6 +249,12 @@ def get_events(subnum, runnum, mnum, data_path, behavior_path, regress_rt=0):
             cond_valSumQvwpFrac_par['trial_type'] = 'valSumQvwpFrac_par'
             cond_valSumQvwpFrac_par['modulation'] = demean_df['valSumQvwpFrac'].reset_index(drop=True)
 
+        if reg == 'valSumEarlyIntQv_par':
+            cond_valSumEarlyIntQv_par = events.query('trial_type == "fractalProb"')[['onset', 'duration']].reset_index(drop=True)
+            cond_valSumEarlyIntQv_par['trial_type'] = 'valSumEarlyIntQv_par'
+            cond_valSumEarlyIntQv_par['modulation'] = np.where(run_behavior['probFractalDraw']>0.5, run_behavior['leftQValue']+run_behavior['rightQValue'], 0)
+            cond_valSumEarlyIntQv_par['modulation'] = cond_valSumEarlyIntQv_par['modulation'] - cond_valSumEarlyIntQv_par['modulation'].mean()
+
         if reg == 'choiceShift_st':
             cond_choiceShift_st = pd.DataFrame(events.query('trial_type == "stimulus"')['onset']+events.query('trial_type == "stimulus"')['duration'], columns = ['onset'])
             cond_choiceShift_st['duration'] = 0

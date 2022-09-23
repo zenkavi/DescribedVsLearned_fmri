@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH -J level2-{MODELNUM}_reg-rt0-{MODELNAME}-{REGNAME}-{SIGN}-tfce1-{PACKAGE}
+#SBATCH -J level2-{MODELNUM}_reg-rt0-overall-mean-{REGNAME}-{SIGN}-tfce1-{PACKAGE}
 #SBATCH -c 7
 
 # Outputs ----------------------------------
-#SBATCH -o /shared/.out/level2-{MODELNUM}_reg-rt0-{MODELNAME}-{SIGN}-{REGNAME}-tfce1-{PACKAGE}.out
-#SBATCH -e /shared/.err/level2-{MODELNUM}_reg-rt0-{MODELNAME}-{SIGN}-{REGNAME}-tfce1-{PACKAGE}.err
+#SBATCH -o /shared/.out/level2-{MODELNUM}_reg-rt0-overall-mean-{SIGN}-{REGNAME}-tfce1-{PACKAGE}.out
+#SBATCH -e /shared/.err/level2-{MODELNUM}_reg-rt0-overall-mean-{SIGN}-{REGNAME}-tfce1-{PACKAGE}.err
 # ------------------------------------------
 
 export DATA_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt0
@@ -13,11 +13,11 @@ export OUT_PATH=/shared/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNU
 export CODE_PATH=/shared/analysis/02_level2
 export BM_PATH=/shared/bids_nifti_wface/derivatives/fmriprep
 
-#aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT} $DATA_PATH/
+#aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level1/{MODELNUM}_reg-rt0 $DATA_PATH/
 #aws s3 sync s3://described-vs-experienced/bids_nifti_wface/derivatives/fmriprep/ $BM_PATH/ --exclude "*" --include "*brain_mask.nii.gz"
 
 docker run --rm -e DATA_PATH=/data -e OUT_PATH=/out -e BM_PATH=/bm \
 -v $DATA_PATH:/data -v $OUT_PATH:/out -v $BM_PATH:/bm -v $CODE_PATH:/code \
 zenkavi/fsl:6.0.3 python ./code/level2.py --mnum {MODELNUM} -r {REGNAME} -s {SIGN} --num_perm 5000 --package {PACKAGE}
 
-#aws s3 sync $OUT_PATH/{REGNAME}_{MODELNUM}_reg-rt{REG_RT} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}/{MODELNAME}/{REGNAME}_{MODELNUM}_reg-rt{REG_RT}
+#aws s3 sync $OUT_PATH/{REGNAME}_{MODELNUM}_reg-rt{REG_RT} s3://described-vs-experienced/bids_nifti_wface/derivatives/nilearn/glm/level2/{MODELNUM}_reg-rt{REG_RT}/overall-mean/{REGNAME}_{MODELNUM}_reg-rt{REG_RT}
